@@ -14,6 +14,8 @@ What will you learn in this workshop?
 - [Type casting](#type-casting)
 - [Arithmetic and comparison operators](#arithmetic-and-comparison-operators)
 
+> 📚 **Homework:** [Workshop 1 — Homework](./workshop_1_homework.md)
+
 
 ## How does computer work?
 
