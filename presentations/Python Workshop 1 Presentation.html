@@ -1,0 +1,650 @@
+<!-- Python Workshop 01 — beginner intro deck. Self-contained. Use ← → / Space to navigate. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python · Workshop 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --mute:#7a7a7a;
+    --line:#e3e3e3;
+    --line2:#111;
+    --paper:#ffffff;
+    /* Luka's installed Coolvetica Compressed is used automatically if present, else Anton */
+    --display:'Coolvetica Compressed','Coolvetica',Anton,'Arial Narrow',sans-serif;
+    --body:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{background:var(--paper); color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased; overflow:hidden}
+
+  .viewport{position:fixed; inset:0; overflow:hidden; background:var(--paper)}
+  .stage{position:absolute; top:50%; left:50%; width:1440px; height:900px; transform-origin:center center}
+
+  .slide{position:absolute; inset:0; opacity:0; pointer-events:none; padding:90px 100px; display:flex; flex-direction:column}
+  .slide.active{opacity:1; pointer-events:auto}
+
+  /* header row on each slide */
+  .head{display:flex; justify-content:space-between; align-items:flex-start}
+  .kick{font-size:15px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--ink)}
+  .kick .b{color:var(--mute)}
+  .num{font-family:var(--display); font-size:30px; letter-spacing:.04em; color:var(--mute); line-height:1}
+
+  .foot{position:absolute; left:100px; right:100px; bottom:54px; border-top:1px solid var(--line); padding-top:16px;
+        display:flex; justify-content:space-between; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute)}
+
+  .body{flex:1; display:flex; flex-direction:column; justify-content:center}
+
+  h1{font-family:var(--display); font-weight:400; text-transform:uppercase; line-height:.92; letter-spacing:.005em}
+  .h-xl{font-size:108px}
+  .h-lg{font-size:84px}
+  .h-md{font-size:64px}
+  .lead{font-size:27px; line-height:1.5; color:#222; max-width:60ch}
+  .lead .hl{color:var(--ink); font-weight:600}
+  .mut{color:var(--mute)}
+  .tag{display:inline-block; font-weight:600; letter-spacing:.04em}
+
+  /* entrance reveal */
+  @keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:none}}
+  .slide .r{opacity:0}
+  .slide.active .r{animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards; animation-delay:var(--d,0s)}
+
+  /* bracket frame — opens from center on every slide */
+  .brk{position:absolute; width:34px; top:50%; transform:translateY(-50%); pointer-events:none; z-index:2}
+  .brk.l{left:42px; border-left:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .brk.r{right:42px; border-right:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .slide .brk{height:0; opacity:0}
+  .slide.active .brk{animation:brkopen .55s cubic-bezier(.16,.84,.3,1) forwards}
+  @keyframes brkopen{from{height:0; opacity:0} to{height:780px; opacity:1}}
+
+  /* title */
+  .title-wrap{display:flex; flex-direction:column; justify-content:center; height:100%}
+  .title-wrap .kick{margin-bottom:40px}
+  .py{font-family:var(--display); font-size:280px; line-height:.9; letter-spacing:.01em}
+  .rule{height:2px; background:var(--ink); margin:30px 0}
+  .subline{font-size:30px; color:#222; font-weight:500}
+  .motif{font-family:var(--mono); font-size:22px; color:var(--mute)}
+
+  /* steps row (slide 2) */
+  .steps{display:flex; gap:26px; margin-top:46px}
+  .step{flex:1; border:1.5px solid var(--ink); padding:30px 28px; min-height:150px; position:relative}
+  .step .n{font-family:var(--display); font-size:40px; line-height:1}
+  .step .t{font-size:22px; font-weight:600; margin-top:14px}
+  .step .d{font-size:16px; color:var(--mute); margin-top:6px; line-height:1.45}
+  .arrow{align-self:center; font-size:30px; color:var(--mute)}
+
+  /* myth/reality (slide 3) */
+  .cols2{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:40px; border:1.5px solid var(--ink)}
+  .cols2 .c{padding:30px 34px}
+  .cols2 .c:first-child{border-right:1.5px solid var(--ink)}
+  .cols2 .lbl{font-size:14px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:16px}
+  .cols2 ul{list-style:none}
+  .cols2 li{font-size:21px; line-height:1.7; padding-left:24px; position:relative}
+  .cols2 li::before{content:"—"; position:absolute; left:0; color:var(--mute)}
+
+  /* fields grid (slide 4) */
+  .grid{display:grid; grid-template-columns:repeat(5,1fr); grid-auto-rows:1fr; gap:0; margin-top:40px;
+        border-top:1.5px solid var(--ink); border-left:1.5px solid var(--ink)}
+  .cell{border-right:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink); padding:24px 22px; min-height:150px}
+  .cell .ct{font-size:18px; font-weight:700; letter-spacing:.04em}
+  .cell .cd{font-size:15px; color:var(--mute); margin-top:10px; line-height:1.45}
+
+  /* why python (slide 5) */
+  .split{display:grid; grid-template-columns:1.05fr .95fr; gap:60px; align-items:center; margin-top:30px}
+  .reasons{list-style:none}
+  .reasons li{font-size:23px; line-height:1.45; padding:18px 0; border-bottom:1px solid var(--line); display:flex; gap:18px}
+  .reasons li:first-child{border-top:1px solid var(--line)}
+  .reasons .rk{font-family:var(--display); font-size:26px; color:var(--mute); min-width:40px}
+  .bigcode{border:1.5px solid var(--ink); padding:46px 38px}
+  .bigcode .lab{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:22px}
+  .bigcode code{font-family:var(--mono); font-size:34px; display:block; line-height:1.4}
+
+  /* A* svg slides */
+  .stage-svg{flex:1; display:flex; align-items:center; justify-content:center; margin-top:8px}
+  svg{display:block; max-width:100%; max-height:100%}
+  .stage-svg > div{display:flex; align-items:center; justify-content:center}
+  .stage-svg svg{width:800px; height:auto; max-width:100%; display:block}
+  .cap{font-size:22px; color:#222; line-height:1.5; margin-top:6px; max-width:70ch}
+  .cap .hl{font-weight:600}
+  .cell-sq{fill:#fff; stroke:var(--line); stroke-width:1.5}
+  .cell-wall{fill:var(--ink); stroke:var(--ink)}
+  .node{fill:var(--ink); opacity:0; transition:r .45s cubic-bezier(.2,.8,.3,1.4), opacity .3s}
+  .node-static{fill:var(--ink)}
+  .edge{stroke:#c7c7c7; stroke-width:2; transition:stroke-dashoffset .5s ease}
+  .sg-ring{fill:none; stroke:var(--ink); stroke-width:2.5}
+  .sg-t{font-family:var(--display); font-size:26px; fill:var(--ink); text-anchor:middle; dominant-baseline:central}
+
+  /* vocabulary diagram (slide 10) */
+  .diag-node{fill:#fff; stroke:var(--ink); stroke-width:2.5}
+  .diag-edge{stroke:var(--ink); stroke-width:2.5}
+  .diag-let{font-family:var(--body); font-weight:700; font-size:22px; fill:var(--ink); text-anchor:middle; dominant-baseline:central}
+  .cost{font-family:var(--mono); font-size:18px; fill:var(--ink)}
+  .cost-bg{fill:#fff}
+  .ann{font-weight:700; font-size:20px; letter-spacing:.04em; fill:var(--ink)}
+  .ann-sub{font-size:16px; fill:var(--mute)}
+  .ann-line{stroke:var(--ink); stroke-width:1.5}
+
+  /* video (slide 11) */
+  .vid-wrap{display:grid; grid-template-columns:1.5fr 1fr; gap:48px; align-items:center; margin-top:10px}
+  .video-frame{position:relative; width:100%; aspect-ratio:16/9; border:1.5px solid var(--ink); background:#000}
+  .video-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+  .video-link{display:inline-block; margin-top:16px; font-size:16px; font-weight:600; letter-spacing:.04em; color:var(--ink);
+               text-decoration:none; border-bottom:2px solid var(--ink); padding-bottom:2px}
+  .vid-note{font-size:21px; line-height:1.55; color:#222}
+  .vid-note .hl{font-weight:600}
+
+  /* code slides */
+  .code{font-family:var(--mono); border:1.5px solid var(--ink); padding:34px 40px; font-size:27px; line-height:1.75; white-space:pre; overflow-x:auto}
+  .code .kw{font-weight:700}
+  .code .com{color:var(--mute)}
+  .code .str{color:var(--ink)}
+  .out{margin-top:22px; border-left:3px solid var(--ink); padding:14px 0 14px 22px}
+  .out .ol{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:8px}
+  .out .ov{font-family:var(--mono); font-size:27px}
+  .note{font-size:21px; color:#222; margin-top:26px; line-height:1.55; max-width:78ch}
+  .note .hl{font-weight:600}
+  .codewrap{display:grid; grid-template-columns:1fr; gap:0; margin-top:24px}
+
+  /* math table */
+  .mtab{border:1.5px solid var(--ink); margin-top:26px}
+  .mrow{display:grid; grid-template-columns:1fr 56px 1fr; align-items:center; padding:16px 34px; border-bottom:1px solid var(--line); font-family:var(--mono); font-size:25px}
+  .mrow:last-child{border-bottom:0}
+  .mrow .ex{font-weight:500}
+  .mrow .ar{color:var(--mute); text-align:center}
+  .mrow .re{display:flex; justify-content:space-between; align-items:center}
+  .mrow .rc{font-size:16px; color:var(--mute); font-family:var(--mono)}
+
+  /* variables boxes */
+  .vbox-row{display:flex; gap:26px; margin-top:26px}
+  .vbox{border:1.5px solid var(--ink); padding:0; min-width:230px}
+  .vbox .vl{font-size:14px; letter-spacing:.14em; text-transform:uppercase; padding:12px 20px; border-bottom:1.5px solid var(--ink); color:var(--mute)}
+  .vbox .vv{font-family:var(--mono); font-size:34px; padding:24px 20px}
+
+  /* recap */
+  .recap{list-style:none; margin-top:30px}
+  .recap li{font-size:27px; line-height:1.4; padding:20px 0; border-bottom:1px solid var(--line); display:flex; gap:20px}
+  .recap li:first-child{border-top:1px solid var(--line)}
+  .recap .rn{font-family:var(--display); font-size:30px; color:var(--mute); min-width:44px}
+  .teaser{margin-top:34px; font-size:23px}
+  .teaser .hl{font-weight:600}
+
+  /* end */
+  .end-q{font-family:var(--display); font-size:200px; line-height:.9}
+  #s-end .kick{margin-bottom:30px}
+
+  /* overlay UI (outside scaled stage) */
+  .ui{position:fixed; left:0; right:0; bottom:0; height:46px; display:flex; align-items:center; gap:18px; padding:0 20px; z-index:50; pointer-events:none}
+  .ui .prog-track{flex:1; height:2px; background:var(--line)}
+  .ui .prog{height:2px; background:var(--ink); width:0; transition:width .4s ease}
+  .ui .count{font-family:var(--mono); font-size:13px; color:var(--mute); letter-spacing:.1em}
+  .ui .btns{display:flex; gap:8px; pointer-events:auto}
+  .ui button{font-family:var(--body); font-size:16px; width:34px; height:30px; border:1px solid var(--ink); background:#fff; cursor:pointer; line-height:1}
+  .ui button:hover{background:var(--ink); color:#fff}
+  .hint{position:fixed; bottom:60px; right:24px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); z-index:50; transition:opacity .6s; pointer-events:none}
+</style>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- 01 TITLE -->
+    <section class="slide" id="s-title">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PYTHON <span class="b">·</span> WORKSHOP 01 ]</div>
+        <div class="py r" style="--d:.08s">PYTHON</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Programming, from absolute zero.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; print("hello, world")</span>
+        <span>Workshop 01 / 18</span>
+      </div>
+    </section>
+
+    <!-- 02 WHAT IS PROGRAMMING -->
+    <section class="slide" id="s-what">
+      <div class="head"><div class="kick">[ WHAT IS THIS ]</div><div class="num">02</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Programming is just<br>giving instructions.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:28px">You write down the steps. A machine follows them — <span class="hl">exactly, instantly,</span> and a billion times without ever getting bored. <span class="hl">Write it once. It runs forever.</span></p>
+        <div class="steps">
+          <div class="step r" style="--d:.22s"><div class="n">01</div><div class="t">Write</div><div class="d">Spell out the steps in plain, precise language.</div></div>
+          <div class="arrow r" style="--d:.30s">→</div>
+          <div class="step r" style="--d:.34s"><div class="n">02</div><div class="t">Run</div><div class="d">The computer does exactly what you said.</div></div>
+          <div class="arrow r" style="--d:.42s">→</div>
+          <div class="step r" style="--d:.46s"><div class="n">03</div><div class="t">Repeat</div><div class="d">Same code, any time, at any scale, for free.</div></div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>What is programming</span></div>
+    </section>
+
+    <!-- 03 MINDSET -->
+    <section class="slide" id="s-mindset">
+      <div class="head"><div class="kick">[ THE TRUTH ]</div><div class="num">03</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">You don't need to be<br>a math genius.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:26px">Coding is breaking a big problem into small, clear steps — then letting the computer do the boring part. <span class="hl">If you can write a recipe, you can write code.</span></p>
+        <div class="cols2">
+          <div class="c r" style="--d:.22s">
+            <div class="lbl">[ The myth ]</div>
+            <ul>
+              <li>It's only for "math people"</li>
+              <li>You must memorise everything</li>
+              <li>One typo and it's hopeless</li>
+            </ul>
+          </div>
+          <div class="c r" style="--d:.30s">
+            <div class="lbl">[ The reality ]</div>
+            <ul>
+              <li>It's logic, patience &amp; curiosity</li>
+              <li>You look things up — always</li>
+              <li>Errors are normal; they guide you</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>Mindset</span></div>
+    </section>
+
+    <!-- 04 FIELDS -->
+    <section class="slide" id="s-fields">
+      <div class="head"><div class="kick">[ WHERE IT LIVES ]</div><div class="num">04</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Code is everywhere.</h1>
+        <div class="grid">
+          <div class="cell r" style="--d:.10s"><div class="ct">[WEB]</div><div class="cd">The sites &amp; apps you open daily.</div></div>
+          <div class="cell r" style="--d:.14s"><div class="ct">[MOBILE]</div><div class="cd">Everything on your phone.</div></div>
+          <div class="cell r" style="--d:.18s"><div class="ct">[GAMES]</div><div class="cd">Worlds, rules, characters.</div></div>
+          <div class="cell r" style="--d:.22s"><div class="ct">[AI]</div><div class="cd">Systems that learn &amp; predict.</div></div>
+          <div class="cell r" style="--d:.26s"><div class="ct">[DATA]</div><div class="cd">Finding patterns in numbers.</div></div>
+          <div class="cell r" style="--d:.30s"><div class="ct">[AUTOMATION]</div><div class="cd">Make boring tasks vanish.</div></div>
+          <div class="cell r" style="--d:.34s"><div class="ct">[SCIENCE]</div><div class="cd">Simulate, model, discover.</div></div>
+          <div class="cell r" style="--d:.38s"><div class="ct">[ROBOTICS]</div><div class="cd">Machines that move &amp; sense.</div></div>
+          <div class="cell r" style="--d:.42s"><div class="ct">[CREATIVE]</div><div class="cd">Generative art, music, design.</div></div>
+          <div class="cell r" style="--d:.46s"><div class="ct">[FINANCE]</div><div class="cd">Modelling, trading, analysis.</div></div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>Fields</span></div>
+    </section>
+
+    <!-- 05 WHY PYTHON -->
+    <section class="slide" id="s-why">
+      <div class="head"><div class="kick">[ WHY PYTHON ]</div><div class="num">05</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">One language. Almost every field.</h1>
+        <div class="split">
+          <ul class="reasons">
+            <li class="r" style="--d:.12s"><span class="rk">01</span><span>Reads almost like plain English.</span></li>
+            <li class="r" style="--d:.18s"><span class="rk">02</span><span>Forgiving and beginner-friendly.</span></li>
+            <li class="r" style="--d:.24s"><span class="rk">03</span><span>A huge library for nearly anything.</span></li>
+            <li class="r" style="--d:.30s"><span class="rk">04</span><span>Runs NASA tools, Instagram, AI labs &amp; science.</span></li>
+          </ul>
+          <div class="bigcode r" style="--d:.24s">
+            <div class="lab">[ A complete program ]</div>
+            <code><span class="kw">print</span>(<span class="str">"Hello, world!"</span>)</code>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>Why Python</span></div>
+    </section>
+
+    <!-- 06 PATHFINDING INTRO -->
+    <section class="slide" id="s-pathintro">
+      <div class="head"><div class="kick">[ A REAL PROBLEM ]</div><div class="num">06</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">How does a map find<br>the fastest route?</h1>
+        <p class="lead r" style="--d:.14s; margin-top:28px">Your taxi app. A game character chasing you. A delivery robot. They all solve the <span class="hl">same puzzle</span>: get from A to B, the smart way.</p>
+        <p class="lead mut r" style="--d:.22s; margin-top:18px">Let's see how a computer actually <span class="hl" style="color:#222">looks at a map</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>Pathfinding</span></div>
+    </section>
+
+    <!-- 07 THE MAP -->
+    <section class="slide" id="s-map">
+      <div class="head"><div class="kick">[ STEP 01 <span class="b">·</span> THE MAP ]</div><div class="num">07</div></div>
+      <div class="stage-svg"><div id="svg-map"></div></div>
+      <p class="cap" style="margin-bottom:70px">A grid. Black cells are <span class="hl">walls</span> you can't cross. The goal: a path from <span class="hl">[S]</span> to <span class="hl">[G]</span>.</p>
+      <div class="foot"><span>Python · Workshop 01</span><span>The map</span></div>
+    </section>
+
+    <!-- 08 VERTICES -->
+    <section class="slide" id="s-vert">
+      <div class="head"><div class="kick">[ STEP 02 <span class="b">·</span> POINTS ]</div><div class="num">08</div></div>
+      <div class="stage-svg"><div id="svg-vert"></div></div>
+      <p class="cap" style="margin-bottom:70px">To a computer, the map is just <span class="hl">points</span>. Every open cell becomes one — a <span class="hl">[vertex]</span>.</p>
+      <div class="foot"><span>Python · Workshop 01</span><span>Vertices</span></div>
+    </section>
+
+    <!-- 09 EDGES -->
+    <section class="slide" id="s-edge">
+      <div class="head"><div class="kick">[ STEP 03 <span class="b">·</span> CONNECTIONS ]</div><div class="num">09</div></div>
+      <div class="stage-svg"><div id="svg-edge"></div></div>
+      <p class="cap" style="margin-bottom:70px">Each point links to its neighbours. A connection is an <span class="hl">[edge]</span>. Together they form a <span class="hl">graph</span> — a web of places and paths.</p>
+      <div class="foot"><span>Python · Workshop 01</span><span>Edges</span></div>
+    </section>
+
+    <!-- 10 VOCABULARY -->
+    <section class="slide" id="s-vocab">
+      <div class="head"><div class="kick">[ VOCABULARY ]</div><div class="num">10</div></div>
+      <div class="body" style="flex-direction:row; gap:60px; align-items:center">
+        <div style="flex:1.3" class="r">
+          <svg viewBox="0 0 760 460" width="100%">
+            <!-- edges -->
+            <line class="diag-edge" x1="170" y1="170" x2="410" y2="95"/>
+            <line class="diag-edge" x1="410" y1="95" x2="610" y2="205"/>
+            <line class="diag-edge" x1="170" y1="170" x2="350" y2="340"/>
+            <line class="diag-edge" x1="350" y1="340" x2="630" y2="365"/>
+            <line class="diag-edge" x1="610" y1="205" x2="630" y2="365"/>
+            <!-- costs -->
+            <g><rect class="cost-bg" x="278" y="118" width="26" height="22"/><text class="cost" x="282" y="135">4</text></g>
+            <g><rect class="cost-bg" x="503" y="138" width="26" height="22"/><text class="cost" x="507" y="155">3</text></g>
+            <g><rect class="cost-bg" x="245" y="248" width="26" height="22"/><text class="cost" x="249" y="265">2</text></g>
+            <g><rect class="cost-bg" x="478" y="345" width="26" height="22"/><text class="cost" x="482" y="362">5</text></g>
+            <g><rect class="cost-bg" x="615" y="278" width="26" height="22"/><text class="cost" x="619" y="295">2</text></g>
+            <!-- nodes -->
+            <circle class="diag-node" cx="170" cy="170" r="26"/><text class="diag-let" x="170" y="170">A</text>
+            <circle class="diag-node" cx="410" cy="95" r="26"/><text class="diag-let" x="410" y="95">B</text>
+            <circle class="diag-node" cx="610" cy="205" r="26"/><text class="diag-let" x="610" y="205">C</text>
+            <circle class="diag-node" cx="350" cy="340" r="26"/><text class="diag-let" x="350" y="340">D</text>
+            <circle class="diag-node" cx="630" cy="365" r="26"/><text class="diag-let" x="630" y="365">E</text>
+            <!-- annotations -->
+            <line class="ann-line" x1="410" y1="69" x2="410" y2="40"/>
+            <text class="ann" x="376" y="30">[VERTEX]</text>
+            <text class="ann-sub" x="376" y="52">a place you can be</text>
+            <line class="ann-line" x1="520" y1="160" x2="560" y2="120"/>
+            <text class="ann" x="560" y="112">[EDGE]</text>
+            <text class="ann-sub" x="560" y="134">a path + its cost</text>
+          </svg>
+        </div>
+        <div style="flex:.9">
+          <p class="lead r" style="--d:.1s"><span class="tag">[VERTEX]</span> <span class="mut">— a place you can be: a junction, a tile, a city.</span></p>
+          <p class="lead r" style="--d:.2s; margin-top:26px"><span class="tag">[EDGE]</span> <span class="mut">— a path between two places, carrying a cost: distance, time, or fuel.</span></p>
+          <p class="lead r" style="--d:.3s; margin-top:26px"><span class="hl">Find a route</span> = pick edges from start to goal so the total cost is as small as possible.</p>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>Vertex / Edge</span></div>
+    </section>
+
+    <!-- 11 A* VIDEO -->
+    <section class="slide" id="s-astar">
+      <div class="head"><div class="kick">[ STEP 04 <span class="b">·</span> A* (A-STAR) ]</div><div class="num">11</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s; margin-bottom:6px">Watch it think.</h1>
+        <div class="vid-wrap">
+          <div class="r" style="--d:.12s">
+            <div class="video-frame">
+              <iframe src="https://www.youtube-nocookie.com/embed/-L-WgKMFuhE?rel=0&modestbranding=1"
+                      title="A* Pathfinding explanation" allow="accelerometer; encrypted-media; picture-in-picture"
+                      allowfullscreen loading="lazy"></iframe>
+            </div>
+            <a class="video-link" href="https://www.youtube.com/watch?v=-L-WgKMFuhE" target="_blank" rel="noopener">▶ Open the A* video — Sebastian Lague (E01)</a>
+          </div>
+          <div class="vid-note r" style="--d:.2s">
+            <p>A* explores <span class="hl">toward the goal first</span>, using a smart guess of the distance left. So it finds the shortest path <span class="hl">without checking everything.</span></p>
+            <p style="margin-top:22px">The whole algorithm? <span class="hl">A few dozen lines of Python.</span></p>
+            <p style="margin-top:22px" class="mut">The same idea routes your taxi, moves game enemies, and steers robots.</p>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>A* in action</span></div>
+    </section>
+
+    <!-- 12 YOUR TURN -->
+    <section class="slide" id="s-yourturn">
+      <div class="head"><div class="kick">[ NOW YOU ]</div><div class="num">12</div></div>
+      <div class="body">
+        <h1 class="h-xl r" style="--d:0s">Let's write<br>some Python.</h1>
+        <p class="lead r" style="--d:.16s; margin-top:30px">Three building blocks sit inside <span class="hl">every program ever written</span>. Start here:</p>
+        <p class="r" style="--d:.26s; margin-top:16px; font-size:34px; font-weight:700; letter-spacing:.02em">[ PRINT ] &nbsp; · &nbsp; [ MATH ] &nbsp; · &nbsp; [ VARIABLES ]</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>Your turn</span></div>
+    </section>
+
+    <!-- 13 PRINT -->
+    <section class="slide" id="s-print">
+      <div class="head"><div class="kick">[ 01 <span class="b">·</span> PRINT ]</div><div class="num">13</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Say something.</h1>
+        <div class="codewrap r" style="--d:.12s">
+          <div class="code"><span class="kw">print</span>(<span class="str">"Hello, world!"</span>)</div>
+          <div class="out"><div class="ol">[ output ]</div><div class="ov">Hello, world!</div></div>
+        </div>
+        <p class="note r" style="--d:.24s"><span class="hl">print()</span> shows things on the screen. The quotes mean it's <span class="hl">text</span> — programmers call that a <span class="hl">string</span>. Try printing your own name.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>print()</span></div>
+    </section>
+
+    <!-- 14 MATH -->
+    <section class="slide" id="s-math">
+      <div class="head"><div class="kick">[ 02 <span class="b">·</span> MATH ]</div><div class="num">14</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">A calculator that never tires.</h1>
+        <div class="mtab">
+          <div class="mrow r" style="--d:.10s"><span class="ex">2 + 3</span><span class="ar">→</span><span class="re"><span>5</span><span class="rc">add</span></span></div>
+          <div class="mrow r" style="--d:.14s"><span class="ex">10 - 4</span><span class="ar">→</span><span class="re"><span>6</span><span class="rc">subtract</span></span></div>
+          <div class="mrow r" style="--d:.18s"><span class="ex">6 * 7</span><span class="ar">→</span><span class="re"><span>42</span><span class="rc">multiply</span></span></div>
+          <div class="mrow r" style="--d:.22s"><span class="ex">20 / 4</span><span class="ar">→</span><span class="re"><span>5.0</span><span class="rc">divide</span></span></div>
+          <div class="mrow r" style="--d:.26s"><span class="ex">2 ** 10</span><span class="ar">→</span><span class="re"><span>1024</span><span class="rc">power</span></span></div>
+          <div class="mrow r" style="--d:.30s"><span class="ex">17 % 5</span><span class="ar">→</span><span class="re"><span>2</span><span class="rc">remainder</span></span></div>
+        </div>
+        <p class="note r" style="--d:.36s"><span class="hl">+ &nbsp; - &nbsp; * &nbsp; /</span> for the basics. <span class="hl">**</span> is power, <span class="hl">%</span> gives the remainder.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>Math</span></div>
+    </section>
+
+    <!-- 15 VARIABLES -->
+    <section class="slide" id="s-vars">
+      <div class="head"><div class="kick">[ 03 <span class="b">·</span> VARIABLES ]</div><div class="num">15</div></div>
+      <div class="body" style="flex-direction:row; gap:54px; align-items:center">
+        <div style="flex:1.15">
+          <h1 class="h-md r" style="--d:0s; margin-bottom:22px">Labeled boxes.</h1>
+          <div class="code r" style="--d:.12s; font-size:25px"><span class="tag" style="font-family:var(--body); color:var(--mute); font-size:14px; letter-spacing:.16em; display:block; margin-bottom:16px">[ CODE ]</span>name = <span class="str">"Luka"</span>
+age  = 25
+<span class="kw">print</span>(name)      <span class="com"># Luka</span>
+<span class="kw">print</span>(age + 1)   <span class="com"># 26</span></div>
+        </div>
+        <div style="flex:.85">
+          <div class="vbox-row" style="flex-direction:column">
+            <div class="vbox r" style="--d:.22s"><div class="vl">[ name ]</div><div class="vv">"Luka"</div></div>
+            <div class="vbox r" style="--d:.30s"><div class="vl">[ age ]</div><div class="vv">25</div></div>
+          </div>
+          <p class="note r" style="--d:.38s; margin-top:24px"><span class="hl">=</span> stores a value in a name. Reuse it anywhere; change it anytime: <span class="hl">age = age + 1</span>.</p>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>Variables</span></div>
+    </section>
+
+    <!-- 16 TOGETHER -->
+    <section class="slide" id="s-together">
+      <div class="head"><div class="kick">[ PUT IT TOGETHER ]</div><div class="num">16</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Your first useful program.</h1>
+        <div class="codewrap r" style="--d:.12s">
+          <div class="code">price = 25
+qty   = 3
+total = price * qty
+<span class="kw">print</span>(<span class="kw">f</span><span class="str">"Total: {total} GEL"</span>)</div>
+          <div class="out"><div class="ol">[ output ]</div><div class="ov">Total: 75 GEL</div></div>
+        </div>
+        <p class="note r" style="--d:.24s">Variables + math + print, working together. <span class="hl">f"...{ }"</span> drops a value straight into the text.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>Together</span></div>
+    </section>
+
+    <!-- 17 RECAP -->
+    <section class="slide" id="s-recap">
+      <div class="head"><div class="kick">[ RECAP ]</div><div class="num">17</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Today you…</h1>
+        <ul class="recap">
+          <li class="r" style="--d:.12s"><span class="rn">01</span><span>Saw <span style="font-weight:600">where code lives</span> — from web to robots.</span></li>
+          <li class="r" style="--d:.18s"><span class="rn">02</span><span>Watched a real algorithm think: <span style="font-weight:600">A*</span> on a graph.</span></li>
+          <li class="r" style="--d:.24s"><span class="rn">03</span><span>Wrote your first Python: <span style="font-weight:600">[print] · [math] · [variables]</span>.</span></li>
+        </ul>
+        <p class="teaser r" style="--d:.34s"><span class="hl">These three are in every program you'll ever write.</span><br><span class="mut">[WORKSHOP 02] — decisions (if), repetition (loops), and your first mini-app.</span></p>
+      </div>
+      <div class="foot"><span>Python · Workshop 01</span><span>Recap</span></div>
+    </section>
+
+    <!-- 18 END -->
+    <section class="slide" id="s-end">
+      <div class="body" style="justify-content:center">
+        <div class="kick r" style="--d:0s">[ END <span class="b">·</span> WORKSHOP 01 ]</div>
+        <div class="end-q r" style="--d:.08s">QUESTIONS?</div>
+        <div class="rule r" style="--d:.16s"></div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; print("see you next time")</span>
+        <span>Python · Workshop 01</span>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- overlay nav UI -->
+<div class="ui">
+  <span class="count" id="count">01 / 18</span>
+  <div class="prog-track"><div class="prog" id="prog"></div></div>
+  <div class="btns">
+    <button id="prev" aria-label="Previous">‹</button>
+    <button id="next" aria-label="Next">›</button>
+  </div>
+</div>
+<div class="hint" id="hint">← → to navigate</div>
+
+<script>
+(function(){
+  /* ---------- A* lattice generation ---------- */
+  var G = {cols:9, rows:6, gap:82, ox:122, oy:65, vw:900, vh:540, r:6};
+  var walls = ['3,1','3,2','3,3','5,2','5,3','5,4','6,2'];
+  var wallSet = {}; walls.forEach(function(w){wallSet[w]=true;});
+  var START={c:0,r:5}, GOAL={c:8,r:0};
+  function open(c,r){ return c>=0&&c<G.cols&&r>=0&&r<G.rows && !wallSet[c+','+r]; }
+  function px(c,r){ return [G.ox+c*G.gap, G.oy+r*G.gap]; }
+  function svgEl(inner){ return '<svg viewBox="0 0 '+G.vw+' '+G.vh+'" width="100%">'+inner+'</svg>'; }
+
+  function cellsMarkup(showSG){
+    var s='', side=58;
+    for(var r=0;r<G.rows;r++) for(var c=0;c<G.cols;c++){
+      var p=px(c,r), x=p[0]-side/2, y=p[1]-side/2, wall=wallSet[c+','+r];
+      s+='<rect class="'+(wall?'cell-wall':'cell-sq')+'" x="'+x+'" y="'+y+'" width="'+side+'" height="'+side+'" rx="3"/>';
+    }
+    if(showSG){
+      var ps=px(START.c,START.r), pg=px(GOAL.c,GOAL.r);
+      s+='<rect class="cell-sq" x="'+(ps[0]-29)+'" y="'+(ps[1]-29)+'" width="58" height="58" rx="3" style="stroke:#0a0a0a;stroke-width:3"/>';
+      s+='<text class="sg-t" x="'+ps[0]+'" y="'+ps[1]+'">S</text>';
+      s+='<rect class="cell-sq" x="'+(pg[0]-29)+'" y="'+(pg[1]-29)+'" width="58" height="58" rx="3" style="stroke:#0a0a0a;stroke-width:3"/>';
+      s+='<text class="sg-t" x="'+pg[0]+'" y="'+pg[1]+'">G</text>';
+    }
+    return s;
+  }
+  function sgRings(){
+    var ps=px(START.c,START.r), pg=px(GOAL.c,GOAL.r);
+    return '<circle class="sg-ring" cx="'+ps[0]+'" cy="'+ps[1]+'" r="15"/>'+
+           '<circle class="sg-ring" cx="'+pg[0]+'" cy="'+pg[1]+'" r="15"/>';
+  }
+  function nodesMarkup(animated){
+    var s='';
+    for(var r=0;r<G.rows;r++) for(var c=0;c<G.cols;c++){
+      if(!open(c,r)) continue;
+      var p=px(c,r);
+      if(animated) s+='<circle class="node" cx="'+p[0]+'" cy="'+p[1]+'" r="0"/>';
+      else s+='<circle class="node-static" cx="'+p[0]+'" cy="'+p[1]+'" r="4"/>';
+    }
+    return s;
+  }
+  function edgesMarkup(){
+    var s='', len=G.gap;
+    for(var r=0;r<G.rows;r++) for(var c=0;c<G.cols;c++){
+      if(!open(c,r)) continue;
+      var a=px(c,r);
+      if(open(c+1,r)){ var b=px(c+1,r); s+='<line class="edge" x1="'+a[0]+'" y1="'+a[1]+'" x2="'+b[0]+'" y2="'+b[1]+'" stroke-dasharray="'+len+'" stroke-dashoffset="'+len+'"/>'; }
+      if(open(c,r+1)){ var d=px(c,r+1); s+='<line class="edge" x1="'+a[0]+'" y1="'+a[1]+'" x2="'+d[0]+'" y2="'+d[1]+'" stroke-dasharray="'+len+'" stroke-dashoffset="'+len+'"/>'; }
+    }
+    return s;
+  }
+
+  document.getElementById('svg-map').innerHTML  = svgEl(cellsMarkup(true));
+  document.getElementById('svg-vert').innerHTML = svgEl(cellsMarkup(false)+sgRings()+nodesMarkup(true));
+  document.getElementById('svg-edge').innerHTML = svgEl(cellsMarkup(false)+edgesMarkup()+nodesMarkup(false)+sgRings());
+
+  /* ---------- navigation ---------- */
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  slides.forEach(function(s){
+    var lb=document.createElement('div'); lb.className='brk l';
+    var rb=document.createElement('div'); rb.className='brk r';
+    s.appendChild(lb); s.appendChild(rb);
+  });
+  var count = document.getElementById('count');
+  var prog  = document.getElementById('prog');
+  var hint  = document.getElementById('hint');
+  var idx = {vert:slides.indexOf(document.getElementById('s-vert')),
+             edge:slides.indexOf(document.getElementById('s-edge'))};
+  var cur = 0, timers = [];
+
+  function fit(){
+    var s = Math.min(window.innerWidth/1440, window.innerHeight/900);
+    stage.style.transform = 'translate(-50%,-50%) scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+  function resetAnims(){
+    clearTimers();
+    var vnodes = document.querySelectorAll('#svg-vert .node');
+    vnodes.forEach(function(n){ n.setAttribute('r','0'); n.style.opacity='0'; });
+    var edges = document.querySelectorAll('#svg-edge .edge');
+    edges.forEach(function(e){ e.style.strokeDashoffset = e.getAttribute('stroke-dasharray'); });
+  }
+  function runAnims(i){
+    if(i===idx.vert){
+      var vnodes = document.querySelectorAll('#svg-vert .node');
+      vnodes.forEach(function(n,k){ timers.push(setTimeout(function(){ n.setAttribute('r', String(G.r)); n.style.opacity='1'; }, k*16)); });
+    }
+    if(i===idx.edge){
+      var edges = document.querySelectorAll('#svg-edge .edge');
+      edges.forEach(function(e,k){ timers.push(setTimeout(function(){ e.style.strokeDashoffset='0'; }, k*7)); });
+    }
+  }
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[cur].classList.remove('active');
+    resetAnims();
+    cur = i;
+    var s = slides[cur];
+    void s.offsetWidth;           /* reflow so reveal anim re-runs */
+    s.classList.add('active');
+    count.textContent = String(i+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+    prog.style.width = (i/(slides.length-1)*100) + '%';
+    runAnims(i);
+  }
+  function nextS(){ goTo(cur+1); }
+  function prevS(){ goTo(cur-1); }
+
+  document.getElementById('next').addEventListener('click', nextS);
+  document.getElementById('prev').addEventListener('click', prevS);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); nextS(); }
+    else if(e.key===' '){ e.preventDefault(); nextS(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prevS(); }
+    else if(e.key==='Home'){ goTo(0); }
+    else if(e.key==='End'){ goTo(slides.length-1); }
+  });
+  /* touch swipe */
+  var tx=0;
+  document.addEventListener('touchstart', function(e){ tx=e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx)>50){ dx<0 ? nextS() : prevS(); }
+  }, {passive:true});
+
+  setTimeout(function(){ hint.style.opacity='0'; }, 4000);
+  goTo(0);
+})();
+</script>
