@@ -1,0 +1,830 @@
+
+<!-- Python Workshop 02 — Part 1: Variables & data types (PCC ch.2). Part 2: Git & GitHub. Self-contained. Use ← → / Space to navigate. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python · Workshop 02 — Variables, Data Types &amp; Git</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --mute:#7a7a7a;
+    --line:#e3e3e3;
+    --line2:#111;
+    --paper:#ffffff;
+    /* Luka's installed Coolvetica Compressed is used automatically if present, else Anton */
+    --display:'Coolvetica Compressed','Coolvetica',Anton,'Arial Narrow',sans-serif;
+    --body:'Inter',system-ui,-apple-system,sans-serif;
+    --mono:'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{background:var(--paper); color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased; overflow:hidden}
+
+  .viewport{position:fixed; inset:0; overflow:hidden; background:var(--paper)}
+  .stage{position:absolute; top:50%; left:50%; width:1440px; height:900px; transform-origin:center center}
+
+  .slide{position:absolute; inset:0; opacity:0; pointer-events:none; padding:90px 100px; display:flex; flex-direction:column}
+  .slide.active{opacity:1; pointer-events:auto}
+
+  /* header row on each slide */
+  .head{display:flex; justify-content:space-between; align-items:flex-start}
+  .kick{font-size:15px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--ink)}
+  .kick .b{color:var(--mute)}
+  .num{font-family:var(--display); font-size:30px; letter-spacing:.04em; color:var(--mute); line-height:1}
+
+  .foot{position:absolute; left:100px; right:100px; bottom:54px; border-top:1px solid var(--line); padding-top:16px;
+        display:flex; justify-content:space-between; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute)}
+
+  .body{flex:1; display:flex; flex-direction:column; justify-content:center}
+
+  h1{font-family:var(--display); font-weight:400; text-transform:uppercase; line-height:.92; letter-spacing:.005em}
+  .h-xl{font-size:108px}
+  .h-lg{font-size:84px}
+  .h-md{font-size:64px}
+  .lead{font-size:27px; line-height:1.5; color:#222; max-width:60ch}
+  .lead .hl{color:var(--ink); font-weight:600}
+  .mut{color:var(--mute)}
+  .tag{display:inline-block; font-weight:600; letter-spacing:.04em}
+
+  /* entrance reveal */
+  @keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:none}}
+  .slide .r{opacity:0}
+  .slide.active .r{animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards; animation-delay:var(--d,0s)}
+
+  /* bracket frame — opens from center on every slide */
+  .brk{position:absolute; width:34px; top:50%; transform:translateY(-50%); pointer-events:none; z-index:2}
+  .brk.l{left:42px; border-left:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .brk.r{right:42px; border-right:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .slide .brk{height:0; opacity:0}
+  .slide.active .brk{animation:brkopen .55s cubic-bezier(.16,.84,.3,1) forwards}
+  @keyframes brkopen{from{height:0; opacity:0} to{height:780px; opacity:1}}
+
+  /* title */
+  .title-wrap{display:flex; flex-direction:column; justify-content:center; height:100%}
+  .title-wrap .kick{margin-bottom:40px}
+  .py{font-family:var(--display); font-size:300px; line-height:.9; letter-spacing:.02em}
+  .rule{height:2px; background:var(--ink); margin:30px 0}
+  .subline{font-size:30px; color:#222; font-weight:500}
+  .motif{font-family:var(--mono); font-size:22px; color:var(--mute)}
+
+  /* steps row */
+  .steps{display:flex; gap:22px; margin-top:46px}
+  .step{flex:1; border:1.5px solid var(--ink); padding:28px 24px; min-height:150px; position:relative}
+  .step .n{font-family:var(--display); font-size:40px; line-height:1}
+  .step .t{font-size:21px; font-weight:600; margin-top:12px}
+  .step .d{font-size:15px; color:var(--mute); margin-top:6px; line-height:1.45}
+  .arrow{align-self:center; font-size:28px; color:var(--mute)}
+
+  /* two columns (compare) */
+  .cols2{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:40px; border:1.5px solid var(--ink)}
+  .cols2 .c{padding:30px 34px}
+  .cols2 .c:first-child{border-right:1.5px solid var(--ink)}
+  .cols2 .lbl{font-size:14px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:16px}
+  .cols2 ul{list-style:none}
+  .cols2 li{font-size:21px; line-height:1.7; padding-left:24px; position:relative}
+  .cols2 li::before{content:"—"; position:absolute; left:0; color:var(--mute)}
+  .cols2 li.mono{font-family:var(--mono); font-size:19px}
+
+  /* fields grid */
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:1fr; gap:0; margin-top:40px;
+        border-top:1.5px solid var(--ink); border-left:1.5px solid var(--ink)}
+  .cell{border-right:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink); padding:26px 24px; min-height:150px}
+  .cell .ct{font-size:19px; font-weight:700; letter-spacing:.04em}
+  .cell .cd{font-size:16px; color:var(--mute); margin-top:10px; line-height:1.45}
+
+  /* diagrams */
+  .dwrap{flex:1; display:flex; align-items:center; justify-content:center; margin:6px 0}
+  .dwrap svg{width:1140px; max-width:100%; height:auto; display:block}
+  .cap{font-size:22px; color:#222; line-height:1.5; margin-top:6px; max-width:82ch}
+  .cap .hl{font-weight:600}
+  .cap .mono{font-family:var(--mono); font-size:20px}
+
+  /* git diagram svg classes */
+  .gbox{fill:#fff; stroke:var(--ink); stroke-width:2.5}
+  .gbox-t{font-family:var(--body); font-weight:700; font-size:21px; fill:var(--ink); text-anchor:middle; dominant-baseline:central; letter-spacing:.02em}
+  .gbox-d{font-family:var(--body); font-size:15px; fill:var(--mute); text-anchor:middle; dominant-baseline:central}
+  .glabel{font-family:var(--mono); font-size:19px; fill:var(--ink); text-anchor:middle; dominant-baseline:central}
+  .gline{fill:none; stroke:var(--ink); stroke-width:2.5; transition:stroke-dashoffset .75s cubic-bezier(.4,.7,.3,1)}
+  .ghead{fill:var(--ink)}
+  .gdot{fill:#fff; stroke:var(--ink); stroke-width:2.5; transition:r .45s cubic-bezier(.2,.8,.3,1.4), opacity .35s}
+  .gdot.solid{fill:var(--ink)}
+  .gfade{opacity:0; transition:opacity .55s ease}
+  .gdash{fill:none; stroke:var(--ink); stroke-width:2; stroke-dasharray:5 6}
+  .ghash{font-family:var(--mono); font-size:16px; fill:var(--mute); text-anchor:middle}
+  .gmsg{font-family:var(--body); font-size:16px; font-weight:500; fill:var(--ink); text-anchor:middle}
+  .ghead-lbl{font-family:var(--display); font-size:24px; fill:var(--ink); text-anchor:middle; letter-spacing:.04em}
+  .gfile{font-family:var(--mono); font-size:18px; fill:var(--ink)}
+  .gfile.mut{fill:var(--mute)}
+  .gnote{font-family:var(--body); font-size:15px; fill:var(--mute)}
+
+  /* video */
+  .vid-wrap{display:grid; grid-template-columns:1.5fr 1fr; gap:48px; align-items:center; margin-top:10px}
+  .video-frame{position:relative; width:100%; aspect-ratio:16/9; border:1.5px solid var(--ink); background:#000}
+  .video-frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+  .video-link{display:inline-block; margin-top:16px; font-size:16px; font-weight:600; letter-spacing:.04em; color:var(--ink);
+               text-decoration:none; border-bottom:2px solid var(--ink); padding-bottom:2px}
+  .vid-note{font-size:21px; line-height:1.55; color:#222}
+  .vid-note .hl{font-weight:600}
+
+  /* code slides */
+  .code{font-family:var(--mono); border:1.5px solid var(--ink); padding:34px 40px; font-size:27px; line-height:1.8; white-space:pre; overflow-x:auto}
+  .code .kw{font-weight:700}
+  .code .com{color:var(--mute)}
+  .code .str{color:var(--ink)}
+  .out{margin-top:22px; border-left:3px solid var(--ink); padding:14px 0 14px 22px}
+  .out .ol{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:8px}
+  .out .ov{font-family:var(--mono); font-size:22px; line-height:1.6}
+  .note{font-size:21px; color:#222; margin-top:26px; line-height:1.55; max-width:80ch}
+  .note .hl{font-weight:600}
+  .note .mono{font-family:var(--mono); font-size:19px}
+  .codewrap{display:grid; grid-template-columns:1fr; gap:0; margin-top:24px}
+
+  /* command table */
+  .mtab{border:1.5px solid var(--ink); margin-top:30px}
+  .mrow{display:grid; grid-template-columns:280px 56px 1fr; align-items:center; padding:22px 34px; border-bottom:1px solid var(--line)}
+  .mrow:last-child{border-bottom:0}
+  .mrow .ex{font-family:var(--mono); font-size:25px; font-weight:500}
+  .mrow .ar{color:var(--mute); text-align:center; font-family:var(--mono); font-size:24px}
+  .mrow .re{display:flex; justify-content:space-between; align-items:center; gap:20px}
+  .mrow .mean{font-size:21px; font-weight:500}
+  .mrow .rc{font-size:14px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute); font-family:var(--body)}
+
+  /* recap */
+  .recap{list-style:none; margin-top:30px}
+  .recap li{font-size:27px; line-height:1.4; padding:20px 0; border-bottom:1px solid var(--line); display:flex; gap:20px}
+  .recap li:first-child{border-top:1px solid var(--line)}
+  .recap .rn{font-family:var(--display); font-size:30px; color:var(--mute); min-width:44px}
+  .teaser{margin-top:34px; font-size:23px}
+  .teaser .hl{font-weight:600}
+
+  /* end */
+  .end-q{font-family:var(--display); font-size:200px; line-height:.9}
+  #s-end .kick{margin-bottom:30px}
+
+  /* overlay UI (outside scaled stage) */
+  .ui{position:fixed; left:0; right:0; bottom:0; height:46px; display:flex; align-items:center; gap:18px; padding:0 20px; z-index:50; pointer-events:none}
+  .ui .prog-track{flex:1; height:2px; background:var(--line)}
+  .ui .prog{height:2px; background:var(--ink); width:0; transition:width .4s ease}
+  .ui .count{font-family:var(--mono); font-size:13px; color:var(--mute); letter-spacing:.1em}
+  .ui .btns{display:flex; gap:8px; pointer-events:auto}
+  .ui button{font-family:var(--body); font-size:16px; width:34px; height:30px; border:1px solid var(--ink); background:#fff; cursor:pointer; line-height:1}
+  .ui button:hover{background:var(--ink); color:#fff}
+  .hint{position:fixed; bottom:60px; right:24px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); z-index:50; transition:opacity .6s; pointer-events:none}
+</style>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- 01 MASTER COVER -->
+    <section class="slide" id="s-cover">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PYTHON <span class="b">&middot;</span> WORKSHOP 02 ]</div>
+        <div class="py r" style="--d:.08s">PYTHON</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Part 1 &mdash; variables &amp; data types.&nbsp;&nbsp;Part 2 &mdash; Git &amp; GitHub.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; message = "Hello!"</span>
+        <span>Workshop 02 / 28</span>
+      </div>
+    </section>
+
+    <!-- 02 PART 1 LEAD-IN -->
+    <section class="slide" id="s-part1">
+      <div class="head"><div class="kick">[ PART 1 OF 2 <span class="b">&middot;</span> THE LANGUAGE ]</div><div class="num">02</div></div>
+      <div class="body">
+        <h1 class="h-xl r" style="--d:0s">The raw<br>materials.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:28px">Before a program can <span class="hl">do</span> anything, it has to <span class="hl">hold</span> things &mdash; words, numbers, answers. Python keeps them in <span class="hl">variables</span>, and they come in a few simple <span class="hl">types</span>.</p>
+        <p class="lead mut r" style="--d:.2s; margin-top:16px">Strings &middot; numbers &middot; and the names you give them.</p>
+      </div>
+      <div class="foot"><span>Python &middot; Workshop 02</span><span>Part 1 &middot; The language</span></div>
+    </section>
+
+    <!-- 03 VARIABLES -->
+    <section class="slide" id="s-var">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">&middot;</span> VARIABLES ]</div><div class="num">03</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">A variable is<br>a label.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:22px">You give a value a <span class="hl">name</span>, then use that name anywhere you need the value. Change it once &mdash; it updates everywhere.</p>
+        <div class="code r" style="--d:.2s; margin-top:24px"><span class="kw">message</span> = <span class="str">"Hello, world!"</span>
+<span class="kw">print</span>(message)</div>
+        <div class="out r" style="--d:.3s">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">Hello, world!</div>
+        </div>
+      </div>
+      <div class="foot"><span>Python &middot; Workshop 02</span><span>Variables</span></div>
+    </section>
+
+    <!-- 04 NAMING -->
+    <section class="slide" id="s-naming">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">&middot;</span> NAMING ]</div><div class="num">04</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Name things<br>clearly.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:22px">Letters, numbers and underscores only; no spaces; never start with a number. Then just be descriptive.</p>
+        <div class="cols2">
+          <div class="c r" style="--d:.2s">
+            <div class="lbl">[ Good ]</div>
+            <ul>
+              <li class="mono">student_name</li>
+              <li class="mono">score_1</li>
+              <li class="mono">total_points</li>
+            </ul>
+          </div>
+          <div class="c r" style="--d:.28s">
+            <div class="lbl">[ Avoid ]</div>
+            <ul>
+              <li class="mono">1_score <span style="font-family:var(--body);color:var(--mute)">&mdash; starts with a number</span></li>
+              <li class="mono">student name <span style="font-family:var(--body);color:var(--mute)">&mdash; has a space</span></li>
+              <li class="mono">print <span style="font-family:var(--body);color:var(--mute)">&mdash; a Python word</span></li>
+            </ul>
+          </div>
+        </div>
+        <p class="note r" style="--d:.36s">Misspell a name later and Python stops with a <span class="mono">NameError</span> &mdash; it only knows the names you defined.</p>
+      </div>
+      <div class="foot"><span>Python &middot; Workshop 02</span><span>Naming</span></div>
+    </section>
+
+    <!-- 05 STRINGS -->
+    <section class="slide" id="s-str">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">&middot;</span> STRINGS ]</div><div class="num">05</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Text is a<br>string.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:22px">Anything in quotes &mdash; single or double. Python can reshape it for you with simple <span class="hl">methods</span>.</p>
+        <div class="code r" style="--d:.2s; margin-top:24px"><span class="kw">name</span> = <span class="str">"ada lovelace"</span>
+<span class="kw">print</span>(name.title())   <span class="com"># Ada Lovelace</span>
+<span class="kw">print</span>(name.upper())   <span class="com"># ADA LOVELACE</span></div>
+        <p class="note r" style="--d:.3s">A <span class="hl">method</span> is an action attached with a dot: <span class="mono">.title()</span>, <span class="mono">.upper()</span>, <span class="mono">.lower()</span>.</p>
+      </div>
+      <div class="foot"><span>Python &middot; Workshop 02</span><span>Strings</span></div>
+    </section>
+
+    <!-- 06 F-STRINGS -->
+    <section class="slide" id="s-fstr">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">&middot;</span> F-STRINGS ]</div><div class="num">06</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Drop values<br>into text.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:22px">Put an <span class="hl">f</span> before the quotes, then wrap any variable in <span class="mono">{ }</span>. Python fills in the blanks.</p>
+        <div class="code r" style="--d:.2s; margin-top:24px"><span class="kw">first</span> = <span class="str">"ada"</span>
+<span class="kw">last</span> = <span class="str">"lovelace"</span>
+<span class="kw">print</span>(<span class="str">f"Hello, {first.title()} {last.title()}!"</span>)</div>
+        <div class="out r" style="--d:.3s">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">Hello, Ada Lovelace!</div>
+        </div>
+      </div>
+      <div class="foot"><span>Python &middot; Workshop 02</span><span>f-strings</span></div>
+    </section>
+
+    <!-- 07 WHITESPACE -->
+    <section class="slide" id="s-ws">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">&middot;</span> WHITESPACE ]</div><div class="num">07</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Spacing you<br>can&rsquo;t see.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:22px">Add a tab with <span class="mono">\t</span> and a new line with <span class="mono">\n</span>. Trim stray spaces from the edges with <span class="mono">.strip()</span>.</p>
+        <div class="code r" style="--d:.2s; margin-top:24px"><span class="kw">print</span>(<span class="str">"Languages:\n\tPython\n\tRust"</span>)
+<span class="kw">name</span> = <span class="str">"  ada  "</span>
+<span class="kw">print</span>(name.strip())   <span class="com"># "ada"</span></div>
+      </div>
+      <div class="foot"><span>Python &middot; Workshop 02</span><span>Whitespace</span></div>
+    </section>
+
+    <!-- 08 NUMBERS -->
+    <section class="slide" id="s-num">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">&middot;</span> NUMBERS ]</div><div class="num">08</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Python does<br>the math.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:22px">Whole numbers (<span class="hl">int</span>) and decimals (<span class="hl">float</span>) work like a calculator. <span class="mono">**</span> means &ldquo;to the power of&rdquo;.</p>
+        <div class="code r" style="--d:.2s; margin-top:24px"><span class="kw">print</span>(2 + 3 * 4)     <span class="com"># 14</span>
+<span class="kw">print</span>(3 ** 2)        <span class="com"># 9</span>
+<span class="kw">print</span>(0.5 * 2)       <span class="com"># 1.0</span>
+<span class="kw">big</span> = 14_000_000_000</div>
+        <p class="note r" style="--d:.32s">Underscores make big numbers readable &mdash; Python ignores them.</p>
+      </div>
+      <div class="foot"><span>Python &middot; Workshop 02</span><span>Numbers</span></div>
+    </section>
+
+    <!-- 09 TWO SHORTCUTS -->
+    <section class="slide" id="s-multi">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">&middot;</span> TWO SHORTCUTS ]</div><div class="num">09</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Two handy<br>habits.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:22px">Assign several variables on one line &mdash; and signal &ldquo;don&rsquo;t change this&rdquo; with an <span class="hl">ALL-CAPS</span> name.</p>
+        <div class="code r" style="--d:.2s; margin-top:24px"><span class="com"># several at once</span>
+<span class="kw">x</span>, <span class="kw">y</span>, <span class="kw">z</span> = 0, 0, 0
+
+<span class="com"># a constant &mdash; caps means "leave it alone"</span>
+<span class="kw">MAX_SCORE</span> = 100</div>
+      </div>
+      <div class="foot"><span>Python &middot; Workshop 02</span><span>Shortcuts</span></div>
+    </section>
+
+    <!-- 10 STYLE & THE ZEN -->
+    <section class="slide" id="s-zen">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">&middot;</span> STYLE ]</div><div class="num">10</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Write it for<br>humans.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:22px">A <span class="mono">#</span> starts a <span class="hl">comment</span> &mdash; a note for people, ignored by Python. Explain <span class="hl">why</span>, not what.</p>
+        <div class="code r" style="--d:.2s; margin-top:24px"><span class="com"># greet the user by name</span>
+<span class="kw">print</span>(<span class="str">f"Hi, {name}!"</span>)
+
+<span class="kw">import</span> this   <span class="com"># try it: the Zen of Python</span></div>
+        <p class="note r" style="--d:.32s"><span class="hl">&ldquo;Simple is better than complex. Readability counts.&rdquo;</span> &mdash; the Zen of Python.</p>
+      </div>
+      <div class="foot"><span>Python &middot; Workshop 02</span><span>Style &amp; the Zen</span></div>
+    </section>
+
+    <!-- 11 PART 2 DIVIDER (GIT) -->
+    <section class="slide" id="s-title">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PART 2 OF 2 <span class="b">·</span> VERSION CONTROL ]</div>
+        <div class="py r" style="--d:.08s">GIT</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">You can write code now — let’s make sure you never lose it.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; git init</span>
+        <span>Part 2 · Version control</span>
+      </div>
+    </section>
+
+    <!-- 02 THE PROBLEM -->
+    <section class="slide" id="s-problem">
+      <div class="head"><div class="kick">[ THE PROBLEM ]</div><div class="num">12</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">It worked<br>yesterday.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:26px">You change one thing — and everything breaks. You can't remember what the working version looked like. So you start saving copies… <span class="hl">and it only gets worse.</span></p>
+        <div class="cols2">
+          <div class="c r" style="--d:.22s">
+            <div class="lbl">[ Without git ]</div>
+            <ul>
+              <li class="mono">project.py</li>
+              <li class="mono">project_final.py</li>
+              <li class="mono">project_final_v2.py</li>
+              <li class="mono">project_FINAL_real.py</li>
+              <li>…which one actually worked?</li>
+            </ul>
+          </div>
+          <div class="c r" style="--d:.30s">
+            <div class="lbl">[ With git ]</div>
+            <ul>
+              <li>One file. One clean folder.</li>
+              <li>Every version is remembered</li>
+              <li>Jump back to any point in time</li>
+              <li>Nothing is ever truly lost</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>The problem</span></div>
+    </section>
+
+    <!-- 03 THE IDEA -->
+    <section class="slide" id="s-idea">
+      <div class="head"><div class="kick">[ THE IDEA ]</div><div class="num">13</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Version control is<br>a time machine.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:26px">It records a <span class="hl">snapshot</span> of your whole project whenever you ask for one. Made a mess? <span class="hl">Travel back</span> to any snapshot — instantly, exactly as it was.</p>
+        <div class="steps">
+          <div class="step r" style="--d:.22s"><div class="n">01</div><div class="t">Snapshot</div><div class="d">Save the state of every file, on command.</div></div>
+          <div class="arrow r" style="--d:.30s">→</div>
+          <div class="step r" style="--d:.34s"><div class="n">02</div><div class="t">Travel back</div><div class="d">Return to any earlier moment, exactly.</div></div>
+          <div class="arrow r" style="--d:.42s">→</div>
+          <div class="step r" style="--d:.46s"><div class="n">03</div><div class="t">Never lose work</div><div class="d">The full history is always kept for you.</div></div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>Version control</span></div>
+    </section>
+
+    <!-- 04 MEET GIT -->
+    <section class="slide" id="s-git">
+      <div class="head"><div class="kick">[ THE TOOL ]</div><div class="num">14</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Git takes the<br>snapshots.</h1>
+        <p class="lead r" style="--d:.14s; margin-top:26px"><span class="hl">Git</span> is the free tool that does version control on your computer. It's the <span class="hl">industry standard</span> — used by nearly every software team on earth — and it quietly remembers every version you save.</p>
+        <p class="lead mut r" style="--d:.22s; margin-top:18px">You talk to it with short commands in the terminal. Don't worry — you'll mostly reuse just <span class="hl" style="color:#222">a handful</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>Meet git</span></div>
+    </section>
+
+    <!-- 05 GIT VS GITHUB -->
+    <section class="slide" id="s-vs">
+      <div class="head"><div class="kick">[ THE BIG ONE ]</div><div class="num">15</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Git is not GitHub.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:20px"><span class="hl">Git</span> is the camera that takes the snapshots. <span class="hl">GitHub</span> is the album where you store and share them online.</p>
+        <div class="cols2">
+          <div class="c r" style="--d:.22s">
+            <div class="lbl">[ Git ]</div>
+            <ul>
+              <li>A tool on <span style="font-weight:600">your computer</span></li>
+              <li>Takes &amp; stores the snapshots</li>
+              <li>Works fully offline</li>
+              <li>Built in 2005 by Linus Torvalds</li>
+            </ul>
+          </div>
+          <div class="c r" style="--d:.30s">
+            <div class="lbl">[ GitHub ]</div>
+            <ul>
+              <li>A <span style="font-weight:600">website</span>, in the cloud</li>
+              <li>Keeps a copy of your project online</li>
+              <li>Backup, sharing &amp; teamwork</li>
+              <li>One of many hosts (also GitLab)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>Git vs GitHub</span></div>
+    </section>
+
+    <!-- 06 REPOSITORY -->
+    <section class="slide" id="s-repo">
+      <div class="head"><div class="kick">[ VOCABULARY ]</div><div class="num">16</div></div>
+      <div class="body" style="flex-direction:row; gap:60px; align-items:center">
+        <div style="flex:1.05">
+          <h1 class="h-md r" style="--d:0s">A repo is<br>your project.</h1>
+          <p class="lead r" style="--d:.14s; margin-top:24px">A <span class="hl">repository</span> — or <span class="hl">repo</span> — is just your project folder with git switched on.</p>
+          <p class="lead r" style="--d:.22s; margin-top:18px">Inside sits a hidden <span class="hl">.git</span> folder: the memory that holds every snapshot you take.</p>
+        </div>
+        <div style="flex:.95" class="r" style="--d:.2s">
+          <svg viewBox="0 0 560 400" width="100%">
+            <!-- folder tab + body -->
+            <path class="gbox" d="M40 96 L40 78 a8 8 0 0 1 8 -8 L150 70 a8 8 0 0 1 8 8 L166 96 Z"/>
+            <rect class="gbox" x="40" y="96" width="480" height="268" rx="8"/>
+            <text class="gfile" x="62" y="86" style="font-size:15px; fill:#7a7a7a">my-project</text>
+            <!-- files -->
+            <rect class="gbox" x="78" y="138" width="20" height="26" rx="2"/>
+            <text class="gfile" x="116" y="156">app.py</text>
+            <rect class="gbox" x="78" y="194" width="20" height="26" rx="2"/>
+            <text class="gfile" x="116" y="212">README.md</text>
+            <!-- divider -->
+            <line x1="78" y1="248" x2="482" y2="248" stroke="#e3e3e3" stroke-width="1.5"/>
+            <!-- .git -->
+            <rect x="78" y="276" width="120" height="40" rx="4" fill="#0a0a0a"/>
+            <text x="138" y="296" fill="#fff" style="font-family:var(--mono); font-size:18px; text-anchor:middle; dominant-baseline:central">.git</text>
+            <line class="gline" x1="206" y1="296" x2="300" y2="296" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+            <polygon class="ghead gfade" points="306,296 294,290 294,302"/>
+            <text class="gnote gfade" x="318" y="289">the memory —</text>
+            <text class="gnote gfade" x="318" y="308">every snapshot lives here</text>
+          </svg>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>Repository</span></div>
+    </section>
+
+    <!-- 07 THE THREE AREAS -->
+    <section class="slide" id="s-areas">
+      <div class="head"><div class="kick">[ STEP 01 <span class="b">·</span> HOW A SAVE WORKS ]</div><div class="num">17</div></div>
+      <div class="dwrap">
+        <svg viewBox="0 0 1040 320">
+          <!-- boxes -->
+          <rect class="gbox" x="30" y="80" width="240" height="150" rx="6"/>
+          <text class="gbox-t" x="150" y="140">WORKING</text>
+          <text class="gbox-t" x="150" y="166">DIRECTORY</text>
+          <text class="gbox-d" x="150" y="200">where you edit files</text>
+
+          <rect class="gbox" x="400" y="80" width="240" height="150" rx="6"/>
+          <text class="gbox-t" x="520" y="140">STAGING</text>
+          <text class="gbox-t" x="520" y="166">AREA</text>
+          <text class="gbox-d" x="520" y="200">changes ready to save</text>
+
+          <rect class="gbox" x="770" y="80" width="240" height="150" rx="6"/>
+          <text class="gbox-t" x="890" y="153">REPOSITORY</text>
+          <text class="gbox-d" x="890" y="188">the saved history</text>
+
+          <!-- arrows -->
+          <line class="gline" x1="282" y1="155" x2="384" y2="155" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+          <polygon class="ghead gfade" points="392,155 380,149 380,161"/>
+          <text class="glabel gfade" x="333" y="120">git add</text>
+
+          <line class="gline" x1="652" y1="155" x2="754" y2="155" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+          <polygon class="ghead gfade" points="762,155 750,149 750,161"/>
+          <text class="glabel gfade" x="703" y="120">git commit</text>
+        </svg>
+      </div>
+      <p class="cap" style="margin-bottom:64px">You edit in the <span class="hl">working directory</span>. <span class="cap mono">git add</span> moves changes to the <span class="hl">staging area</span>. <span class="cap mono">git commit</span> seals them into the <span class="hl">repository</span> as one snapshot.</p>
+      <div class="foot"><span>Python · Workshop 02</span><span>Working · Staging · Repo</span></div>
+    </section>
+
+    <!-- 08 A COMMIT -->
+    <section class="slide" id="s-commit">
+      <div class="head"><div class="kick">[ STEP 02 <span class="b">·</span> THE SNAPSHOTS ]</div><div class="num">18</div></div>
+      <div class="dwrap">
+        <svg viewBox="0 0 1040 320">
+          <!-- spine -->
+          <line class="gline" x1="90" y1="180" x2="950" y2="180" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+          <!-- commits -->
+          <circle class="gdot solid" cx="150" cy="180" r="0" data-r="16"/>
+          <circle class="gdot solid" cx="340" cy="180" r="0" data-r="16"/>
+          <circle class="gdot solid" cx="530" cy="180" r="0" data-r="16"/>
+          <circle class="gdot solid" cx="720" cy="180" r="0" data-r="16"/>
+          <circle class="gdot solid" cx="910" cy="180" r="0" data-r="16"/>
+          <!-- hashes -->
+          <text class="ghash gfade" x="150" y="138">a1b2c3</text>
+          <text class="ghash gfade" x="340" y="138">9f3c2a</text>
+          <text class="ghash gfade" x="530" y="138">b7d4e1</text>
+          <text class="ghash gfade" x="720" y="138">c0a8f5</text>
+          <text class="ghash gfade" x="910" y="138">e2b6d9</text>
+          <!-- messages -->
+          <text class="gmsg gfade" x="150" y="232">"init"</text>
+          <text class="gmsg gfade" x="340" y="232">"add page"</text>
+          <text class="gmsg gfade" x="530" y="232">"fix typo"</text>
+          <text class="gmsg gfade" x="720" y="232">"new feature"</text>
+          <text class="gmsg gfade" x="910" y="232">"polish"</text>
+          <!-- go-back ring -->
+          <circle class="gdash gfade" cx="340" cy="180" r="30"/>
+          <text class="gnote gfade" x="340" y="270" style="text-anchor:middle">go back anytime</text>
+          <!-- HEAD -->
+          <text class="ghead-lbl gfade" x="910" y="108">HEAD</text>
+          <line class="gline gfade" x1="910" y1="120" x2="910" y2="158" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000" stroke-width="2"/>
+        </svg>
+      </div>
+      <p class="cap" style="margin-bottom:64px">Every commit is a labeled snapshot with its own <span class="hl">ID</span> and a short message. They line up in order — and you can return to <span class="hl">any one of them</span>.</p>
+      <div class="foot"><span>Python · Workshop 02</span><span>Commits</span></div>
+    </section>
+
+    <!-- 09 THE DAILY LOOP -->
+    <section class="slide" id="s-loop">
+      <div class="head"><div class="kick">[ THE DAILY LOOP ]</div><div class="num">19</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">The loop you'll run every day.</h1>
+        <p class="lead r" style="--d:.10s; margin-top:18px">Edit your code, then walk these four steps. Soon it's muscle memory.</p>
+        <div class="steps">
+          <div class="step r" style="--d:.20s"><div class="n">01</div><div class="t">status</div><div class="d">See what changed since the last snapshot.</div></div>
+          <div class="arrow r" style="--d:.26s">→</div>
+          <div class="step r" style="--d:.30s"><div class="n">02</div><div class="t">add</div><div class="d">Choose the changes to include.</div></div>
+          <div class="arrow r" style="--d:.36s">→</div>
+          <div class="step r" style="--d:.40s"><div class="n">03</div><div class="t">commit</div><div class="d">Seal them as a snapshot, with a message.</div></div>
+          <div class="arrow r" style="--d:.46s">→</div>
+          <div class="step r" style="--d:.50s"><div class="n">04</div><div class="t">push</div><div class="d">Send your snapshots up to GitHub.</div></div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>The daily loop</span></div>
+    </section>
+
+    <!-- 10 FIRST COMMANDS -->
+    <section class="slide" id="s-cmds">
+      <div class="head"><div class="kick">[ FIRST COMMANDS ]</div><div class="num">20</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Your first repository.</h1>
+        <div class="codewrap r" style="--d:.12s">
+          <div class="code"><span class="kw">git</span> init
+<span class="kw">git</span> status
+<span class="kw">git</span> add .
+<span class="kw">git</span> commit -m <span class="str">"First snapshot"</span>
+<span class="kw">git</span> log</div>
+        </div>
+        <p class="note r" style="--d:.24s">One-time setup first: <span class="mono">git config --global user.name "Luka"</span> and your email, so every snapshot is signed. <span class="hl">git add .</span> means "all files"; the text after <span class="hl">-m</span> is a note to future-you.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>First commands</span></div>
+    </section>
+
+    <!-- 11 TO THE CLOUD -->
+    <section class="slide" id="s-remote">
+      <div class="head"><div class="kick">[ STEP 03 <span class="b">·</span> TO THE CLOUD ]</div><div class="num">21</div></div>
+      <div class="dwrap">
+        <svg viewBox="0 0 1040 320">
+          <!-- left box -->
+          <rect class="gbox" x="70" y="100" width="320" height="150" rx="6"/>
+          <text class="gbox-t" x="230" y="160">YOUR COMPUTER</text>
+          <text class="gbox-d" x="230" y="192">local repository</text>
+          <!-- right box -->
+          <rect class="gbox" x="650" y="100" width="320" height="150" rx="6"/>
+          <text class="gbox-t" x="810" y="160">GITHUB</text>
+          <text class="gbox-d" x="810" y="192">the cloud · remote repo</text>
+          <!-- push (upper) -->
+          <line class="gline" x1="396" y1="150" x2="640" y2="150" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+          <polygon class="ghead gfade" points="648,150 636,144 636,156"/>
+          <text class="glabel gfade" x="518" y="124">git push</text>
+          <!-- pull (lower) -->
+          <line class="gline" x1="644" y1="206" x2="400" y2="206" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+          <polygon class="ghead gfade" points="392,206 404,200 404,212"/>
+          <text class="glabel gfade" x="522" y="234">git pull</text>
+        </svg>
+      </div>
+      <p class="cap" style="margin-bottom:64px">Your repo lives on your computer; <span class="hl">GitHub</span> keeps a copy in the cloud. First time: <span class="cap mono">git remote add origin &lt;url&gt;</span>, then <span class="cap mono">git push</span> sends snapshots up and <span class="cap mono">git pull</span> brings new ones down.</p>
+      <div class="foot"><span>Python · Workshop 02</span><span>Local · Remote</span></div>
+    </section>
+
+    <!-- 12 PUSH / PULL / CLONE -->
+    <section class="slide" id="s-verbs">
+      <div class="head"><div class="kick">[ THE CLOUD VERBS ]</div><div class="num">22</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Up, down, and copy.</h1>
+        <div class="mtab">
+          <div class="mrow r" style="--d:.12s"><span class="ex">git clone</span><span class="ar">→</span><span class="re"><span class="mean">Copy a whole repo from GitHub onto your machine</span><span class="rc">first time</span></span></div>
+          <div class="mrow r" style="--d:.18s"><span class="ex">git push</span><span class="ar">→</span><span class="re"><span class="mean">Send your local commits up to GitHub</span><span class="rc">upload</span></span></div>
+          <div class="mrow r" style="--d:.24s"><span class="ex">git pull</span><span class="ar">→</span><span class="re"><span class="mean">Bring new commits down from GitHub</span><span class="rc">download</span></span></div>
+        </div>
+        <p class="note r" style="--d:.32s"><span class="hl">Clone</span> once to get a project. Then it's the same rhythm forever: <span class="hl">commit</span> locally, <span class="hl">push</span> to share, <span class="hl">pull</span> to stay in sync with your team.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>Clone · Push · Pull</span></div>
+    </section>
+
+    <!-- 13 THE SAFETY NET -->
+    <section class="slide" id="s-safety">
+      <div class="head"><div class="kick">[ THE PAYOFF ]</div><div class="num">23</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Broke it all?<br>Go back.</h1>
+        <div class="codewrap r" style="--d:.14s" style="margin-top:20px">
+          <div class="code"><span class="kw">git</span> checkout .
+<span class="kw">git</span> checkout <span class="str">9f3c2a</span>
+<span class="kw">git</span> checkout main</div>
+        </div>
+        <p class="note r" style="--d:.26s">Because every snapshot is saved, a mistake is never permanent. <span class="hl">git checkout .</span> discards unsaved chaos; <span class="hl">git checkout &lt;id&gt;</span> rewinds to an old commit; <span class="hl">git checkout main</span> brings you back. Worst case: you lose a few minutes — not your project.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>The safety net</span></div>
+    </section>
+
+    <!-- 14 BRANCHES -->
+    <section class="slide" id="s-branch">
+      <div class="head"><div class="kick">[ STEP 04 <span class="b">·</span> PARALLEL UNIVERSES ]</div><div class="num">24</div></div>
+      <div class="dwrap">
+        <svg viewBox="0 0 1040 320">
+          <!-- main spine -->
+          <line class="gline" x1="110" y1="235" x2="930" y2="235" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+          <!-- branch off + branch spine + merge -->
+          <line class="gline" x1="330" y1="235" x2="450" y2="130" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+          <line class="gline" x1="450" y1="130" x2="650" y2="130" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+          <line class="gline" x1="650" y1="130" x2="760" y2="235" data-len="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/>
+          <!-- main commits -->
+          <circle class="gdot solid" cx="180" cy="235" r="0" data-r="15"/>
+          <circle class="gdot solid" cx="330" cy="235" r="0" data-r="15"/>
+          <circle class="gdot solid" cx="760" cy="235" r="0" data-r="15"/>
+          <circle class="gdot solid" cx="900" cy="235" r="0" data-r="15"/>
+          <!-- branch commits -->
+          <circle class="gdot" cx="450" cy="130" r="0" data-r="15"/>
+          <circle class="gdot" cx="560" cy="130" r="0" data-r="15"/>
+          <circle class="gdot" cx="650" cy="130" r="0" data-r="15"/>
+          <!-- labels -->
+          <text class="glabel gfade" x="150" y="278" style="text-anchor:start">main</text>
+          <text class="glabel gfade" x="500" y="100" style="text-anchor:middle">feature</text>
+          <text class="gnote gfade" x="715" y="180" style="text-anchor:middle">merge back</text>
+        </svg>
+      </div>
+      <p class="cap" style="margin-bottom:64px">A <span class="hl">branch</span> is a safe copy of your project. Try a wild idea on it; if it works, <span class="hl">merge</span> it back into <span class="hl">main</span>. If it doesn't — just delete it. <span class="hl">main</span> never broke.</p>
+      <div class="foot"><span>Python · Workshop 02</span><span>Branches</span></div>
+    </section>
+
+    <!-- 15 WHY IT MATTERS -->
+    <section class="slide" id="s-why">
+      <div class="head"><div class="kick">[ WHY IT MATTERS ]</div><div class="num">25</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Git is everywhere.</h1>
+        <div class="grid">
+          <div class="cell r" style="--d:.12s"><div class="ct">[PORTFOLIO]</div><div class="cd">Your GitHub is your coding résumé.</div></div>
+          <div class="cell r" style="--d:.16s"><div class="ct">[TEAMWORK]</div><div class="cd">Many people, one codebase, no chaos.</div></div>
+          <div class="cell r" style="--d:.20s"><div class="ct">[BACKUP]</div><div class="cd">Your work also lives safely in the cloud.</div></div>
+          <div class="cell r" style="--d:.24s"><div class="ct">[OPEN SOURCE]</div><div class="cd">Join projects built by the whole world.</div></div>
+          <div class="cell r" style="--d:.28s"><div class="ct">[UNDO]</div><div class="cd">Mistakes are reversible — always.</div></div>
+          <div class="cell r" style="--d:.32s"><div class="ct">[HISTORY]</div><div class="cd">See what changed, when, and why.</div></div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>Why it matters</span></div>
+    </section>
+
+    <!-- 16 WATCH IT -->
+    <section class="slide" id="s-video">
+      <div class="head"><div class="kick">[ WATCH IT ]</div><div class="num">26</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s; margin-bottom:6px">Git in 100 seconds.</h1>
+        <div class="vid-wrap">
+          <div class="r" style="--d:.12s">
+            <div class="video-frame">
+              <iframe src="https://www.youtube-nocookie.com/embed/hwP7WQkmECE?rel=0&modestbranding=1"
+                      title="Git Explained in 100 Seconds" allow="accelerometer; encrypted-media; picture-in-picture"
+                      allowfullscreen loading="lazy"></iframe>
+            </div>
+            <a class="video-link" href="https://www.youtube.com/watch?v=hwP7WQkmECE" target="_blank" rel="noopener">▶ Git Explained in 100 Seconds — Fireship</a>
+          </div>
+          <div class="vid-note r" style="--d:.2s">
+            <p>The same story, faster: <span class="hl">init → add → commit</span>, then branch off into an <span class="hl">alternate universe</span> and merge it back.</p>
+            <p style="margin-top:22px">Watch it once now — it'll click.</p>
+            <p style="margin-top:22px" class="mut">Then open a terminal and run the first commands yourself.</p>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>Git in 100 seconds</span></div>
+    </section>
+
+    <!-- 17 RECAP -->
+    <section class="slide" id="s-recap">
+      <div class="head"><div class="kick">[ RECAP ]</div><div class="num">27</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Today you…</h1>
+        <ul class="recap">
+          <li class="r" style="--d:.1s"><span class="rn">01</span><span><span style="font-weight:600">Variables</span> label values; <span style="font-weight:600">strings</span> and <span style="font-weight:600">numbers</span> are your raw materials.</span></li>
+          <li class="r" style="--d:.16s"><span class="rn">02</span><span>f-strings drop values into text; clear names and comments keep code readable.</span></li>
+          <li class="r" style="--d:.22s"><span class="rn">03</span><span><span style="font-weight:600">git</span> snapshots your work; <span style="font-weight:600">GitHub</span> keeps it safe in the cloud.</span></li>
+          <li class="r" style="--d:.28s"><span class="rn">04</span><span>The daily loop: <span style="font-weight:600">add → commit → push</span>, with a branch as your safety net.</span></li>
+        </ul>
+        <p class="teaser r" style="--d:.38s"><span class="hl">Commit early, commit often.</span><br><span class="mut">[WORKSHOP 03] — decisions with <span class="mono">if</span>, and repetition with loops.</span></p>
+      </div>
+      <div class="foot"><span>Python · Workshop 02</span><span>Recap</span></div>
+    </section>
+
+    <!-- 18 END -->
+    <section class="slide" id="s-end">
+      <div class="body" style="justify-content:center">
+        <div class="kick r" style="--d:0s">[ END <span class="b">·</span> WORKSHOP 02 ]</div>
+        <div class="end-q r" style="--d:.08s">QUESTIONS?</div>
+        <div class="rule r" style="--d:.16s"></div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; git push origin main</span>
+        <span>Python · Workshop 02</span>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- overlay nav UI -->
+<div class="ui">
+  <span class="count" id="count">01 / 28</span>
+  <div class="prog-track"><div class="prog" id="prog"></div></div>
+  <div class="btns">
+    <button id="prev" aria-label="Previous">‹</button>
+    <button id="next" aria-label="Next">›</button>
+  </div>
+</div>
+<div class="hint" id="hint">← → to navigate</div>
+
+<script>
+(function(){
+  /* ---------- navigation ---------- */
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  slides.forEach(function(s){
+    var lb=document.createElement('div'); lb.className='brk l';
+    var rb=document.createElement('div'); rb.className='brk r';
+    s.appendChild(lb); s.appendChild(rb);
+  });
+  var count = document.getElementById('count');
+  var prog  = document.getElementById('prog');
+  var hint  = document.getElementById('hint');
+  var cur = 0, timers = [];
+
+  function fit(){
+    var s = Math.min(window.innerWidth/1440, window.innerHeight/900);
+    stage.style.transform = 'translate(-50%,-50%) scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+
+  function resetAnims(){
+    clearTimers();
+    document.querySelectorAll('.gline').forEach(function(l){ l.style.strokeDashoffset = l.getAttribute('data-len') || '1000'; });
+    document.querySelectorAll('.gdot').forEach(function(d){ d.setAttribute('r','0'); d.style.opacity='0'; });
+    document.querySelectorAll('.gfade').forEach(function(e){ e.style.opacity='0'; });
+  }
+  function runAnims(i){
+    var s = slides[i];
+    var lines = s.querySelectorAll('.gline');
+    lines.forEach(function(l,k){ timers.push(setTimeout(function(){ l.style.strokeDashoffset='0'; }, 260 + k*170)); });
+    var dots = s.querySelectorAll('.gdot');
+    dots.forEach(function(d,k){ timers.push(setTimeout(function(){ d.setAttribute('r', d.getAttribute('data-r')||'16'); d.style.opacity='1'; }, 520 + k*130)); });
+    var fades = s.querySelectorAll('.gfade');
+    fades.forEach(function(e,k){ timers.push(setTimeout(function(){ e.style.opacity='1'; }, 780 + k*110)); });
+  }
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[cur].classList.remove('active');
+    resetAnims();
+    cur = i;
+    var s = slides[cur];
+    void s.offsetWidth;           /* reflow so reveal anim re-runs */
+    s.classList.add('active');
+    count.textContent = String(i+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+    prog.style.width = (i/(slides.length-1)*100) + '%';
+    runAnims(i);
+  }
+  function nextS(){ goTo(cur+1); }
+  function prevS(){ goTo(cur-1); }
+
+  document.getElementById('next').addEventListener('click', nextS);
+  document.getElementById('prev').addEventListener('click', prevS);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); nextS(); }
+    else if(e.key===' '){ e.preventDefault(); nextS(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prevS(); }
+    else if(e.key==='Home'){ goTo(0); }
+    else if(e.key==='End'){ goTo(slides.length-1); }
+  });
+  /* touch swipe */
+  var tx=0;
+  document.addEventListener('touchstart', function(e){ tx=e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx)>50){ dx<0 ? nextS() : prevS(); }
+  }, {passive:true});
+
+  setTimeout(function(){ hint.style.opacity='0'; }, 4000);
+  goTo(0);
+})();
+</script>
