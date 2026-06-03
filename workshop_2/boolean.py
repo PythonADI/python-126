@@ -1,0 +1,17 @@
+print(f"{bool(0) = }")
+print(f"{bool(0.001) = }")
+print(f"{bool(-1) = }")
+print(f"{bool(1) = }")
+print(f"{bool(100) = }")
+print(f"{bool(-100) = }")
+print(f"{bool(1000) = }")
+print(f"{bool(-1000) = }")
+
+
+print(f"{bool("") = }")
+print(f"{bool(" ") = }")
+print(f"{bool("\n") = }")
+print(f"{bool("\t") = }")
+print(f"{bool("Hello") = }")
+print(f"{bool("False") = }")
+print(f"{bool("0") = }")

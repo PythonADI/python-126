@@ -1,0 +1,7 @@
+MAX_SCORE = 100
+
+print(MAX_SCORE + 1)
+
+
+# MAX_SCORE = 17  # DON'T DO THIS
+print(MAX_SCORE)
