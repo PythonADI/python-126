@@ -7,6 +7,7 @@ These are the books we'll lean on during the course. Each links to where you can
   A Hands-On, Project-Based Introduction to Programming. This is our main reference.
   - Publisher: https://nostarch.com/python-crash-course-3rd-edition
   - Free companion resources: https://ehmatthes.github.io/pcc_3e/
+  - [Book](../resources/Python%20Crash%20Course%20-%20A%20Hands-On,%20Project-Based%20Introduction%20to%20Programming%20by%20Eric%20Matthes.pdf)
 
 ## If you're interested in data science
 - **Python for Data Analysis** — Wes McKinney
