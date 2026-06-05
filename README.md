@@ -3,5 +3,7 @@
 ## Topics
 [Workshop 1](./docs/workshop_1.md) · [Homework](./docs/workshop_1_homework.md)
 
+[Workshop 2 — Homework](./docs/workshop_2_homework.md)
+
 ## Books
 [Recommended Reading](./docs/resources.md)
