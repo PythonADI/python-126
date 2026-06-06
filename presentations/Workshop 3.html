@@ -1,0 +1,703 @@
+
+<!-- Python Workshop 03 — Part 1: Decisions (if / elif / else). Part 2: Repetition (while / for). Self-contained. Use ← → / Space to navigate. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python · Workshop 03 — Decisions &amp; Loops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --mute:#7a7a7a;
+    --line:#e3e3e3;
+    --line2:#111;
+    --paper:#ffffff;
+    /* Luka's installed Coolvetica Compressed is used automatically if present, else Anton */
+    --display:'Coolvetica Compressed','Coolvetica',Anton,'Arial Narrow',sans-serif;
+    --body:'Inter','Noto Sans Georgian',system-ui,-apple-system,sans-serif;
+    --mono:'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono','Noto Sans Georgian',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{background:var(--paper); color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased; overflow:hidden}
+
+  .viewport{position:fixed; inset:0; overflow:hidden; background:var(--paper)}
+  .stage{position:absolute; top:50%; left:50%; width:1440px; height:900px; transform-origin:center center}
+
+  .slide{position:absolute; inset:0; opacity:0; pointer-events:none; padding:90px 100px; display:flex; flex-direction:column}
+  .slide.active{opacity:1; pointer-events:auto}
+
+  /* header row on each slide */
+  .head{display:flex; justify-content:space-between; align-items:flex-start}
+  .kick{font-size:15px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--ink)}
+  .kick .b{color:var(--mute)}
+  .num{font-family:var(--display); font-size:30px; letter-spacing:.04em; color:var(--mute); line-height:1}
+
+  .foot{position:absolute; left:100px; right:100px; bottom:54px; border-top:1px solid var(--line); padding-top:16px;
+        display:flex; justify-content:space-between; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute)}
+
+  .body{flex:1; display:flex; flex-direction:column; justify-content:center}
+
+  h1{font-family:var(--display); font-weight:400; text-transform:uppercase; line-height:.92; letter-spacing:.005em}
+  .h-xl{font-size:108px}
+  .h-lg{font-size:84px}
+  .h-md{font-size:64px}
+  .lead{font-size:27px; line-height:1.5; color:#222; max-width:62ch}
+  .lead .hl{color:var(--ink); font-weight:600}
+  .mut{color:var(--mute)}
+  .tag{display:inline-block; font-weight:600; letter-spacing:.04em}
+
+  /* entrance reveal */
+  @keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:none}}
+  .slide .r{opacity:0}
+  .slide.active .r{animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards; animation-delay:var(--d,0s)}
+
+  /* bracket frame — opens from center on every slide */
+  .brk{position:absolute; width:34px; top:50%; transform:translateY(-50%); pointer-events:none; z-index:2}
+  .brk.l{left:42px; border-left:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .brk.r{right:42px; border-right:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .slide .brk{height:0; opacity:0}
+  .slide.active .brk{animation:brkopen .55s cubic-bezier(.16,.84,.3,1) forwards}
+  @keyframes brkopen{from{height:0; opacity:0} to{height:780px; opacity:1}}
+
+  /* title / divider */
+  .title-wrap{display:flex; flex-direction:column; justify-content:center; height:100%}
+  .title-wrap .kick{margin-bottom:40px}
+  .py{font-family:var(--display); font-size:300px; line-height:.9; letter-spacing:.02em}
+  .rule{height:2px; background:var(--ink); margin:30px 0}
+  .subline{font-size:30px; color:#222; font-weight:500}
+  .subline .b{color:var(--mute)}
+  .motif{font-family:var(--mono); font-size:22px; color:var(--mute)}
+
+  /* two columns (compare) */
+  .cols2{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:36px; border:1.5px solid var(--ink)}
+  .cols2 .c{padding:28px 32px}
+  .cols2 .c:first-child{border-right:1.5px solid var(--ink)}
+  .cols2 .lbl{font-size:14px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:16px}
+  .cols2 ul{list-style:none}
+  .cols2 li{font-size:20px; line-height:1.5; padding:8px 0; color:#222}
+  .cols2 li::before{content:"\2014"; color:var(--mute); margin-right:10px}
+  .colcode{font-family:var(--mono); font-size:21px; line-height:1.7; white-space:pre}
+  .colcode .kw{font-weight:700}
+  .colcode .com{color:var(--mute)}
+
+  /* grid of cells (applications) */
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:38px}
+  .cell{border:1.5px solid var(--ink); padding:24px 24px; min-height:148px}
+  .cell .ci{font-family:var(--display); font-size:34px; line-height:1; color:var(--mute)}
+  .cell .ct{font-size:21px; font-weight:600; margin-top:12px}
+  .cell .cd{font-size:15px; color:var(--mute); margin-top:8px; line-height:1.5}
+
+  /* code slides */
+  .code{font-family:var(--mono); border:1.5px solid var(--ink); padding:32px 38px; font-size:27px; line-height:1.8; white-space:pre; overflow-x:auto}
+  .code.sm{font-size:23px; line-height:1.62; padding:26px 32px}
+  .code .kw{font-weight:700}
+  .code .com{color:var(--mute)}
+  .code .str{color:var(--ink)}
+  .out{margin-top:22px; border-left:3px solid var(--ink); padding:14px 0 14px 22px}
+  .out .ol{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:8px}
+  .out .ov{font-family:var(--mono); font-size:22px; line-height:1.6}
+  .note{font-size:21px; color:#222; margin-top:24px; line-height:1.55; max-width:84ch}
+  .note .hl{font-weight:600}
+  .note .mono{font-family:var(--mono); font-size:19px}
+
+  /* warning callout */
+  .warn{margin-top:24px; border-left:3px solid var(--ink); background:#f6f6f6; padding:18px 22px; font-size:20px; line-height:1.55; max-width:88ch}
+  .warn .wl{display:block; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:7px}
+  .warn .hl{font-weight:600}
+  .warn .mono{font-family:var(--mono); font-size:18px}
+
+  /* range table */
+  .mtab{border:1.5px solid var(--ink); margin-top:30px}
+  .mrow{display:grid; grid-template-columns:300px 56px 1fr; align-items:center; padding:20px 34px; border-bottom:1px solid var(--line)}
+  .mrow:last-child{border-bottom:0}
+  .mrow .ex{font-family:var(--mono); font-size:24px; font-weight:500}
+  .mrow .ar{color:var(--mute); text-align:center; font-family:var(--mono); font-size:24px}
+  .mrow .re{display:flex; justify-content:space-between; align-items:center; gap:20px}
+  .mrow .mean{font-family:var(--mono); font-size:22px; font-weight:500}
+  .mrow .rc{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute); font-family:var(--body)}
+
+  /* recap */
+  .recap{list-style:none; margin-top:26px}
+  .recap li{font-size:25px; line-height:1.4; padding:18px 0; border-bottom:1px solid var(--line); display:flex; gap:20px}
+  .recap li:first-child{border-top:1px solid var(--line)}
+  .recap .rn{font-family:var(--display); font-size:28px; color:var(--mute); min-width:44px}
+  .recap .rt .hl{font-weight:600}
+  .teaser{margin-top:30px; font-size:23px}
+  .teaser .hl{font-weight:600}
+
+  /* end */
+  .end-q{font-family:var(--display); font-size:200px; line-height:.9}
+  #s-end .kick{margin-bottom:30px}
+
+  /* flow diagrams (SVG) */
+  .flowwrap{display:flex; align-items:center; justify-content:center; margin-top:10px}
+  .flowwrap svg{width:100%; height:auto; max-height:560px}
+  .gline{fill:none; stroke:var(--ink); stroke-width:2.5; transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)}
+  .gdot{fill:var(--ink); transition:r .4s ease, opacity .4s ease}
+  .gfade{transition:opacity .55s ease}
+  .gtxt{font-family:var(--mono); fill:var(--ink)}
+  .glabel{font-family:var(--body); font-weight:700; letter-spacing:.06em; fill:var(--ink)}
+  .gnote{font-family:var(--body); font-size:15px; fill:var(--mute)}
+
+  /* overlay UI (outside scaled stage) */
+  .ui{position:fixed; left:0; right:0; bottom:0; height:46px; display:flex; align-items:center; gap:18px; padding:0 20px; z-index:50; pointer-events:none}
+  .ui .prog-track{flex:1; height:2px; background:var(--line)}
+  .ui .prog{height:2px; background:var(--ink); width:0; transition:width .4s ease}
+  .ui .count{font-family:var(--mono); font-size:13px; color:var(--mute); letter-spacing:.1em}
+  .ui .btns{display:flex; gap:8px; pointer-events:auto}
+  .ui button{font-family:var(--body); font-size:16px; width:34px; height:30px; border:1px solid var(--ink); background:#fff; cursor:pointer; line-height:1}
+  .ui button:hover{background:var(--ink); color:#fff}
+  .hint{position:fixed; bottom:60px; right:24px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); z-index:50; transition:opacity .6s; pointer-events:none}
+</style>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- 01 COVER -->
+    <section class="slide" id="s-title">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PYTHON <span class="b">·</span> WORKSHOP 03 ]</div>
+        <div class="py r" style="--d:.08s">FLOW</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Part 1 — decisions <span class="b">·</span> Part 2 — repetition</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; if ready: begin()</span>
+        <span>Workshop 03 / 23</span>
+      </div>
+    </section>
+
+    <!-- 02 LEAD-IN -->
+    <section class="slide" id="s-leadin">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> DECISIONS ]</div><div class="num">02</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Programs that<br>choose.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:26px">Until now your code ran <span class="hl">every line, every time</span> — top to bottom. Today it starts to <span class="hl">react</span>: running some lines only when a condition holds.</p>
+        <p class="lead r" style="--d:.22s; margin-top:16px; color:var(--mute)">A program that can decide is a program that can do something useful.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Decisions</span></div>
+    </section>
+
+    <!-- 03 CONDITIONS -->
+    <section class="slide" id="s-cond">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> CONDITIONS ]</div><div class="num">03</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">True or false.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:20px">A <span class="hl">condition</span> is any expression Python can judge as <span class="hl">True</span> or <span class="hl">False</span>. Note <span class="mono" style="font-family:var(--mono)">==</span> asks &ldquo;equal?&rdquo; — not <span class="mono" style="font-family:var(--mono)">=</span>, which assigns.</p>
+        <div class="code r" style="--d:.2s; margin-top:22px"><span class="kw">print</span>(10 &gt; 3)
+<span class="kw">print</span>(7 == 7)
+<span class="kw">print</span>(7 != 7)
+<span class="kw">print</span>(5 &lt;= 4)</div>
+        <div class="out r" style="--d:.3s">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">True<br>True<br>False<br>False</div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Conditions</span></div>
+    </section>
+
+    <!-- 04 IF -->
+    <section class="slide" id="s-if">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> IF ]</div><div class="num">04</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Your first<br>decision.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:22px"><span class="hl">if</span> runs its block <span class="hl">only when</span> the condition is True. The colon opens the block.</p>
+        <div class="code r" style="--d:.22s; margin-top:22px"><span class="kw">age</span> = 19
+<span class="kw">if</span> age &gt;= 18:
+    <span class="kw">print</span>(<span class="str">"You can vote."</span>)
+<span class="kw">print</span>(<span class="str">"Done."</span>)</div>
+        <p class="note r" style="--d:.34s">Forget the <span class="mono">:</span> and Python stops with a <span class="mono">SyntaxError</span> before it runs a single line.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>if</span></div>
+    </section>
+
+    <!-- 05 INDENTATION -->
+    <section class="slide" id="s-indent">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> INDENTATION ]</div><div class="num">05</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Indentation<br>is the block.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:20px">Python has no curly braces. The <span class="hl">indentation itself</span> marks what is inside the <span class="mono">if</span> — and what is outside.</p>
+        <div class="code r" style="--d:.2s; margin-top:22px"><span class="kw">if</span> logged_in:
+    <span class="kw">print</span>(<span class="str">"Welcome!"</span>)     <span class="com"># inside  — runs only if True</span>
+    <span class="kw">print</span>(<span class="str">"Loading…"</span>)    <span class="com"># inside  — runs only if True</span>
+<span class="kw">print</span>(<span class="str">"Footer"</span>)          <span class="com"># outside — always runs</span></div>
+        <p class="note r" style="--d:.34s">Four spaces is the convention. Being inconsistent — or mixing tabs and spaces — throws an <span class="mono">IndentationError</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Indentation</span></div>
+    </section>
+
+    <!-- 06 ELSE -->
+    <section class="slide" id="s-else">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> ELSE ]</div><div class="num">06</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">The other<br>path.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:22px"><span class="hl">else</span> catches every case the <span class="mono">if</span> didn&rsquo;t — it runs when the condition is False.</p>
+        <div class="code r" style="--d:.22s; margin-top:22px"><span class="kw">temp</span> = 14
+<span class="kw">if</span> temp &gt;= 20:
+    <span class="kw">print</span>(<span class="str">"T-shirt weather."</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">"Bring a jacket."</span>)</div>
+        <p class="note r" style="--d:.34s">Exactly one branch runs — <span class="hl">never both, never neither</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>else</span></div>
+    </section>
+
+    <!-- 07 ELIF -->
+    <section class="slide" id="s-elif">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> ELIF ]</div><div class="num">07</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Many paths.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:18px">Chain conditions with <span class="hl">elif</span>. Python checks top to bottom and takes the <span class="hl">first</span> that is True — then skips the rest.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:20px"><span class="kw">score</span> = 84
+
+<span class="kw">if</span> score &gt;= 90:
+    <span class="kw">grade</span> = <span class="str">"A"</span>
+<span class="kw">elif</span> score &gt;= 80:
+    <span class="kw">grade</span> = <span class="str">"B"</span>
+<span class="kw">elif</span> score &gt;= 70:
+    <span class="kw">grade</span> = <span class="str">"C"</span>
+<span class="kw">else</span>:
+    <span class="kw">grade</span> = <span class="str">"F"</span>
+
+<span class="kw">print</span>(grade)      <span class="com"># B</span></div>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>elif</span></div>
+    </section>
+
+    <!-- 08 FLOWCHART: DECISION DIAMOND -->
+    <section class="slide" id="s-flow1">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> HOW IT FLOWS ]</div><div class="num">08</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">One question,<br>two ways.</h1>
+        <div class="flowwrap r" style="--d:.15s">
+          <svg viewBox="0 0 1060 430" xmlns="http://www.w3.org/2000/svg">
+            <!-- entry arrow -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M530 14 V44"/>
+            <!-- decision diamond -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M530 46 L690 120 L530 194 L370 120 Z"/>
+            <!-- branch lines -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M448 158 L250 286"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M612 158 L810 286"/>
+            <!-- outcome boxes -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M90 296 h320 v92 h-320 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M650 296 h320 v92 h-320 Z"/>
+
+            <!-- diamond label -->
+            <text class="gtxt gfade" x="530" y="129" text-anchor="middle" font-size="27">age &gt;= 18 ?</text>
+            <!-- branch labels -->
+            <text class="glabel gfade" x="312" y="226" text-anchor="middle" font-size="20">FALSE</text>
+            <text class="glabel gfade" x="748" y="226" text-anchor="middle" font-size="20">TRUE</text>
+            <!-- arrowheads into boxes -->
+            <path class="gfade" d="M243 282 L257 282 L250 296 Z"/>
+            <path class="gfade" d="M803 282 L817 282 L810 296 Z"/>
+            <!-- box labels -->
+            <text class="gtxt gfade" x="250" y="349" text-anchor="middle" font-size="26">print("Not yet")</text>
+            <text class="gtxt gfade" x="810" y="349" text-anchor="middle" font-size="26">print("Welcome")</text>
+            <!-- entry annotation -->
+            <text class="gnote gfade" x="530" y="9" text-anchor="middle">condition</text>
+          </svg>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Flow</span></div>
+    </section>
+
+    <!-- 09 LOGIC -->
+    <section class="slide" id="s-logic">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> LOGIC ]</div><div class="num">09</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Combine<br>conditions.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:18px"><span class="hl">and</span> needs both true <span class="b" style="color:var(--mute)">·</span> <span class="hl">or</span> needs either <span class="b" style="color:var(--mute)">·</span> <span class="hl">not</span> flips it.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:18px"><span class="kw">age</span> = 20
+<span class="kw">member</span> = <span class="kw">True</span>
+
+<span class="kw">if</span> age &gt;= 18 <span class="kw">and</span> member:
+    <span class="kw">print</span>(<span class="str">"Entry allowed."</span>)
+
+<span class="kw">if</span> age &lt; 13 <span class="kw">or</span> age &gt; 65:
+    <span class="kw">print</span>(<span class="str">"Discount ticket."</span>)
+
+<span class="kw">print</span>(<span class="kw">not</span> member)      <span class="com"># False</span></div>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Logic</span></div>
+    </section>
+
+    <!-- 10 WORKED EXAMPLE: input() (bilingual) -->
+    <section class="slide" id="s-input">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> INPUT ]</div><div class="num">10</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Ask, then decide.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:18px"><span class="hl">input()</span> pauses for the user and returns <span class="hl">text</span> — wrap it in <span class="mono">int()</span> to compare numbers.</p>
+        <p class="lead r" style="--d:.16s; margin-top:6px; color:var(--mute); font-size:21px">Prompt means &ldquo;How old are you?&rdquo; — replies: &ldquo;You can vote.&rdquo; / &ldquo;Not yet.&rdquo;</p>
+        <div class="code sm r" style="--d:.24s; margin-top:18px"><span class="kw">age</span> = <span class="kw">int</span>(<span class="kw">input</span>(<span class="str">"რამდენი წლის ხარ? "</span>))
+<span class="kw">if</span> age &gt;= 18:
+    <span class="kw">print</span>(<span class="str">"შეგიძლია ხმის მიცემა."</span>)
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">"ჯერ ადრეა."</span>)</div>
+        <div class="out r" style="--d:.34s">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">რამდენი წლის ხარ? 20<br>შეგიძლია ხმის მიცემა.</div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>input()</span></div>
+    </section>
+
+    <!-- 11 DIVIDER: LOOPS -->
+    <section class="slide" id="s-loops">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PART 2 OF 2 <span class="b">·</span> REPETITION ]</div>
+        <div class="py r" style="--d:.08s">LOOPS</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">You can decide now — let&rsquo;s make the computer repeat without copy-paste.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; while True:</span>
+        <span>Part 2 · Repetition</span>
+      </div>
+    </section>
+
+    <!-- 12 THE PROBLEM -->
+    <section class="slide" id="s-byhand">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> THE PROBLEM ]</div><div class="num">12</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Don&rsquo;t repeat<br>yourself.</h1>
+        <div class="cols2 r" style="--d:.16s">
+          <div class="c">
+            <div class="lbl">By hand</div>
+            <div class="colcode"><span class="kw">print</span>(1)
+<span class="kw">print</span>(2)
+<span class="kw">print</span>(3)
+<span class="kw">print</span>(4)
+<span class="kw">print</span>(5)
+<span class="com"># …and on, and on</span></div>
+          </div>
+          <div class="c">
+            <div class="lbl">With a loop</div>
+            <div class="colcode"><span class="kw">for</span> n <span class="kw">in</span> <span class="kw">range</span>(1, 6):
+    <span class="kw">print</span>(n)</div>
+          </div>
+        </div>
+        <p class="note r" style="--d:.3s">Same output. One is busywork; the other scales to a thousand lines without changing.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>The problem</span></div>
+    </section>
+
+    <!-- 13 WHILE -->
+    <section class="slide" id="s-while">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> WHILE ]</div><div class="num">13</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Repeat while<br>true.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:18px">A <span class="hl">while</span> loop keeps running its block <span class="hl">as long as</span> the condition stays True.</p>
+        <div class="code r" style="--d:.2s; margin-top:20px"><span class="kw">n</span> = 3
+<span class="kw">while</span> n &gt; 0:
+    <span class="kw">print</span>(n)
+    <span class="kw">n</span> -= 1
+<span class="kw">print</span>(<span class="str">"Liftoff!"</span>)</div>
+        <div class="out r" style="--d:.3s">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">3 · 2 · 1 · Liftoff!</div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>while</span></div>
+    </section>
+
+    <!-- 14 INFINITE LOOPS -->
+    <section class="slide" id="s-infinite">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> INFINITE LOOPS ]</div><div class="num">14</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">The endless<br>loop.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:18px">If the condition <span class="hl">never becomes False</span>, the loop never stops. The classic cause: forgetting to change the variable.</p>
+        <div class="code r" style="--d:.2s; margin-top:20px"><span class="kw">n</span> = 3
+<span class="kw">while</span> n &gt; 0:
+    <span class="kw">print</span>(n)
+    <span class="com"># forgot n -= 1  →  n stays 3 forever</span></div>
+        <p class="warn r" style="--d:.32s"><span class="wl">[ The trap ]</span>This prints <span class="hl">3</span> forever. Every <span class="mono">while</span> loop needs something inside that moves it <span class="hl">toward</span> False. Press <span class="mono">Ctrl + C</span> to stop a runaway loop.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Infinite loops</span></div>
+    </section>
+
+    <!-- 15 FLOWCHART: WHILE LOOP-BACK -->
+    <section class="slide" id="s-flow2">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> HOW IT FLOWS ]</div><div class="num">15</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Loop back,<br>or exit.</h1>
+        <div class="flowwrap r" style="--d:.15s">
+          <svg viewBox="0 0 1060 430" xmlns="http://www.w3.org/2000/svg">
+            <!-- entry -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M560 18 V46"/>
+            <!-- diamond -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M560 48 L712 116 L560 184 L408 116 Z"/>
+            <!-- TRUE branch to body box (right) -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M712 116 H806"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M806 80 h214 v72 h-214 Z"/>
+            <!-- FALSE branch to exit box (left) -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M408 116 H262"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M42 80 h220 v72 h-220 Z"/>
+            <!-- loop-back arrow: down from body, left, up into diamond -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M913 152 V300 H560 V186"/>
+
+            <!-- diamond label -->
+            <text class="gtxt gfade" x="560" y="124" text-anchor="middle" font-size="26">n &gt; 0 ?</text>
+            <!-- body label (two lines) -->
+            <text class="gtxt gfade" x="913" y="110" text-anchor="middle" font-size="22">print(n)</text>
+            <text class="gtxt gfade" x="913" y="138" text-anchor="middle" font-size="22">n -= 1</text>
+            <!-- exit label -->
+            <text class="gtxt gfade" x="152" y="123" text-anchor="middle" font-size="24">Liftoff!</text>
+            <!-- branch labels -->
+            <text class="glabel gfade" x="757" y="104" text-anchor="middle" font-size="18">TRUE</text>
+            <text class="glabel gfade" x="335" y="104" text-anchor="middle" font-size="18">FALSE</text>
+            <!-- loop annotation -->
+            <text class="gnote gfade" x="700" y="320" text-anchor="middle">repeat</text>
+            <!-- arrowheads -->
+            <path class="gfade" d="M799 109 L799 123 L813 116 Z"/>      <!-- into body, pointing right -->
+            <path class="gfade" d="M269 109 L269 123 L255 116 Z"/>      <!-- into exit, pointing left -->
+            <path class="gfade" d="M553 198 L567 198 L560 184 Z"/>      <!-- into diamond bottom, pointing up -->
+          </svg>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Flow</span></div>
+    </section>
+
+    <!-- 16 FOR + RANGE -->
+    <section class="slide" id="s-for">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> FOR ]</div><div class="num">16</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">The counting<br>loop.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:22px"><span class="hl">for</span> with <span class="hl">range()</span> repeats a set number of times — no counter to manage by hand.</p>
+        <div class="code r" style="--d:.22s; margin-top:22px"><span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(5):
+    <span class="kw">print</span>(i)</div>
+        <div class="out r" style="--d:.32s">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">0 · 1 · 2 · 3 · 4</div>
+        </div>
+        <p class="note r" style="--d:.4s"><span class="mono">range(5)</span> <span class="hl">starts at 0</span> and <span class="hl">stops before</span> 5 — five numbers, not six.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>for</span></div>
+    </section>
+
+    <!-- 17 RANGE THREE WAYS -->
+    <section class="slide" id="s-range">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> RANGE ]</div><div class="num">17</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">range(),<br>three ways.</h1>
+        <div class="mtab r" style="--d:.16s">
+          <div class="mrow">
+            <div class="ex">range(5)</div>
+            <div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">0 1 2 3 4</span><span class="rc">stop</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">range(2, 6)</div>
+            <div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">2 3 4 5</span><span class="rc">start, stop</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">range(1, 10, 2)</div>
+            <div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">1 3 5 7 9</span><span class="rc">start, stop, step</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">range(10, 0, -1)</div>
+            <div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">10 9 8 … 1</span><span class="rc">count down</span></div>
+          </div>
+        </div>
+        <p class="note r" style="--d:.32s">The <span class="hl">stop</span> value is never included — that&rsquo;s why <span class="mono">range(2, 6)</span> ends at 5.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>range()</span></div>
+    </section>
+
+    <!-- 18 FOR OVER TEXT -->
+    <section class="slide" id="s-fortext">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> STRINGS ]</div><div class="num">18</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Loop over<br>letters.</h1>
+        <p class="lead r" style="--d:.12s; margin-top:22px">Strings are <span class="hl">sequences</span> — a <span class="mono">for</span> loop walks them one character at a time.</p>
+        <div class="code r" style="--d:.22s; margin-top:22px"><span class="kw">for</span> char <span class="kw">in</span> <span class="str">"Python"</span>:
+    <span class="kw">print</span>(char)</div>
+        <p class="note r" style="--d:.34s">Prints <span class="mono">P · y · t · h · o · n</span> — each on its own line. Same <span class="mono">for</span>, no <span class="mono">range()</span> needed.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Strings</span></div>
+    </section>
+
+    <!-- 19 BREAK & CONTINUE -->
+    <section class="slide" id="s-breakcont">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> STEERING ]</div><div class="num">19</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Steer the<br>loop.</h1>
+        <div class="cols2 r" style="--d:.16s">
+          <div class="c">
+            <div class="lbl">break — stop entirely</div>
+            <div class="colcode"><span class="kw">for</span> n <span class="kw">in</span> <span class="kw">range</span>(1, 99):
+    <span class="kw">if</span> n == 5:
+        <span class="kw">break</span>
+    <span class="kw">print</span>(n)
+<span class="com"># 1 2 3 4</span></div>
+          </div>
+          <div class="c">
+            <div class="lbl">continue — skip one</div>
+            <div class="colcode"><span class="kw">for</span> n <span class="kw">in</span> <span class="kw">range</span>(1, 6):
+    <span class="kw">if</span> n == 3:
+        <span class="kw">continue</span>
+    <span class="kw">print</span>(n)
+<span class="com"># 1 2 4 5</span></div>
+          </div>
+        </div>
+        <p class="note r" style="--d:.3s"><span class="hl">break</span> leaves the loop for good. <span class="hl">continue</span> jumps to the next turn.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>break / continue</span></div>
+    </section>
+
+    <!-- 20 CAPSTONE -->
+    <section class="slide" id="s-capstone">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> CAPSTONE ]</div><div class="num">20</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Putting it<br>together.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:18px">A decision <span class="hl">inside</span> a loop. The <span class="mono">%</span> operator from Workshop 01 gives the remainder — <span class="hl">0 means even</span>.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:18px"><span class="kw">for</span> n <span class="kw">in</span> <span class="kw">range</span>(1, 11):
+    <span class="kw">if</span> n % 2 == 0:
+        <span class="kw">print</span>(n, <span class="str">"even"</span>)
+    <span class="kw">else</span>:
+        <span class="kw">print</span>(n, <span class="str">"odd"</span>)</div>
+        <div class="out r" style="--d:.3s">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">1 odd · 2 even · 3 odd · … · 9 odd · 10 even</div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Capstone</span></div>
+    </section>
+
+    <!-- 21 WHERE IT SHOWS UP -->
+    <section class="slide" id="s-where">
+      <div class="head"><div class="kick">[ CLOSING <span class="b">·</span> WHERE IT SHOWS UP ]</div><div class="num">21</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">You&rsquo;ll see this<br>everywhere.</h1>
+        <div class="grid r" style="--d:.16s">
+          <div class="cell"><div class="ci">01</div><div class="ct">Games</div><div class="cd">Loop the game until the player wins or quits.</div></div>
+          <div class="cell"><div class="ci">02</div><div class="ct">Validation</div><div class="cd">Re-ask with <span style="font-family:var(--mono)">while</span> until the answer is valid.</div></div>
+          <div class="cell"><div class="ci">03</div><div class="ct">Menus</div><div class="cd"><span style="font-family:var(--mono)">if/elif</span> routes each choice to its action.</div></div>
+          <div class="cell"><div class="ci">04</div><div class="ct">Retries</div><div class="cd">Try again up to N times, then give up.</div></div>
+          <div class="cell"><div class="ci">05</div><div class="ct">Data</div><div class="cd">A <span style="font-family:var(--mono)">for</span> over every row, file, or message.</div></div>
+          <div class="cell"><div class="ci">06</div><div class="ct">Rules</div><div class="cd">Gate features: logged in? allowed? in stock?</div></div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Applications</span></div>
+    </section>
+
+    <!-- 22 RECAP + TEASER -->
+    <section class="slide" id="s-recap">
+      <div class="head"><div class="kick">[ RECAP <span class="b">·</span> WORKSHOP 03 ]</div><div class="num">22</div></div>
+      <div class="body">
+        <ul class="recap">
+          <li class="r" style="--d:0s"><span class="rn">01</span><span class="rt"><span class="hl">Conditions</span> are True/False — built from comparisons and <span class="hl">and / or / not</span>.</span></li>
+          <li class="r" style="--d:.08s"><span class="rn">02</span><span class="rt"><span class="hl">if / elif / else</span> — choose one path; the indentation makes the block.</span></li>
+          <li class="r" style="--d:.16s"><span class="rn">03</span><span class="rt"><span class="hl">while</span> — repeat until a condition turns False; mind the infinite loop.</span></li>
+          <li class="r" style="--d:.24s"><span class="rn">04</span><span class="rt"><span class="hl">for + range()</span> — count a fixed number of times, or walk a sequence.</span></li>
+          <li class="r" style="--d:.32s"><span class="rn">05</span><span class="rt"><span class="hl">break / continue</span> — stop or skip from inside any loop.</span></li>
+        </ul>
+        <p class="teaser r" style="--d:.42s"><span class="hl">Workshop 04 — Functions.</span> Package these patterns into named blocks you can reuse and call anywhere.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 03</span><span>Recap</span></div>
+    </section>
+
+    <!-- 23 END -->
+    <section class="slide" id="s-end">
+      <div class="body" style="justify-content:center">
+        <div class="kick r" style="--d:0s">[ END <span class="b">·</span> WORKSHOP 03 ]</div>
+        <div class="end-q r" style="--d:.08s">QUESTIONS?</div>
+        <div class="rule r" style="--d:.16s"></div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; while learning: keep_going()</span>
+        <span>Python · Workshop 03</span>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- overlay nav UI -->
+<div class="ui">
+  <span class="count" id="count">01 / 23</span>
+  <div class="prog-track"><div class="prog" id="prog"></div></div>
+  <div class="btns">
+    <button id="prev" aria-label="Previous">&lsaquo;</button>
+    <button id="next" aria-label="Next">&rsaquo;</button>
+  </div>
+</div>
+<div class="hint" id="hint">← → to navigate</div>
+
+<script>
+(function(){
+  /* ---------- setup ---------- */
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  slides.forEach(function(s){
+    var lb=document.createElement('div'); lb.className='brk l';
+    var rb=document.createElement('div'); rb.className='brk r';
+    s.appendChild(lb); s.appendChild(rb);
+  });
+  var count = document.getElementById('count');
+  var prog  = document.getElementById('prog');
+  var hint  = document.getElementById('hint');
+  var cur = 0, timers = [];
+
+  function fit(){
+    var s = Math.min(window.innerWidth/1440, window.innerHeight/900);
+    stage.style.transform = 'translate(-50%,-50%) scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+
+  function resetAnims(){
+    clearTimers();
+    document.querySelectorAll('.gline').forEach(function(l){ l.style.strokeDashoffset = l.getAttribute('data-len') || '1'; });
+    document.querySelectorAll('.gdot').forEach(function(d){ d.setAttribute('r','0'); d.style.opacity='0'; });
+    document.querySelectorAll('.gfade').forEach(function(e){ e.style.opacity='0'; });
+  }
+  function runAnims(i){
+    var s = slides[i];
+    s.querySelectorAll('.gline').forEach(function(l,k){ timers.push(setTimeout(function(){ l.style.strokeDashoffset='0'; }, 260 + k*150)); });
+    s.querySelectorAll('.gdot').forEach(function(d,k){ timers.push(setTimeout(function(){ d.setAttribute('r', d.getAttribute('data-r')||'16'); d.style.opacity='1'; }, 520 + k*130)); });
+    s.querySelectorAll('.gfade').forEach(function(e,k){ timers.push(setTimeout(function(){ e.style.opacity='1'; }, 820 + k*90)); });
+  }
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[cur].classList.remove('active');
+    resetAnims();
+    cur = i;
+    var s = slides[cur];
+    void s.offsetWidth;           /* reflow so reveal anim re-runs */
+    s.classList.add('active');
+    count.textContent = String(i+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+    prog.style.width = (i/(slides.length-1)*100) + '%';
+    runAnims(i);
+  }
+  function nextS(){ goTo(cur+1); }
+  function prevS(){ goTo(cur-1); }
+
+  document.getElementById('next').addEventListener('click', nextS);
+  document.getElementById('prev').addEventListener('click', prevS);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); nextS(); }
+    else if(e.key===' '){ e.preventDefault(); nextS(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prevS(); }
+    else if(e.key==='Home'){ goTo(0); }
+    else if(e.key==='End'){ goTo(slides.length-1); }
+  });
+  /* touch swipe */
+  var tx=0;
+  document.addEventListener('touchstart', function(e){ tx=e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx)>50){ dx<0 ? nextS() : prevS(); }
+  }, {passive:true});
+
+  setTimeout(function(){ hint.style.opacity='0'; }, 4000);
+  goTo(0);
+})();
+</script>
