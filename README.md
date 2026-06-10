@@ -7,5 +7,7 @@
 
 [Workshop 3 — Homework](./docs/workshop_3_homework.md)
 
+[Workshop 4 — Homework](./docs/workshop_4_homework.md)
+
 ## Books
 [Recommended Reading](./docs/resources.md)

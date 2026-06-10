@@ -1,0 +1,712 @@
+
+<!-- Python Workshop 04 — Part 1: Defining & calling functions. Part 2: Return values. Self-contained. Use ← → / Space to navigate. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python · Workshop 04 — Functions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --mute:#7a7a7a;
+    --line:#e3e3e3;
+    --line2:#111;
+    --paper:#ffffff;
+    /* Luka's installed Coolvetica Compressed is used automatically if present, else Anton */
+    --display:'Coolvetica Compressed','Coolvetica',Anton,'Arial Narrow',sans-serif;
+    --body:'Inter','Noto Sans Georgian',system-ui,-apple-system,sans-serif;
+    --mono:'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono','Noto Sans Georgian',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{background:var(--paper); color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased; overflow:hidden}
+
+  .viewport{position:fixed; inset:0; overflow:hidden; background:var(--paper)}
+  .stage{position:absolute; top:50%; left:50%; width:1440px; height:900px; transform-origin:center center}
+
+  .slide{position:absolute; inset:0; opacity:0; pointer-events:none; padding:90px 100px; display:flex; flex-direction:column}
+  .slide.active{opacity:1; pointer-events:auto}
+
+  /* header row on each slide */
+  .head{display:flex; justify-content:space-between; align-items:flex-start}
+  .kick{font-size:15px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--ink)}
+  .kick .b{color:var(--mute)}
+  .num{font-family:var(--display); font-size:30px; letter-spacing:.04em; color:var(--mute); line-height:1}
+
+  .foot{position:absolute; left:100px; right:100px; bottom:54px; border-top:1px solid var(--line); padding-top:16px;
+        display:flex; justify-content:space-between; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute)}
+
+  .body{flex:1; display:flex; flex-direction:column; justify-content:center}
+
+  h1{font-family:var(--display); font-weight:400; text-transform:uppercase; line-height:.92; letter-spacing:.005em}
+  .h-xl{font-size:108px}
+  .h-lg{font-size:84px}
+  .h-md{font-size:64px}
+  .lead{font-size:27px; line-height:1.5; color:#222; max-width:62ch}
+  .lead .hl{color:var(--ink); font-weight:600}
+  .mut{color:var(--mute)}
+  .tag{display:inline-block; font-weight:600; letter-spacing:.04em}
+
+  /* entrance reveal */
+  @keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:none}}
+  .slide .r{opacity:0}
+  .slide.active .r{animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards; animation-delay:var(--d,0s)}
+
+  /* bracket frame — opens from center on every slide */
+  .brk{position:absolute; width:34px; top:50%; transform:translateY(-50%); pointer-events:none; z-index:2}
+  .brk.l{left:42px; border-left:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .brk.r{right:42px; border-right:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .slide .brk{height:0; opacity:0}
+  .slide.active .brk{animation:brkopen .55s cubic-bezier(.16,.84,.3,1) forwards}
+  @keyframes brkopen{from{height:0; opacity:0} to{height:780px; opacity:1}}
+
+  /* title / divider */
+  .title-wrap{display:flex; flex-direction:column; justify-content:center; height:100%}
+  .title-wrap .kick{margin-bottom:40px}
+  .py{font-family:var(--display); font-size:300px; line-height:.9; letter-spacing:.02em}
+  .rule{height:2px; background:var(--ink); margin:30px 0}
+  .subline{font-size:30px; color:#222; font-weight:500}
+  .subline .b{color:var(--mute)}
+  .motif{font-family:var(--mono); font-size:22px; color:var(--mute)}
+
+  /* two columns (compare) */
+  .cols2{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:36px; border:1.5px solid var(--ink)}
+  .cols2 .c{padding:28px 32px}
+  .cols2 .c:first-child{border-right:1.5px solid var(--ink)}
+  .cols2 .lbl{font-size:14px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:16px}
+  .cols2 ul{list-style:none}
+  .cols2 li{font-size:20px; line-height:1.5; padding:8px 0; color:#222}
+  .cols2 li::before{content:"\2014"; color:var(--mute); margin-right:10px}
+  .colcode{font-family:var(--mono); font-size:21px; line-height:1.7; white-space:pre}
+  .colcode .kw{font-weight:700}
+  .colcode .com{color:var(--mute)}
+
+  /* grid of cells (applications) */
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:38px}
+  .cell{border:1.5px solid var(--ink); padding:24px 24px; min-height:148px}
+  .cell .ci{font-family:var(--display); font-size:34px; line-height:1; color:var(--mute)}
+  .cell .ct{font-size:21px; font-weight:600; margin-top:12px}
+  .cell .cd{font-size:15px; color:var(--mute); margin-top:8px; line-height:1.5}
+
+  /* code slides */
+  .code{font-family:var(--mono); border:1.5px solid var(--ink); padding:32px 38px; font-size:27px; line-height:1.8; white-space:pre; overflow-x:auto}
+  .code.sm{font-size:23px; line-height:1.62; padding:26px 32px}
+  .code .kw{font-weight:700}
+  .code .com{color:var(--mute)}
+  .code .str{color:var(--ink)}
+  .out{margin-top:22px; border-left:3px solid var(--ink); padding:14px 0 14px 22px}
+  .out .ol{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:8px}
+  .out .ov{font-family:var(--mono); font-size:22px; line-height:1.6}
+  .note{font-size:21px; color:#222; margin-top:24px; line-height:1.55; max-width:84ch}
+  .note .hl{font-weight:600}
+  .note .mono{font-family:var(--mono); font-size:19px}
+
+  /* warning callout */
+  .warn{margin-top:24px; border-left:3px solid var(--ink); background:#f6f6f6; padding:18px 22px; font-size:20px; line-height:1.55; max-width:88ch}
+  .warn .wl{display:block; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:7px}
+  .warn .hl{font-weight:600}
+  .warn .mono{font-family:var(--mono); font-size:18px}
+
+  /* range table */
+  .mtab{border:1.5px solid var(--ink); margin-top:30px}
+  .mrow{display:grid; grid-template-columns:300px 56px 1fr; align-items:center; padding:20px 34px; border-bottom:1px solid var(--line)}
+  .mrow:last-child{border-bottom:0}
+  .mrow .ex{font-family:var(--mono); font-size:24px; font-weight:500}
+  .mrow .ar{color:var(--mute); text-align:center; font-family:var(--mono); font-size:24px}
+  .mrow .re{display:flex; justify-content:space-between; align-items:center; gap:20px}
+  .mrow .mean{font-family:var(--mono); font-size:22px; font-weight:500}
+  .mrow .rc{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute); font-family:var(--body)}
+
+  /* recap */
+  .recap{list-style:none; margin-top:26px}
+  .recap li{font-size:25px; line-height:1.4; padding:18px 0; border-bottom:1px solid var(--line); display:flex; gap:20px}
+  .recap li:first-child{border-top:1px solid var(--line)}
+  .recap .rn{font-family:var(--display); font-size:28px; color:var(--mute); min-width:44px}
+  .recap .rt .hl{font-weight:600}
+  .teaser{margin-top:30px; font-size:23px}
+  .teaser .hl{font-weight:600}
+
+  /* end */
+  .end-q{font-family:var(--display); font-size:200px; line-height:.9}
+  #s-end .kick{margin-bottom:30px}
+
+  /* flow diagrams (SVG) */
+  .flowwrap{display:flex; align-items:center; justify-content:center; margin-top:10px}
+  .flowwrap svg{width:100%; height:auto; max-height:560px}
+  .gline{fill:none; stroke:var(--ink); stroke-width:2.5; transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)}
+  .gdot{fill:var(--ink); transition:r .4s ease, opacity .4s ease}
+  .gfade{transition:opacity .55s ease}
+  .gtxt{font-family:var(--mono); fill:var(--ink)}
+  .glabel{font-family:var(--body); font-weight:700; letter-spacing:.06em; fill:var(--ink)}
+  .gnote{font-family:var(--body); font-size:15px; fill:var(--mute)}
+
+  /* overlay UI (outside scaled stage) */
+  .ui{position:fixed; left:0; right:0; bottom:0; height:46px; display:flex; align-items:center; gap:18px; padding:0 20px; z-index:50; pointer-events:none}
+  .ui .prog-track{flex:1; height:2px; background:var(--line)}
+  .ui .prog{height:2px; background:var(--ink); width:0; transition:width .4s ease}
+  .ui .count{font-family:var(--mono); font-size:13px; color:var(--mute); letter-spacing:.1em}
+  .ui .btns{display:flex; gap:8px; pointer-events:auto}
+  .ui button{font-family:var(--body); font-size:16px; width:34px; height:30px; border:1px solid var(--ink); background:#fff; cursor:pointer; line-height:1}
+  .ui button:hover{background:var(--ink); color:#fff}
+  .hint{position:fixed; bottom:60px; right:24px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); z-index:50; transition:opacity .6s; pointer-events:none}
+</style>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- 01 COVER -->
+    <section class="slide" id="s-title">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PYTHON <span class="b">·</span> WORKSHOP 04 ]</div>
+        <div class="py r" style="--d:.08s">DEF</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Part 1 — defining &amp; calling <span class="b">·</span> Part 2 — return values</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; def workshop(): ...</span>
+        <span>Workshop 04 / 22</span>
+      </div>
+    </section>
+
+    <!-- 02 LEAD-IN -->
+    <section class="slide" id="s-leadin">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> WHY FUNCTIONS ]</div><div class="num">02</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">You&rsquo;ve been calling<br>functions since day one.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:26px"><span class="mono" style="font-family:var(--mono)">print()</span>, <span class="mono" style="font-family:var(--mono)">input()</span>, <span class="mono" style="font-family:var(--mono)">int()</span>, <span class="mono" style="font-family:var(--mono)">len()</span>, <span class="mono" style="font-family:var(--mono)">range()</span> — every one is a <span class="hl">function</span>: a named block of code somebody else wrote. You type the name, add parentheses, and a whole hidden block runs. For three workshops you&rsquo;ve only been the caller.</p>
+        <p class="lead r mut" style="--d:.18s; margin-top:16px">Today you cross to the other side of the parentheses. You define your own — and Workshop 03&rsquo;s ifs and loops are exactly what goes inside.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>print · input · len · range</span></div>
+    </section>
+
+    <!-- 03 THE PROBLEM -->
+    <section class="slide" id="s-problem">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> THE PROBLEM ]</div><div class="num">03</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Copy. Paste. Regret.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Three guests, the same two lines, three times. It works — and it&rsquo;s a trap.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">print</span>(<span class="str">"Hello, nino!"</span>)
+<span class="kw">print</span>(<span class="str">"Welcome to the club."</span>)
+
+<span class="kw">print</span>(<span class="str">"Hello, giorgi!"</span>)
+<span class="kw">print</span>(<span class="str">"Welcome to the club."</span>)
+
+<span class="kw">print</span>(<span class="str">"Hello, mariami!"</span>)
+<span class="kw">print</span>(<span class="str">"Welcome to the club."</span>)</div>
+        <p class="note r" style="--d:.3s; margin-top:18px">Now the club changes its welcome message. You edit <span class="hl">three places</span> — and miss one. Repetition is where bugs live.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>Copy · paste · regret</span></div>
+    </section>
+
+    <!-- 04 FIRST DEF -->
+    <section class="slide" id="s-def">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> DEF ]</div><div class="num">04</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Define it once.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px"><span class="hl">def</span>, a name, parentheses, a colon — then an indented body. Calling the name runs the body.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">greet</span>():
+    <span class="kw">print</span>(<span class="str">"Hello!"</span>)
+    <span class="kw">print</span>(<span class="str">"Welcome to the club."</span>)
+
+<span class="kw">greet</span>()</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">Hello!<br>Welcome to the club.</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px">Function names follow the same snake_case rules as variables (Workshop 02), and the colon + indented block works exactly like <span class="mono">if</span> and <span class="mono">while</span> from Workshop 03. The only new word is <span class="mono">def</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>def</span></div>
+    </section>
+
+    <!-- 05 DEFINING ≠ RUNNING -->
+    <section class="slide" id="s-call">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> CALLING ]</div><div class="num">05</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">def alone does nothing.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px"><span class="hl">def</span> only stocks the vending machine. Nothing happens until someone <span class="hl">presses the button</span> — and every press replays the body.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">greet</span>():
+    <span class="kw">print</span>(<span class="str">"Hello!"</span>)
+
+<span class="kw">print</span>(<span class="str">"Before any call"</span>)
+<span class="kw">greet</span>()
+<span class="kw">greet</span>()</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">Before any call · Hello! · Hello!</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px">Python reads the <span class="mono">def</span>, memorizes the recipe, and moves on — that&rsquo;s why <span class="mono">Before any call</span> prints first. And define <span class="hl">before</span> you call: scripts still run top to bottom (Workshop 01).</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>define once · call many</span></div>
+    </section>
+
+    <!-- 06 ONE PARAMETER -->
+    <section class="slide" id="s-param">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> PARAMETERS ]</div><div class="num">06</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Leave a slot open.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px"><span class="mono" style="font-family:var(--mono)">name</span> is a blank inside the recipe — a coin slot on the machine. Each call fills it with a <span class="hl">different value</span>.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">greet</span>(name):
+    <span class="kw">print</span>(f<span class="str">"Hello, {name}!"</span>)
+
+<span class="kw">greet</span>(<span class="str">"nino"</span>)
+<span class="kw">greet</span>(<span class="str">"giorgi"</span>)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">Hello, nino!<br>Hello, giorgi!</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px">One function, every guest. This is the fix for slide 03 — change the greeting <span class="hl">once</span>, and every call gets the new version.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>greet(name)</span></div>
+    </section>
+
+    <!-- 07 VOCABULARY TABLE -->
+    <section class="slide" id="s-vocab">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> VOCABULARY ]</div><div class="num">07</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Parameter or argument?</h1>
+        <div class="mtab r" style="--d:.15s">
+          <div class="mrow">
+            <div class="ex">def greet(name):</div>
+            <div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">name is a <b>parameter</b> — the named slot</span><span class="rc">definition</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">greet("nino")</div>
+            <div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">"nino" is an <b>argument</b> — the value you pass in</span><span class="rc">call</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">greet(user)</div>
+            <div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">arguments can be variables too</span><span class="rc">call</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">greet()</div>
+            <div class="ar">&rarr;</div>
+            <div class="re"><span class="mean" style="font-size:17px">TypeError: greet() missing 1 required positional argument: 'name'</span><span class="rc">error</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>parameter · argument</span></div>
+    </section>
+
+    <!-- 08 MULTIPLE PARAMETERS -->
+    <section class="slide" id="s-multi">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> MULTIPLE PARAMETERS ]</div><div class="num">08</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">More slots, in order.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Separate parameters with commas. Python matches <span class="hl">by position</span>: first argument &rarr; first parameter.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">order</span>(drink, size):
+    <span class="kw">print</span>(f<span class="str">"One {size} {drink}, coming up!"</span>)
+
+<span class="kw">order</span>(<span class="str">"latte"</span>, <span class="str">"large"</span>)
+<span class="kw">order</span>(<span class="str">"espresso"</span>, <span class="str">"small"</span>)
+<span class="kw">order</span>(<span class="str">"small"</span>, <span class="str">"espresso"</span>)  <span class="com"># oops — swapped!</span></div>
+        <div class="out r" style="--d:.3s; margin-top:16px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">One large latte, coming up! · One small espresso, coming up!<br>One espresso small, coming up!</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px">Python doesn&rsquo;t know what a latte is. It only knows <span class="hl">first value &rarr; first slot</span>. <span class="mono">One espresso small</span> is your bug, not Python&rsquo;s.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>Order matters</span></div>
+    </section>
+
+    <!-- 09 DEFAULT VALUES -->
+    <section class="slide" id="s-default">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> DEFAULTS ]</div><div class="num">09</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">A fallback value.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Put <span class="mono" style="font-family:var(--mono)">=</span> in the definition and the slot <span class="hl">fills itself</span> when the caller stays silent.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">greet</span>(name=<span class="str">"friend"</span>):
+    <span class="kw">print</span>(f<span class="str">"Hello, {name}!"</span>)
+
+<span class="kw">greet</span>(<span class="str">"nino"</span>)
+<span class="kw">greet</span>()</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">Hello, nino!<br>Hello, friend!</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px">Pass an argument and it wins; pass nothing and the default steps in. Defaults make arguments <span class="hl">optional</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>name="friend"</span></div>
+    </section>
+
+    <!-- 10 BILINGUAL WORKED EXAMPLE -->
+    <section class="slide" id="s-voter">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> WORKED EXAMPLE ]</div><div class="num">10</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Last week&rsquo;s decision, packaged.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px; color:var(--mute); font-size:21px">Messages mean &ldquo;You can vote.&rdquo; / &ldquo;Not yet.&rdquo; — the same Georgian example from Workshop 03, now wrapped in a function and called twice.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">check_voter</span>(age):
+    <span class="kw">if</span> age &gt;= 18:
+        <span class="kw">print</span>(<span class="str">"შეგიძლია ხმის მიცემა."</span>)
+    <span class="kw">else</span>:
+        <span class="kw">print</span>(<span class="str">"ჯერ ადრეა."</span>)
+
+<span class="kw">check_voter</span>(19)
+<span class="kw">check_voter</span>(15)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">შეგიძლია ხმის მიცემა.<br>ჯერ ადრეა.</div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>Worked example</span></div>
+    </section>
+
+    <!-- 11 DIVIDER: RETURN VALUES -->
+    <section class="slide" id="s-part2">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PART 2 OF 2 <span class="b">·</span> RETURN VALUES ]</div>
+        <div class="py r" style="--d:.08s">RETURN</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Functions that hand the answer back.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; result = add(3, 4)</span>
+        <span>Part 2 · Return values</span>
+      </div>
+    </section>
+
+    <!-- 12 RETURN BASICS -->
+    <section class="slide" id="s-return">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> RETURN ]</div><div class="num">12</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Hand the answer back.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">So far our functions only talked at the screen. <span class="hl">return</span> is the can dropping out of the machine — a value handed back to whoever called.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">add</span>(a, b):
+    <span class="kw">return</span> a + b
+
+<span class="kw">result</span> = <span class="kw">add</span>(3, 4)
+<span class="kw">print</span>(result)
+<span class="kw">print</span>(<span class="kw">add</span>(10, 5))</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">7<br>15</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px"><span class="mono">add(3, 4)</span> doesn&rsquo;t print 7 — it <span class="hl">becomes</span> 7, right there in your code. Catch it in a variable, or use it on the spot.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>return</span></div>
+    </section>
+
+    <!-- 13 FLOWCHART: CALL AND RETURN -->
+    <section class="slide" id="s-flow">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> HOW A CALL WORKS ]</div><div class="num">13</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">The round trip.</h1>
+        <div class="flowwrap r" style="--d:.15s">
+          <svg viewBox="0 0 1060 430" xmlns="http://www.w3.org/2000/svg">
+            <!-- caller box -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M70 165 h330 v90 h-330 Z"/>
+            <!-- top arc: the call -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M260 165 C260 70, 800 70, 800 140"/>
+            <!-- function box -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M660 140 h330 v120 h-330 Z"/>
+            <!-- bottom arc: the return -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M760 260 C760 358, 235 358, 235 255"/>
+
+            <!-- caller label -->
+            <text class="gtxt gfade" x="235" y="218" text-anchor="middle" font-size="25">result = add(3, 4)</text>
+            <!-- function labels (two lines) -->
+            <text class="gtxt gfade" x="696" y="190" font-size="23">def add(a, b):</text>
+            <text class="gtxt gfade" x="744" y="228" font-size="23">return a + b</text>
+            <text class="gnote gfade" x="880" y="292" text-anchor="middle">computes 7</text>
+            <!-- call labels -->
+            <text class="glabel gfade" x="530" y="58" text-anchor="middle" font-size="20">CALL</text>
+            <text class="gnote gfade" x="530" y="122" text-anchor="middle">a = 3 · b = 4</text>
+            <!-- return labels -->
+            <text class="glabel gfade" x="500" y="318" text-anchor="middle" font-size="26">7</text>
+            <text class="glabel gfade" x="500" y="382" text-anchor="middle" font-size="20">BACK</text>
+            <!-- arrowheads -->
+            <path class="gfade" d="M793 126 L807 126 L800 140 Z"/>
+            <path class="gfade" d="M228 269 L242 269 L235 255 Z"/>
+            <!-- bottom annotation -->
+            <text class="gnote gfade" x="530" y="424" text-anchor="middle">the call is replaced by the value it returns — then Python resumes at the line it left</text>
+          </svg>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>The round trip</span></div>
+    </section>
+
+    <!-- 14 USING THE VALUE -->
+    <section class="slide" id="s-usevalue">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> USING THE VALUE ]</div><div class="num">14</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">A call is a value.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Anywhere a number can go, a call can go — arithmetic, f-strings, <span class="mono" style="font-family:var(--mono)">if</span> conditions.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">area</span>(width, height):
+    <span class="kw">return</span> width * height
+
+<span class="kw">total</span> = <span class="kw">area</span>(3, 4) + <span class="kw">area</span>(5, 2)
+<span class="kw">print</span>(f<span class="str">"{total = }"</span>)
+
+<span class="kw">if</span> <span class="kw">area</span>(10, 10) &gt; 50:
+    <span class="kw">print</span>(<span class="str">"Big room!"</span>)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">total = 22<br>Big room!</div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>Calls inside expressions</span></div>
+    </section>
+
+    <!-- 15 PRINT VS RETURN -->
+    <section class="slide" id="s-printreturn">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> PRINT VS RETURN ]</div><div class="num">15</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Print is not return.</h1>
+        <div class="cols2 r" style="--d:.18s">
+          <div class="c">
+            <div class="lbl">print — the display lights up</div>
+            <div class="colcode"><span class="kw">def</span> <span class="kw">show_sum</span>(a, b):
+    <span class="kw">print</span>(a + b)
+
+<span class="kw">show_sum</span>(2, 3)
+<span class="com"># 5 flashes on screen — then it's gone</span></div>
+          </div>
+          <div class="c">
+            <div class="lbl">return — the can drops out</div>
+            <div class="colcode"><span class="kw">def</span> <span class="kw">add</span>(a, b):
+    <span class="kw">return</span> a + b
+
+<span class="kw">total</span> = <span class="kw">add</span>(2, 3)
+<span class="kw">print</span>(total + 10)
+<span class="com"># 15 — the value kept working</span></div>
+          </div>
+        </div>
+        <p class="warn r" style="--d:.34s"><span class="wl">[ The trap ]</span><span class="mono">print()</span> shows a value to a human and throws it away. <span class="mono">return</span> hands the value back to your <span class="hl">code</span>. A vending machine test: <span class="mono">print</span> is the little screen flashing — <span class="mono">return</span> is the can in your hand. You can&rsquo;t drink the screen.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>print vs return</span></div>
+    </section>
+
+    <!-- 16 NONE -->
+    <section class="slide" id="s-none">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> NONE ]</div><div class="num">16</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">The sound of nothing.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">So what do you get if you <span class="hl">catch</span> the result of a function that only prints?</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">show_sum</span>(a, b):
+    <span class="kw">print</span>(a + b)
+
+<span class="kw">result</span> = <span class="kw">show_sum</span>(2, 3)
+<span class="kw">print</span>(f<span class="str">"{result = }"</span>)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">5<br>result = None</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px">Every function returns <span class="hl">something</span>. No <span class="mono">return</span> line means Python quietly returns <span class="mono">None</span> — its word for &ldquo;no value here.&rdquo; If a variable mysteriously prints <span class="mono">None</span>, the function behind it printed where it should have returned.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>None</span></div>
+    </section>
+
+    <!-- 17 RETURN EXITS IMMEDIATELY -->
+    <section class="slide" id="s-early">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> RETURN EXITS ]</div><div class="num">17</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Return ends it. Instantly.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">The moment <span class="hl">return</span> runs, the function is over — code after it never executes.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">check</span>(n):
+    <span class="kw">if</span> n % 2 == 0:
+        <span class="kw">return</span> <span class="str">"even"</span>
+    <span class="kw">return</span> <span class="str">"odd"</span>
+
+<span class="kw">print</span>(<span class="kw">check</span>(10))
+<span class="kw">print</span>(<span class="kw">check</span>(7))</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">even · odd</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px">That&rsquo;s why the last line needs no <span class="mono">else</span> — reaching it <span class="hl">proves</span> the <span class="mono">if</span> didn&rsquo;t fire. The <span class="mono">%</span> trick is from Workshop 01; the early exit is new.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>Early return</span></div>
+    </section>
+
+    <!-- 18 LOCAL SCOPE -->
+    <section class="slide" id="s-scope">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> SCOPE ]</div><div class="num">18</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Variables stay inside.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px"><span class="mono" style="font-family:var(--mono)">total</span> is born when the call starts and <span class="hl">vanishes</span> when it ends. Outside the function, it was never defined.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> <span class="kw">make_total</span>(price, quantity):
+    <span class="kw">total</span> = price * quantity
+    <span class="kw">return</span> total
+
+<span class="kw">print</span>(<span class="kw">make_total</span>(7, 3))
+<span class="kw">print</span>(total)   <span class="com"># NameError!</span></div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">21<br>NameError: name 'total' is not defined</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px">That&rsquo;s a feature, not a bug — functions can&rsquo;t trample each other&rsquo;s variables. The only door out is <span class="mono">return</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>Local scope</span></div>
+    </section>
+
+    <!-- 19 CAPSTONE -->
+    <section class="slide" id="s-capstone">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> CAPSTONE ]</div><div class="num">19</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Grades, on an assembly line.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Workshop 03&rsquo;s grade ladder, rebuilt with <span class="hl">early returns</span> — then fed by a Workshop 03 <span class="mono" style="font-family:var(--mono)">for</span> loop.</p>
+        <div class="cols2 r" style="--d:.2s">
+          <div class="c">
+            <div class="lbl">the machine — one definition</div>
+            <div class="colcode"><span class="kw">def</span> <span class="kw">letter_grade</span>(score):
+    <span class="kw">if</span> score &gt;= 90:
+        <span class="kw">return</span> <span class="str">"A"</span>
+    <span class="kw">if</span> score &gt;= 80:
+        <span class="kw">return</span> <span class="str">"B"</span>
+    <span class="kw">if</span> score &gt;= 70:
+        <span class="kw">return</span> <span class="str">"C"</span>
+    <span class="kw">return</span> <span class="str">"F"</span></div>
+          </div>
+          <div class="c">
+            <div class="lbl">the assembly line — four calls</div>
+            <div class="colcode"><span class="kw">for</span> score <span class="kw">in</span> <span class="kw">range</span>(65, 100, 10):
+    <span class="kw">grade</span> = <span class="kw">letter_grade</span>(score)
+    <span class="kw">print</span>(score, <span class="str">"-&gt;"</span>, grade)
+
+<span class="com"># 65 -&gt; F</span>
+<span class="com"># 75 -&gt; C</span>
+<span class="com"># 85 -&gt; B</span>
+<span class="com"># 95 -&gt; A</span></div>
+          </div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px">One definition, four calls, zero copy-paste — <span class="mono">def</span> + <span class="mono">if</span> + <span class="mono">for</span> + <span class="mono">range(start, stop, step)</span>, everything from Workshops 1&ndash;3 in a dozen lines. This is why functions exist.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>def · for · range · if</span></div>
+    </section>
+
+    <!-- 20 WHERE IT SHOWS UP -->
+    <section class="slide" id="s-where">
+      <div class="head"><div class="kick">[ CLOSING <span class="b">·</span> WHERE IT SHOWS UP ]</div><div class="num">20</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Functions are everywhere.</h1>
+        <div class="grid">
+          <div class="cell r" style="--d:.16s"><div class="ci">01</div><div class="ct">Built-ins</div><div class="cd"><span style="font-family:var(--mono)">print()</span>, <span style="font-family:var(--mono)">len()</span>, <span style="font-family:var(--mono)">round()</span> — functions someone defined so you wouldn&rsquo;t have to. Now you&rsquo;re that someone.</div></div>
+          <div class="cell r" style="--d:.22s"><div class="ci">02</div><div class="ct">Apps</div><div class="cd">Tap Like, Send, Pay — every button on your phone calls a function with your tap as the argument.</div></div>
+          <div class="cell r" style="--d:.28s"><div class="ci">03</div><div class="ct">Games</div><div class="cd">A game loop calls <span style="font-family:var(--mono)">update()</span> and <span style="font-family:var(--mono)">draw()</span> dozens of times per second.</div></div>
+          <div class="cell r" style="--d:.34s"><div class="ci">04</div><div class="ct">The web</div><div class="cd">Every page you open — a function on a server far away returns it to you.</div></div>
+          <div class="cell r" style="--d:.4s"><div class="ci">05</div><div class="ct">Spreadsheets</div><div class="cd"><span style="font-family:var(--mono)">SUM(A1:A9)</span> — you&rsquo;ve been calling functions in Excel all along.</div></div>
+          <div class="cell r" style="--d:.46s"><div class="ci">06</div><div class="ct">Your homework</div><div class="cd">Every Workshop 3 exercise collapses into one line once it&rsquo;s wrapped in a <span style="font-family:var(--mono)">def</span>.</div></div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>Functions everywhere</span></div>
+    </section>
+
+    <!-- 21 RECAP + TEASER -->
+    <section class="slide" id="s-recap">
+      <div class="head"><div class="kick">[ RECAP <span class="b">·</span> WORKSHOP 04 ]</div><div class="num">21</div></div>
+      <div class="body">
+        <ul class="recap">
+          <li class="r" style="--d:0s"><span class="rn">01</span><span class="rt"><span class="hl">def</span> packages code under a name — <span class="hl">calling</span> it runs the body, as many times as you like.</span></li>
+          <li class="r" style="--d:.08s"><span class="rn">02</span><span class="rt"><span class="hl">Parameters</span> are the slots in the definition; <span class="hl">arguments</span> are the values you pass — matched <span class="hl">by position</span>.</span></li>
+          <li class="r" style="--d:.16s"><span class="rn">03</span><span class="rt"><span class="hl">return</span> hands the answer back to your code; <span class="hl">print</span> only shows it to a human.</span></li>
+          <li class="r" style="--d:.24s"><span class="rn">04</span><span class="rt">No <span class="hl">return</span> means the function returns <span class="hl">None</span> — Python&rsquo;s word for nothing, and the quietest bug there is.</span></li>
+          <li class="r" style="--d:.32s"><span class="rn">05</span><span class="rt">Variables created inside a function are <span class="hl">local</span> — they vanish when the call ends; <span class="hl">return</span> is the only door out.</span></li>
+        </ul>
+        <p class="teaser r" style="--d:.4s"><span class="hl">Workshop 05 — Lists.</span> One name for many values: store them, loop them, grow them.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 04</span><span>def · call · return</span></div>
+    </section>
+
+    <!-- 22 END -->
+    <section class="slide" id="s-end">
+      <div class="body" style="justify-content:center">
+        <div class="kick r" style="--d:0s">[ END <span class="b">·</span> WORKSHOP 04 ]</div>
+        <div class="end-q r" style="--d:.08s">QUESTIONS?</div>
+        <div class="rule r" style="--d:.16s"></div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; def goodbye(): return "see you!"</span>
+        <span>Python · Workshop 04</span>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- overlay nav UI -->
+<div class="ui">
+  <span class="count" id="count">01 / 22</span>
+  <div class="prog-track"><div class="prog" id="prog"></div></div>
+  <div class="btns">
+    <button id="prev" aria-label="Previous">&lsaquo;</button>
+    <button id="next" aria-label="Next">&rsaquo;</button>
+  </div>
+</div>
+<div class="hint" id="hint">← → to navigate</div>
+
+<script>
+(function(){
+  /* ---------- setup ---------- */
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  slides.forEach(function(s){
+    var lb=document.createElement('div'); lb.className='brk l';
+    var rb=document.createElement('div'); rb.className='brk r';
+    s.appendChild(lb); s.appendChild(rb);
+  });
+  var count = document.getElementById('count');
+  var prog  = document.getElementById('prog');
+  var hint  = document.getElementById('hint');
+  var cur = 0, timers = [];
+
+  function fit(){
+    var s = Math.min(window.innerWidth/1440, window.innerHeight/900);
+    stage.style.transform = 'translate(-50%,-50%) scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+
+  function resetAnims(){
+    clearTimers();
+    document.querySelectorAll('.gline').forEach(function(l){ l.style.strokeDashoffset = l.getAttribute('data-len') || '1'; });
+    document.querySelectorAll('.gdot').forEach(function(d){ d.setAttribute('r','0'); d.style.opacity='0'; });
+    document.querySelectorAll('.gfade').forEach(function(e){ e.style.opacity='0'; });
+  }
+  function runAnims(i){
+    var s = slides[i];
+    s.querySelectorAll('.gline').forEach(function(l,k){ timers.push(setTimeout(function(){ l.style.strokeDashoffset='0'; }, 260 + k*150)); });
+    s.querySelectorAll('.gdot').forEach(function(d,k){ timers.push(setTimeout(function(){ d.setAttribute('r', d.getAttribute('data-r')||'16'); d.style.opacity='1'; }, 520 + k*130)); });
+    s.querySelectorAll('.gfade').forEach(function(e,k){ timers.push(setTimeout(function(){ e.style.opacity='1'; }, 820 + k*90)); });
+  }
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[cur].classList.remove('active');
+    resetAnims();
+    cur = i;
+    var s = slides[cur];
+    void s.offsetWidth;           /* reflow so reveal anim re-runs */
+    s.classList.add('active');
+    count.textContent = String(i+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+    prog.style.width = (i/(slides.length-1)*100) + '%';
+    runAnims(i);
+  }
+  function nextS(){ goTo(cur+1); }
+  function prevS(){ goTo(cur-1); }
+
+  document.getElementById('next').addEventListener('click', nextS);
+  document.getElementById('prev').addEventListener('click', prevS);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); nextS(); }
+    else if(e.key===' '){ e.preventDefault(); nextS(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prevS(); }
+    else if(e.key==='Home'){ goTo(0); }
+    else if(e.key==='End'){ goTo(slides.length-1); }
+  });
+  /* touch swipe */
+  var tx=0;
+  document.addEventListener('touchstart', function(e){ tx=e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx)>50){ dx<0 ? nextS() : prevS(); }
+  }, {passive:true});
+
+  setTimeout(function(){ hint.style.opacity='0'; }, 4000);
+  goTo(0);
+})();
+</script>
