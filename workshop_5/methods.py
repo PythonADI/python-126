@@ -1,19 +1,15 @@
-shopping = ["milk", "bread", "eggs"]
+nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-shopping[0] = "oat milk"      # replace the item at a position
-print(shopping)
+nums.append(11)
+print(nums)
 
-shopping.append("cheese")     # add one item to the end
-print(shopping)
-
-shopping.insert(1, "butter")  # add at a position, push the rest right
-print(shopping)
-
-last = shopping.pop()         # remove the last item AND hand it back
-print(f"removed: {last}")
-print(shopping)
-
-shopping.remove("eggs")       # remove by value
-print(shopping)
-
-print(f"{len(shopping)} items left")
+nums.pop()
+print(nums)
+nums.insert(0, -1)
+print(nums)
+nums[0] = 0
+print(nums)
+print(len(nums))
+nums.append(11)
+nums.insert(len(nums) // 2, 25)
+print(nums)

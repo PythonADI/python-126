@@ -1,15 +1,13 @@
-# a list holds many values in one variable
-shopping = ["milk", "bread", "eggs", "cheese"]
-numbers = [10, 20, 30, 40, 50]
-empty = []
+nums = [3, 5, 7, 9, 11, 22, 17, 3, 10]
 
-print(shopping)
-print(numbers)
-print(empty)
+# print(nums[0])
+# print(nums[1])
+# print(nums[2])
+# print(nums[3])
 
-# a list is just one value — it can even mix types
-mixed = ["nino", 21, 1.65, True]
-print(mixed)
+# for i in range(len(nums)): # 0 1 2 3
+#     print(nums[i])
 
-print(f"{shopping = }")
-print(f"i need to buy {len(shopping)} things")
+
+for num in nums:
+    print(num)
