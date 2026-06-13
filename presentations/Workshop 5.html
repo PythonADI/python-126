@@ -132,7 +132,7 @@
   .end-q{font-family:var(--display); font-size:200px; line-height:.9}
   #s-end .kick{margin-bottom:30px}
 
-  /* flow diagrams (SVG) */
+  /* flow / box diagrams (SVG) */
   .flowwrap{display:flex; align-items:center; justify-content:center; margin-top:10px}
   .flowwrap svg{width:100%; height:auto; max-height:560px}
   .gline{fill:none; stroke:var(--ink); stroke-width:2.5; transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)}
@@ -166,7 +166,7 @@
       </div>
       <div class="foot">
         <span class="motif">&gt;&gt;&gt; shopping = ["milk", "bread"]</span>
-        <span>Workshop 05 / 20</span>
+        <span>Workshop 05 / 22</span>
       </div>
     </section>
 
@@ -218,9 +218,48 @@
       <div class="foot"><span>Python · Workshop 05</span><span>[ ... ]</span></div>
     </section>
 
-    <!-- 05 INDEXING -->
+    <!-- 05 WHAT A LIST LOOKS LIKE (visual) -->
+    <section class="slide" id="s-list-viz">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> WHAT A LIST LOOKS LIKE ]</div><div class="num">05</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">A row of numbered boxes.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:8px; font-size:20px; color:var(--mute)"><span class="mono" style="font-family:var(--mono)">shopping = ["milk", "bread", "eggs", "cheese"]</span></p>
+        <div class="flowwrap r" style="--d:.15s">
+          <svg viewBox="0 0 1080 430" xmlns="http://www.w3.org/2000/svg">
+            <!-- positive index row (the address from the front) -->
+            <text class="glabel gfade" x="135" y="118" text-anchor="middle" font-size="26">0</text>
+            <text class="glabel gfade" x="375" y="118" text-anchor="middle" font-size="26">1</text>
+            <text class="glabel gfade" x="615" y="118" text-anchor="middle" font-size="26">2</text>
+            <text class="glabel gfade" x="855" y="118" text-anchor="middle" font-size="26">3</text>
+            <!-- the boxes -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M60 148 h150 v112 h-150 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M300 148 h150 v112 h-150 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M540 148 h150 v112 h-150 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M780 148 h150 v112 h-150 Z"/>
+            <!-- the values inside -->
+            <text class="gtxt gfade" x="135" y="216" text-anchor="middle" font-size="26">"milk"</text>
+            <text class="gtxt gfade" x="375" y="216" text-anchor="middle" font-size="26">"bread"</text>
+            <text class="gtxt gfade" x="615" y="216" text-anchor="middle" font-size="26">"eggs"</text>
+            <text class="gtxt gfade" x="855" y="216" text-anchor="middle" font-size="23">"cheese"</text>
+            <!-- negative index row (the address from the back) -->
+            <text class="gnote gfade" x="135" y="300" text-anchor="middle" font-size="21">-4</text>
+            <text class="gnote gfade" x="375" y="300" text-anchor="middle" font-size="21">-3</text>
+            <text class="gnote gfade" x="615" y="300" text-anchor="middle" font-size="21">-2</text>
+            <text class="gnote gfade" x="855" y="300" text-anchor="middle" font-size="21">-1</text>
+            <!-- first / last callouts -->
+            <text class="glabel gfade" x="135" y="350" text-anchor="middle" font-size="16">FIRST &mdash; [0]</text>
+            <text class="glabel gfade" x="855" y="350" text-anchor="middle" font-size="16">LAST &mdash; [-1]</text>
+            <text class="gnote gfade" x="540" y="404" text-anchor="middle" font-size="19">index from the front on top (0, 1, 2, 3) &middot; from the back underneath (-1 is always the last)</text>
+          </svg>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:4px">The value lives <span class="hl">inside</span> the box; the index is its <span class="hl">address</span>. So <span class="mono">shopping[0]</span> is "milk", <span class="mono">shopping[-1]</span> is "cheese", and <span class="mono">len(shopping)</span> is 4.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 05</span><span>value inside · index = address</span></div>
+    </section>
+
+    <!-- 06 INDEXING -->
     <section class="slide" id="s-index">
-      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> INDEXING ]</div><div class="num">05</div></div>
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> INDEXING ]</div><div class="num">06</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Counting starts at zero.</h1>
         <p class="lead r" style="--d:.1s; margin-top:16px">Every item has a <span class="hl">position</span> — its index. The first is <span class="mono" style="font-family:var(--mono)">[0]</span>, not <span class="mono" style="font-family:var(--mono)">[1]</span>. Negative numbers count from the end.</p>
@@ -238,9 +277,9 @@
       <div class="foot"><span>Python · Workshop 05</span><span>index from 0</span></div>
     </section>
 
-    <!-- 06 ANATOMY TABLE -->
+    <!-- 07 QUICK REFERENCE -->
     <section class="slide" id="s-anatomy">
-      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> QUICK REFERENCE ]</div><div class="num">06</div></div>
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> QUICK REFERENCE ]</div><div class="num">07</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">Four ways to reach in.</h1>
         <p class="lead r" style="--d:.08s; margin-top:14px; font-size:21px; color:var(--mute)">Given <span class="mono" style="font-family:var(--mono)">nums = [10, 20, 30, 40, 50]</span></p>
@@ -266,9 +305,9 @@
       <div class="foot"><span>Python · Workshop 05</span><span>index · count · slice</span></div>
     </section>
 
-    <!-- 07 SLICING -->
+    <!-- 08 SLICING -->
     <section class="slide" id="s-slice">
-      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SLICING ]</div><div class="num">07</div></div>
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SLICING ]</div><div class="num">08</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Take a slice.</h1>
         <p class="lead r" style="--d:.1s; margin-top:16px">Two indexes and a colon — <span class="mono" style="font-family:var(--mono)">[start:stop]</span> — give you a piece. The <span class="hl">stop is not included</span>. Leave a side blank to mean &ldquo;the end.&rdquo;</p>
@@ -286,9 +325,9 @@
       <div class="foot"><span>Python · Workshop 05</span><span>[start:stop]</span></div>
     </section>
 
-    <!-- 08 INDEXERROR -->
+    <!-- 09 INDEXERROR -->
     <section class="slide" id="s-oob">
-      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> THE EDGE ]</div><div class="num">08</div></div>
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> THE EDGE ]</div><div class="num">09</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Mind the edge.</h1>
         <p class="lead r" style="--d:.1s; margin-top:16px">Four items live at positions <span class="mono" style="font-family:var(--mono)">0, 1, 2, 3</span>. Ask for <span class="mono" style="font-family:var(--mono)">[4]</span> and Python stops you cold.</p>
@@ -303,9 +342,9 @@
       <div class="foot"><span>Python · Workshop 05</span><span>IndexError</span></div>
     </section>
 
-    <!-- 09 SEQUENCES BRIDGE -->
+    <!-- 10 SEQUENCES BRIDGE -->
     <section class="slide" id="s-seq">
-      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SEQUENCES ]</div><div class="num">09</div></div>
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SEQUENCES ]</div><div class="num">10</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">You&rsquo;ve done this before.</h1>
         <p class="lead r" style="--d:.08s; margin-top:14px; font-size:21px; color:var(--mute)">A string is characters in a row; a list is values in a row. The same moves work on both.</p>
@@ -334,7 +373,7 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       <div class="foot"><span>Python · Workshop 05</span><span>strings · lists</span></div>
     </section>
 
-    <!-- 10 DIVIDER: WORKING WITH LISTS -->
+    <!-- 11 DIVIDER: WORKING WITH LISTS -->
     <section class="slide" id="s-part2">
       <div class="title-wrap">
         <div class="kick r" style="--d:0s">[ PART 2 OF 2 <span class="b">·</span> WORKING WITH LISTS ]</div>
@@ -348,9 +387,9 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       </div>
     </section>
 
-    <!-- 11 LOOPING -->
+    <!-- 12 LOOPING -->
     <section class="slide" id="s-loop">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> LOOPING ]</div><div class="num">11</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> LOOPING ]</div><div class="num">12</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">One item at a time.</h1>
         <p class="lead r" style="--d:.1s; margin-top:16px">A <span class="mono" style="font-family:var(--mono)">for</span> loop walks a list exactly like it walked a string&rsquo;s characters in Workshop 03 — but now each step hands you a whole <span class="hl">item</span>.</p>
@@ -367,9 +406,9 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       <div class="foot"><span>Python · Workshop 05</span><span>for item in list</span></div>
     </section>
 
-    <!-- 12 MEMBERSHIP -->
+    <!-- 13 MEMBERSHIP -->
     <section class="slide" id="s-in">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> MEMBERSHIP ]</div><div class="num">12</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> MEMBERSHIP ]</div><div class="num">13</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Is it in there?</h1>
         <p class="lead r" style="--d:.1s; margin-top:16px"><span class="mono" style="font-family:var(--mono)">in</span> asks a yes/no question — a <span class="hl">bool</span>, perfect for an <span class="mono" style="font-family:var(--mono)">if</span>. <span class="mono" style="font-family:var(--mono)">.count()</span> tells you how many.</p>
@@ -389,12 +428,58 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       <div class="foot"><span>Python · Workshop 05</span><span>in · not in · count</span></div>
     </section>
 
-    <!-- 13 GROW / SHRINK -->
-    <section class="slide" id="s-methods">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> CHANGING A LIST ]</div><div class="num">13</div></div>
+    <!-- 14 APPEND & POP (visual) -->
+    <section class="slide" id="s-methods-viz">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> APPEND &amp; POP ]</div><div class="num">14</div></div>
       <div class="body">
-        <h1 class="h-md r" style="--d:0s">Lists can change.</h1>
-        <p class="lead r" style="--d:.08s; margin-top:14px; font-size:21px; color:var(--mute)">Starting from <span class="mono" style="font-family:var(--mono)">x = ["milk", "bread"]</span>, each line edits the list in place.</p>
+        <h1 class="h-md r" style="--d:0s">Push one on. Pop one off.</h1>
+        <div class="flowwrap r" style="--d:.15s">
+          <svg viewBox="0 0 1080 480" xmlns="http://www.w3.org/2000/svg">
+            <!-- APPEND: list of three, a fourth joining the end -->
+            <text class="glabel gfade" x="40" y="108" font-size="22">.append()</text>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M150 60 h150 v80 h-150 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M310 60 h150 v80 h-150 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M470 60 h150 v80 h-150 Z"/>
+            <text class="gtxt gfade" x="225" y="108" text-anchor="middle" font-size="22">"milk"</text>
+            <text class="gtxt gfade" x="385" y="108" text-anchor="middle" font-size="22">"bread"</text>
+            <text class="gtxt gfade" x="545" y="108" text-anchor="middle" font-size="22">"eggs"</text>
+            <!-- arrow into the new slot -->
+            <path class="gfade" d="M636 100 h74" fill="none" stroke="#0a0a0a" stroke-width="2.5"/>
+            <path class="gfade" d="M710 90 l18 10 l-18 10 Z" fill="#0a0a0a"/>
+            <!-- the new box -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M748 60 h168 v80 h-168 Z"/>
+            <text class="gtxt gfade" x="832" y="108" text-anchor="middle" font-size="22">"cheese"</text>
+            <text class="gnote gfade" x="832" y="44" text-anchor="middle" font-size="16">new — joins the end</text>
+            <text class="gnote gfade" x="450" y="184" text-anchor="middle" font-size="18">shopping.append("cheese")  →  the list grows on the right</text>
+
+            <!-- POP: list of four, the last leaving the end -->
+            <text class="glabel gfade" x="40" y="340" font-size="22">.pop()</text>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M150 290 h150 v80 h-150 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M310 290 h150 v80 h-150 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M470 290 h150 v80 h-150 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M630 290 h168 v80 h-168 Z"/>
+            <text class="gtxt gfade" x="225" y="340" text-anchor="middle" font-size="22">"milk"</text>
+            <text class="gtxt gfade" x="385" y="340" text-anchor="middle" font-size="22">"bread"</text>
+            <text class="gtxt gfade" x="545" y="340" text-anchor="middle" font-size="22">"eggs"</text>
+            <text class="gtxt gfade" x="714" y="340" text-anchor="middle" font-size="22">"cheese"</text>
+            <!-- arrow up, out of the last box -->
+            <path class="gfade" d="M714 290 v-30" fill="none" stroke="#0a0a0a" stroke-width="2.5"/>
+            <path class="gfade" d="M704 264 l10 -16 l10 16 Z" fill="#0a0a0a"/>
+            <text class="gnote gfade" x="714" y="244" text-anchor="middle" font-size="16">handed back to you</text>
+            <text class="gnote gfade" x="450" y="424" text-anchor="middle" font-size="18">last = shopping.pop()  →  removes the last item AND returns it</text>
+          </svg>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:4px"><span class="mono">.insert(i, x)</span> and <span class="mono">.remove(x)</span> do the same in the middle — the other items slide over to keep the row tight.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 05</span><span>append · pop</span></div>
+    </section>
+
+    <!-- 15 CHANGING A LIST (table) -->
+    <section class="slide" id="s-methods">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> CHANGING A LIST ]</div><div class="num">15</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Five ways to edit.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:14px; font-size:21px; color:var(--mute)">Starting from <span class="mono" style="font-family:var(--mono)">x = ["milk", "bread"]</span>, each line changes the list in place.</p>
         <div class="mtab r" style="--d:.15s">
           <div class="mrow">
             <div class="ex">x.append("eggs")</div><div class="ar">&rarr;</div>
@@ -422,9 +507,9 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       <div class="foot"><span>Python · Workshop 05</span><span>append · insert · pop · remove</span></div>
     </section>
 
-    <!-- 14 BUILDING IN A LOOP -->
+    <!-- 16 BUILDING IN A LOOP -->
     <section class="slide" id="s-build">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> THE CORE PATTERN ]</div><div class="num">14</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> THE CORE PATTERN ]</div><div class="num">16</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Start empty. Grow it.</h1>
         <p class="lead r" style="--d:.1s; margin-top:16px">The most common list pattern in all of programming: an empty list, a loop, and <span class="mono" style="font-family:var(--mono)">.append()</span> on every pass.</p>
@@ -444,9 +529,9 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       <div class="foot"><span>Python · Workshop 05</span><span>[] + append in a loop</span></div>
     </section>
 
-    <!-- 15 FUNCTIONS OVER LISTS -->
+    <!-- 17 FUNCTIONS OVER LISTS -->
     <section class="slide" id="s-func">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> LISTS + FUNCTIONS ]</div><div class="num">15</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> LISTS + FUNCTIONS ]</div><div class="num">17</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Hand a list to a function.</h1>
         <p class="lead r" style="--d:.1s; margin-top:16px">A parameter can be a whole list. Last week&rsquo;s <span class="mono" style="font-family:var(--mono)">def</span> + <span class="mono" style="font-family:var(--mono)">return</span> now chew through many values at once.</p>
@@ -466,9 +551,9 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       <div class="foot"><span>Python · Workshop 05</span><span>def average(numbers)</span></div>
     </section>
 
-    <!-- 16 SPLIT / JOIN -->
+    <!-- 18 SPLIT / JOIN -->
     <section class="slide" id="s-split">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> STRINGS &amp; LISTS ]</div><div class="num">16</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> STRINGS &amp; LISTS ]</div><div class="num">18</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Strings to lists, and back.</h1>
         <p class="lead r" style="--d:.1s; margin-top:16px"><span class="mono" style="font-family:var(--mono)">.split()</span> breaks a string into a list of words; <span class="mono" style="font-family:var(--mono)">.join()</span> glues a list back into one string.</p>
@@ -487,9 +572,9 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       <div class="foot"><span>Python · Workshop 05</span><span>split · join</span></div>
     </section>
 
-    <!-- 17 WORKED BILINGUAL EXAMPLE -->
+    <!-- 19 WORKED BILINGUAL EXAMPLE -->
     <section class="slide" id="s-worked">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> WORKED EXAMPLE ]</div><div class="num">17</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> WORKED EXAMPLE ]</div><div class="num">19</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Last week&rsquo;s khinkali, listed.</h1>
         <p class="lead r" style="--d:.1s; margin-top:16px; color:var(--mute); font-size:21px">An order is just a list of dishes. We loop over it in Georgian — <span class="mono" style="font-family:var(--mono)">ვამზადებ</span> means &ldquo;I&rsquo;m preparing,&rdquo; <span class="mono" style="font-family:var(--mono)">მზადაა</span> means &ldquo;is ready.&rdquo;</p>
@@ -507,9 +592,9 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       <div class="foot"><span>Python · Workshop 05</span><span>Worked example</span></div>
     </section>
 
-    <!-- 18 WHERE IT SHOWS UP -->
+    <!-- 20 WHERE IT SHOWS UP -->
     <section class="slide" id="s-where">
-      <div class="head"><div class="kick">[ CLOSING <span class="b">·</span> WHERE THEY SHOW UP ]</div><div class="num">18</div></div>
+      <div class="head"><div class="kick">[ CLOSING <span class="b">·</span> WHERE THEY SHOW UP ]</div><div class="num">20</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">Lists are everywhere.</h1>
         <div class="grid">
@@ -524,9 +609,9 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       <div class="foot"><span>Python · Workshop 05</span><span>Lists everywhere</span></div>
     </section>
 
-    <!-- 19 RECAP + TEASER -->
+    <!-- 21 RECAP + TEASER -->
     <section class="slide" id="s-recap">
-      <div class="head"><div class="kick">[ RECAP <span class="b">·</span> WORKSHOP 05 ]</div><div class="num">19</div></div>
+      <div class="head"><div class="kick">[ RECAP <span class="b">·</span> WORKSHOP 05 ]</div><div class="num">21</div></div>
       <div class="body">
         <ul class="recap">
           <li class="r" style="--d:0s"><span class="rn">01</span><span class="rt">A <span class="hl">list</span> holds many values in order — write it with <span class="hl">[ ... ]</span>, and <span class="hl">[]</span> is the empty one.</span></li>
@@ -540,7 +625,7 @@ nums[1:3]    <span class="com"># [20, 30]</span>
       <div class="foot"><span>Python · Workshop 05</span><span>create · index · loop · grow</span></div>
     </section>
 
-    <!-- 20 END -->
+    <!-- 22 END -->
     <section class="slide" id="s-end">
       <div class="body" style="justify-content:center">
         <div class="kick r" style="--d:0s">[ END <span class="b">·</span> WORKSHOP 05 ]</div>
@@ -558,7 +643,7 @@ nums[1:3]    <span class="com"># [20, 30]</span>
 
 <!-- overlay nav UI -->
 <div class="ui">
-  <span class="count" id="count">01 / 20</span>
+  <span class="count" id="count">01 / 22</span>
   <div class="prog-track"><div class="prog" id="prog"></div></div>
   <div class="btns">
     <button id="prev" aria-label="Previous">&lsaquo;</button>
