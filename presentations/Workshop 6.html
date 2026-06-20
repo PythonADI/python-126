@@ -1,0 +1,719 @@
+
+<!-- Python Workshop 06 — Part 1: Look up by name. Part 2: Working with dictionaries. Self-contained. Use ← → / Space to navigate. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python · Workshop 06 — Dictionaries</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --mute:#7a7a7a;
+    --line:#e3e3e3;
+    --line2:#111;
+    --paper:#ffffff;
+    /* Luka's installed Coolvetica Compressed is used automatically if present, else Anton */
+    --display:'Coolvetica Compressed','Coolvetica',Anton,'Arial Narrow',sans-serif;
+    --body:'Inter','Noto Sans Georgian',system-ui,-apple-system,sans-serif;
+    --mono:'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono','Noto Sans Georgian',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{background:var(--paper); color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased; overflow:hidden}
+
+  .viewport{position:fixed; inset:0; overflow:hidden; background:var(--paper)}
+  .stage{position:absolute; top:50%; left:50%; width:1440px; height:900px; transform-origin:center center}
+
+  .slide{position:absolute; inset:0; opacity:0; pointer-events:none; padding:90px 100px; display:flex; flex-direction:column}
+  .slide.active{opacity:1; pointer-events:auto}
+
+  /* header row on each slide */
+  .head{display:flex; justify-content:space-between; align-items:flex-start}
+  .kick{font-size:15px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--ink)}
+  .kick .b{color:var(--mute)}
+  .num{font-family:var(--display); font-size:30px; letter-spacing:.04em; color:var(--mute); line-height:1}
+
+  .foot{position:absolute; left:100px; right:100px; bottom:54px; border-top:1px solid var(--line); padding-top:16px;
+        display:flex; justify-content:space-between; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute)}
+
+  .body{flex:1; display:flex; flex-direction:column; justify-content:center}
+
+  h1{font-family:var(--display); font-weight:400; text-transform:uppercase; line-height:.92; letter-spacing:.005em}
+  .h-xl{font-size:108px}
+  .h-lg{font-size:84px}
+  .h-md{font-size:64px}
+  .lead{font-size:27px; line-height:1.5; color:#222; max-width:62ch}
+  .lead .hl{color:var(--ink); font-weight:600}
+  .mut{color:var(--mute)}
+  .tag{display:inline-block; font-weight:600; letter-spacing:.04em}
+
+  /* entrance reveal */
+  @keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:none}}
+  .slide .r{opacity:0}
+  .slide.active .r{animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards; animation-delay:var(--d,0s)}
+
+  /* bracket frame — opens from center on every slide */
+  .brk{position:absolute; width:34px; top:50%; transform:translateY(-50%); pointer-events:none; z-index:2}
+  .brk.l{left:42px; border-left:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .brk.r{right:42px; border-right:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .slide .brk{height:0; opacity:0}
+  .slide.active .brk{animation:brkopen .55s cubic-bezier(.16,.84,.3,1) forwards}
+  @keyframes brkopen{from{height:0; opacity:0} to{height:780px; opacity:1}}
+
+  /* title / divider */
+  .title-wrap{display:flex; flex-direction:column; justify-content:center; height:100%}
+  .title-wrap .kick{margin-bottom:40px}
+  .py{font-family:var(--display); font-size:300px; line-height:.9; letter-spacing:.02em}
+  .py.fit{font-size:200px}
+  .rule{height:2px; background:var(--ink); margin:30px 0}
+  .subline{font-size:30px; color:#222; font-weight:500}
+  .subline .b{color:var(--mute)}
+  .motif{font-family:var(--mono); font-size:22px; color:var(--mute)}
+
+  /* two columns (compare) */
+  .cols2{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:36px; border:1.5px solid var(--ink)}
+  .cols2 .c{padding:28px 32px}
+  .cols2 .c:first-child{border-right:1.5px solid var(--ink)}
+  .cols2 .lbl{font-size:14px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:16px}
+  .cols2 ul{list-style:none}
+  .cols2 li{font-size:20px; line-height:1.5; padding:8px 0; color:#222}
+  .cols2 li::before{content:"\2014"; color:var(--mute); margin-right:10px}
+  .colcode{font-family:var(--mono); font-size:21px; line-height:1.7; white-space:pre}
+  .colcode .kw{font-weight:700}
+  .colcode .com{color:var(--mute)}
+
+  /* grid of cells (applications) */
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:38px}
+  .cell{border:1.5px solid var(--ink); padding:24px 24px; min-height:148px}
+  .cell .ci{font-family:var(--display); font-size:34px; line-height:1; color:var(--mute)}
+  .cell .ct{font-size:21px; font-weight:600; margin-top:12px}
+  .cell .cd{font-size:15px; color:var(--mute); margin-top:8px; line-height:1.5}
+
+  /* code slides */
+  .code{font-family:var(--mono); border:1.5px solid var(--ink); padding:32px 38px; font-size:27px; line-height:1.8; white-space:pre; overflow-x:auto}
+  .code.sm{font-size:23px; line-height:1.62; padding:26px 32px}
+  .code .kw{font-weight:700}
+  .code .com{color:var(--mute)}
+  .code .str{color:var(--ink)}
+  .out{margin-top:22px; border-left:3px solid var(--ink); padding:14px 0 14px 22px}
+  .out .ol{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:8px}
+  .out .ov{font-family:var(--mono); font-size:22px; line-height:1.6}
+  .note{font-size:21px; color:#222; margin-top:24px; line-height:1.55; max-width:84ch}
+  .note .hl{font-weight:600}
+  .note .mono{font-family:var(--mono); font-size:19px}
+
+  /* warning callout */
+  .warn{margin-top:24px; border-left:3px solid var(--ink); background:#f6f6f6; padding:18px 22px; font-size:20px; line-height:1.55; max-width:88ch}
+  .warn .wl{display:block; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:7px}
+  .warn .hl{font-weight:600}
+  .warn .mono{font-family:var(--mono); font-size:18px}
+
+  /* range table */
+  .mtab{border:1.5px solid var(--ink); margin-top:30px}
+  .mrow{display:grid; grid-template-columns:340px 56px 1fr; align-items:center; padding:20px 34px; border-bottom:1px solid var(--line)}
+  .mrow:last-child{border-bottom:0}
+  .mrow .ex{font-family:var(--mono); font-size:24px; font-weight:500}
+  .mrow .ar{color:var(--mute); text-align:center; font-family:var(--mono); font-size:24px}
+  .mrow .re{display:flex; justify-content:space-between; align-items:center; gap:20px}
+  .mrow .mean{font-family:var(--mono); font-size:22px; font-weight:500}
+  .mrow .rc{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute); font-family:var(--body)}
+
+  /* recap */
+  .recap{list-style:none; margin-top:26px}
+  .recap li{font-size:25px; line-height:1.4; padding:18px 0; border-bottom:1px solid var(--line); display:flex; gap:20px}
+  .recap li:first-child{border-top:1px solid var(--line)}
+  .recap .rn{font-family:var(--display); font-size:28px; color:var(--mute); min-width:44px}
+  .recap .rt .hl{font-weight:600}
+  .teaser{margin-top:30px; font-size:23px}
+  .teaser .hl{font-weight:600}
+
+  /* end */
+  .end-q{font-family:var(--display); font-size:200px; line-height:.9}
+  #s-end .kick{margin-bottom:30px}
+
+  /* flow / box diagrams (SVG) */
+  .flowwrap{display:flex; align-items:center; justify-content:center; margin-top:10px}
+  .flowwrap svg{width:100%; height:auto; max-height:560px}
+  .gline{fill:none; stroke:var(--ink); stroke-width:2.5; transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)}
+  .gdot{fill:var(--ink); transition:r .4s ease, opacity .4s ease}
+  .gfade{transition:opacity .55s ease}
+  .gtxt{font-family:var(--mono); fill:var(--ink)}
+  .glabel{font-family:var(--body); font-weight:700; letter-spacing:.06em; fill:var(--ink)}
+  .gnote{font-family:var(--body); font-size:15px; fill:var(--mute)}
+
+  /* overlay UI (outside scaled stage) */
+  .ui{position:fixed; left:0; right:0; bottom:0; height:46px; display:flex; align-items:center; gap:18px; padding:0 20px; z-index:50; pointer-events:none}
+  .ui .prog-track{flex:1; height:2px; background:var(--line)}
+  .ui .prog{height:2px; background:var(--ink); width:0; transition:width .4s ease}
+  .ui .count{font-family:var(--mono); font-size:13px; color:var(--mute); letter-spacing:.1em}
+  .ui .btns{display:flex; gap:8px; pointer-events:auto}
+  .ui button{font-family:var(--body); font-size:16px; width:34px; height:30px; border:1px solid var(--ink); background:#fff; cursor:pointer; line-height:1}
+  .ui button:hover{background:var(--ink); color:#fff}
+  .hint{position:fixed; bottom:60px; right:24px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); z-index:50; transition:opacity .6s; pointer-events:none}
+</style>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- 01 COVER -->
+    <section class="slide" id="s-title">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PYTHON <span class="b">·</span> WORKSHOP 06 ]</div>
+        <div class="py fit r" style="--d:.08s">DICTIONARIES</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Part 1 — look up by name <span class="b">·</span> Part 2 — working with dictionaries</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; scores = {"nino": 90}</span>
+        <span>Workshop 06 / 22</span>
+      </div>
+    </section>
+
+    <!-- 02 LEAD-IN -->
+    <section class="slide" id="s-leadin">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> WHY DICTIONARIES ]</div><div class="num">02</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">A list finds by<br>position.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:24px">Last week a <span class="mono" style="font-family:var(--mono)">list</span> answered one question: <span class="hl">what is at position 2?</span> Perfect when order is the point — a queue, a playlist, a row of scores.</p>
+        <p class="lead r mut" style="--d:.18s; margin-top:16px">But often you don&rsquo;t care about position — you care about a <span class="hl">name</span>. What is <span class="mono" style="font-family:var(--mono)">nino</span>&rsquo;s score? What&rsquo;s the price of <span class="mono" style="font-family:var(--mono)">milk</span>? A <span class="hl">dictionary</span> looks a value up by a key, not a number.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>by name · not by number</span></div>
+    </section>
+
+    <!-- 03 THE PROBLEM -->
+    <section class="slide" id="s-problem">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> THE PROBLEM ]</div><div class="num">03</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Two lists, kept in sync.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Storing names and their scores the only way you knew until today — two separate lists, lined up by position:</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">names</span>  = [<span class="str">"nino"</span>, <span class="str">"giorgi"</span>, <span class="str">"mariami"</span>]
+<span class="kw">scores</span> = [90, 75, 88]</div>
+        <p class="note r" style="--d:.3s; margin-top:18px">To find giorgi&rsquo;s score you must first hunt for his <span class="hl">index</span> in <span class="mono">names</span>, then use that same number in <span class="mono">scores</span>. Add or remove one person and the two lists drift out of step. <span class="hl">A dictionary ties each name straight to its score:</span> <span class="mono">{"nino": 90, "giorgi": 75, "mariami": 88}</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>name and value, together</span></div>
+    </section>
+
+    <!-- 04 CREATING -->
+    <section class="slide" id="s-create">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> CREATING ]</div><div class="num">04</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Curly braces, key: value.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Wrap <span class="hl">key: value</span> pairs in <span class="mono" style="font-family:var(--mono)">{ }</span>, separated by commas. The key is how you find it; the value is what you get back.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">phone</span> = {<span class="str">"nino"</span>: <span class="str">"555-1234"</span>, <span class="str">"giorgi"</span>: <span class="str">"555-9876"</span>}
+<span class="kw">empty</span> = {}
+
+<span class="kw">print</span>(phone)
+<span class="kw">print</span>(<span class="kw">len</span>(phone))</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">{'nino': '555-1234', 'giorgi': '555-9876'}<br>2</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px"><span class="mono">len()</span> counts the <span class="hl">pairs</span>, not the letters. And <span class="mono">{}</span> is an <span class="hl">empty dictionary</span>, ready to be filled — just like <span class="mono">[]</span> was last week.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>{ key: value }</span></div>
+    </section>
+
+    <!-- 05 WHAT A DICT LOOKS LIKE (visual) -->
+    <section class="slide" id="s-dict-viz">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> WHAT A DICTIONARY LOOKS LIKE ]</div><div class="num">05</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Each key points to a value.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:8px; font-size:20px; color:var(--mute)"><span class="mono" style="font-family:var(--mono)">scores = {"nino": 90, "giorgi": 75, "mariami": 88}</span></p>
+        <div class="flowwrap r" style="--d:.15s">
+          <svg viewBox="0 0 1080 430" xmlns="http://www.w3.org/2000/svg">
+            <!-- column labels -->
+            <text class="glabel gfade" x="290" y="64" text-anchor="middle" font-size="18">KEY</text>
+            <text class="glabel gfade" x="730" y="64" text-anchor="middle" font-size="18">VALUE</text>
+            <!-- row 1 -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M150 90 h280 v64 h-280 Z"/>
+            <text class="gtxt gfade" x="290" y="130" text-anchor="middle" font-size="24">"nino"</text>
+            <path class="gfade" d="M450 122 h140" fill="none" stroke="#0a0a0a" stroke-width="2.5"/>
+            <path class="gfade" d="M590 112 l18 10 l-18 10 Z" fill="#0a0a0a"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M640 90 h180 v64 h-180 Z"/>
+            <text class="gtxt gfade" x="730" y="130" text-anchor="middle" font-size="24">90</text>
+            <!-- row 2 -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M150 190 h280 v64 h-280 Z"/>
+            <text class="gtxt gfade" x="290" y="230" text-anchor="middle" font-size="24">"giorgi"</text>
+            <path class="gfade" d="M450 222 h140" fill="none" stroke="#0a0a0a" stroke-width="2.5"/>
+            <path class="gfade" d="M590 212 l18 10 l-18 10 Z" fill="#0a0a0a"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M640 190 h180 v64 h-180 Z"/>
+            <text class="gtxt gfade" x="730" y="230" text-anchor="middle" font-size="24">75</text>
+            <!-- row 3 -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M150 290 h280 v64 h-280 Z"/>
+            <text class="gtxt gfade" x="290" y="330" text-anchor="middle" font-size="24">"mariami"</text>
+            <path class="gfade" d="M450 322 h140" fill="none" stroke="#0a0a0a" stroke-width="2.5"/>
+            <path class="gfade" d="M590 312 l18 10 l-18 10 Z" fill="#0a0a0a"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M640 290 h180 v64 h-180 Z"/>
+            <text class="gtxt gfade" x="730" y="330" text-anchor="middle" font-size="24">88</text>
+            <!-- caption -->
+            <text class="gnote gfade" x="540" y="404" text-anchor="middle" font-size="19">no positions, no order to count — you reach a value by handing over its key</text>
+          </svg>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:4px">The key is the <span class="hl">address</span>; the value is what lives there. So <span class="mono">scores["nino"]</span> is 90 — you never say <span class="mono">scores[0]</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>key &rarr; value</span></div>
+    </section>
+
+    <!-- 06 LOOKUP -->
+    <section class="slide" id="s-lookup">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> LOOKUP ]</div><div class="num">06</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Reach in by key.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Square brackets again — but this time you put the <span class="hl">key</span> inside, not a number.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">scores</span> = {<span class="str">"nino"</span>: 90, <span class="str">"giorgi"</span>: 75, <span class="str">"mariami"</span>: 88}
+
+<span class="kw">print</span>(scores[<span class="str">"nino"</span>])      <span class="com"># 90</span>
+<span class="kw">print</span>(scores[<span class="str">"mariami"</span>])   <span class="com"># 88</span></div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">90 · 88</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px">It reads almost like English: <span class="mono">scores["nino"]</span> — &ldquo;nino&rsquo;s score.&rdquo; The order of the pairs never matters; only the key does.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>d[key]</span></div>
+    </section>
+
+    <!-- 07 KEYERROR -->
+    <section class="slide" id="s-keyerror">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> THE EDGE ]</div><div class="num">07</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Ask for a missing key.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">The dictionary holds <span class="mono" style="font-family:var(--mono)">nino</span> and <span class="mono" style="font-family:var(--mono)">giorgi</span>. Ask for <span class="mono" style="font-family:var(--mono)">"luka"</span> and Python stops you cold.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">scores</span> = {<span class="str">"nino"</span>: 90, <span class="str">"giorgi"</span>: 75}
+<span class="kw">print</span>(scores[<span class="str">"luka"</span>])</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">KeyError: 'luka'</div>
+        </div>
+        <p class="warn r" style="--d:.34s"><span class="wl">[ The dictionary&rsquo;s IndexError ]</span>Last week a missing position gave you an <span class="hl">IndexError</span>; here a missing key gives a <span class="hl">KeyError</span>. <span class="mono">d[key]</span> <span class="hl">demands</span> the key exists. When it might not, ask politely with <span class="mono">.get()</span> — next slide.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>KeyError</span></div>
+    </section>
+
+    <!-- 08 SAFE LOOKUP .get() -->
+    <section class="slide" id="s-get">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SAFE LOOKUP ]</div><div class="num">08</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Ask politely: <span style="font-family:var(--mono); text-transform:none">.get()</span></h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px"><span class="mono" style="font-family:var(--mono)">.get()</span> never crashes. Miss the key and it hands back <span class="mono" style="font-family:var(--mono)">None</span> — or a fallback you choose.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">scores</span> = {<span class="str">"nino"</span>: 90, <span class="str">"giorgi"</span>: 75}
+
+<span class="kw">print</span>(scores.<span class="kw">get</span>(<span class="str">"nino"</span>))       <span class="com"># 90</span>
+<span class="kw">print</span>(scores.<span class="kw">get</span>(<span class="str">"luka"</span>))       <span class="com"># None</span>
+<span class="kw">print</span>(scores.<span class="kw">get</span>(<span class="str">"luka"</span>, 0))    <span class="com"># 0  - the fallback</span></div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">90<br>None<br>0</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px">The second argument is the <span class="hl">default</span> — what to return when the key is absent. That little <span class="mono">0</span> is the seed of this week&rsquo;s most important pattern.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>.get(key, default)</span></div>
+    </section>
+
+    <!-- 09 QUICK REFERENCE -->
+    <section class="slide" id="s-quickref">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> QUICK REFERENCE ]</div><div class="num">09</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Four ways to reach in.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:14px; font-size:21px; color:var(--mute)">Given <span class="mono" style="font-family:var(--mono)">scores = {"nino": 90, "giorgi": 75}</span></p>
+        <div class="mtab r" style="--d:.15s">
+          <div class="mrow">
+            <div class="ex">scores["nino"]</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">the value at a key &mdash; 90</span><span class="rc">lookup</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">scores.get("luka", 0)</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">value, or a fallback &mdash; 0</span><span class="rc">safe</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">"nino" in scores</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">is the key there? &mdash; True</span><span class="rc">membership</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">len(scores)</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">how many pairs &mdash; 2</span><span class="rc">count</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>lookup · safe · in · count</span></div>
+    </section>
+
+    <!-- 10 LIST VS DICT -->
+    <section class="slide" id="s-vs">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> LIST vs DICTIONARY ]</div><div class="num">10</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Position, or name?</h1>
+        <p class="lead r" style="--d:.08s; margin-top:14px; font-size:21px; color:var(--mute)">Same idea — many values in one variable — reached two different ways.</p>
+        <div class="cols2 r" style="--d:.18s">
+          <div class="c">
+            <div class="lbl">a list — by position</div>
+            <div class="colcode"><span class="kw">scores</span> = [90, 75, 88]
+scores[0]       <span class="com"># 90</span>
+<span class="com"># found by NUMBER</span>
+<span class="com"># order is the point</span>
+<span class="kw">len</span>(scores)     <span class="com"># 3</span>
+<span class="kw">for</span> s <span class="kw">in</span> scores: ...</div>
+          </div>
+          <div class="c">
+            <div class="lbl">a dictionary — by name</div>
+            <div class="colcode"><span class="kw">scores</span> = {<span class="str">"nino"</span>: 90}
+scores[<span class="str">"nino"</span>]  <span class="com"># 90</span>
+<span class="com"># found by KEY</span>
+<span class="com"># name is the point</span>
+<span class="kw">len</span>(scores)     <span class="com"># 1</span>
+<span class="kw">for</span> k <span class="kw">in</span> scores: ...</div>
+          </div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px">Reach for a <span class="hl">list</span> when order matters and the items are interchangeable; reach for a <span class="hl">dictionary</span> when every value has a natural name.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>list · dictionary</span></div>
+    </section>
+
+    <!-- 11 DIVIDER: WORKING WITH DICTIONARIES -->
+    <section class="slide" id="s-part2">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PART 2 OF 2 <span class="b">·</span> WORKING WITH DICTIONARIES ]</div>
+        <div class="py r" style="--d:.08s">EDIT</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Add them, change them, walk them, tally them.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; scores["luka"] = 95</span>
+        <span>Part 2 · Working with dictionaries</span>
+      </div>
+    </section>
+
+    <!-- 12 ADD & UPDATE -->
+    <section class="slide" id="s-set">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> ADD &amp; UPDATE ]</div><div class="num">12</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">One line does both.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px"><span class="mono" style="font-family:var(--mono)">d[key] = value</span> writes a pair. New key? It&rsquo;s <span class="hl">added</span>. Key already there? It&rsquo;s <span class="hl">overwritten</span>.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">scores</span> = {<span class="str">"nino"</span>: 90}
+
+scores[<span class="str">"giorgi"</span>] = 75    <span class="com"># adds a new pair</span>
+scores[<span class="str">"nino"</span>] = 100      <span class="com"># updates the existing one</span>
+
+<span class="kw">print</span>(scores)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">{'nino': 100, 'giorgi': 75}</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px">There&rsquo;s no separate &ldquo;add&rdquo; and &ldquo;update&rdquo; — Python decides for you based on whether the key already exists. Each key appears <span class="hl">at most once</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>d[key] = value</span></div>
+    </section>
+
+    <!-- 13 ADD & REMOVE (visual) -->
+    <section class="slide" id="s-set-viz">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> ADD &amp; REMOVE ]</div><div class="num">13</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">A pair joins. A pair leaves.</h1>
+        <div class="flowwrap r" style="--d:.15s">
+          <svg viewBox="0 0 1080 480" xmlns="http://www.w3.org/2000/svg">
+            <!-- ADD: two pairs, a third joining -->
+            <text class="glabel gfade" x="40" y="108" font-size="22">d[k] = v</text>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M180 60 h190 v80 h-190 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M380 60 h190 v80 h-190 Z"/>
+            <text class="gtxt gfade" x="275" y="108" text-anchor="middle" font-size="22">nino: 90</text>
+            <text class="gtxt gfade" x="475" y="108" text-anchor="middle" font-size="22">giorgi: 75</text>
+            <!-- arrow into the new pair -->
+            <path class="gfade" d="M586 100 h74" fill="none" stroke="#0a0a0a" stroke-width="2.5"/>
+            <path class="gfade" d="M660 90 l18 10 l-18 10 Z" fill="#0a0a0a"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M698 60 h210 v80 h-210 Z"/>
+            <text class="gtxt gfade" x="803" y="108" text-anchor="middle" font-size="22">mariami: 88</text>
+            <text class="gnote gfade" x="803" y="44" text-anchor="middle" font-size="16">new pair — joins the dict</text>
+            <text class="gnote gfade" x="470" y="184" text-anchor="middle" font-size="18">scores["mariami"] = 88  &rarr;  a brand-new key:value pair appears</text>
+
+            <!-- REMOVE: three pairs, one leaving -->
+            <text class="glabel gfade" x="40" y="340" font-size="22">.pop(k)</text>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M180 290 h190 v80 h-190 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M380 290 h190 v80 h-190 Z"/>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M580 290 h210 v80 h-210 Z"/>
+            <text class="gtxt gfade" x="275" y="338" text-anchor="middle" font-size="22">nino: 90</text>
+            <text class="gtxt gfade" x="475" y="338" text-anchor="middle" font-size="22">giorgi: 75</text>
+            <text class="gtxt gfade" x="685" y="338" text-anchor="middle" font-size="22">mariami: 88</text>
+            <!-- arrow up, out of the nino pair -->
+            <path class="gfade" d="M275 290 v-30" fill="none" stroke="#0a0a0a" stroke-width="2.5"/>
+            <path class="gfade" d="M265 264 l10 -16 l10 16 Z" fill="#0a0a0a"/>
+            <text class="gnote gfade" x="275" y="244" text-anchor="middle" font-size="16">value 90 handed back</text>
+            <text class="gnote gfade" x="470" y="424" text-anchor="middle" font-size="18">got = scores.pop("nino")  &rarr;  removes that pair by key, returns its value</text>
+          </svg>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:4px"><span class="mono">del scores["nino"]</span> removes the pair too — but <span class="mono">.pop()</span> also <span class="hl">hands the value back</span>, the way it did for lists.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>add · remove</span></div>
+    </section>
+
+    <!-- 14 CHANGING A DICT (table) -->
+    <section class="slide" id="s-edit">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> CHANGING A DICTIONARY ]</div><div class="num">14</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Five ways to edit.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:14px; font-size:21px; color:var(--mute)">Starting from <span class="mono" style="font-family:var(--mono)">cart = {"milk": 2}</span>, each line changes it in place.</p>
+        <div class="mtab r" style="--d:.15s">
+          <div class="mrow">
+            <div class="ex">cart["bread"] = 1</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">add a new key</span><span class="rc">grow</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">cart["milk"] = 3</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">update an existing key</span><span class="rc">change</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">cart.pop("milk")</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">remove by key &mdash; and return it</span><span class="rc">shrink</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">del cart["bread"]</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">remove by key</span><span class="rc">shrink</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">"milk" in cart</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">is that key present?</span><span class="rc">check</span></div>
+          </div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px">Like a list, a dictionary can be <span class="hl">edited in place</span> — same variable, new contents.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>add · update · pop · del</span></div>
+    </section>
+
+    <!-- 15 MEMBERSHIP & LOOPING KEYS -->
+    <section class="slide" id="s-in">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> MEMBERSHIP ]</div><div class="num">15</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">in checks the keys.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px"><span class="mono" style="font-family:var(--mono)">in</span> asks a yes/no question about the <span class="hl">keys</span> — perfect for an <span class="mono" style="font-family:var(--mono)">if</span>. A plain <span class="mono" style="font-family:var(--mono)">for</span> walks the keys too.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">scores</span> = {<span class="str">"nino"</span>: 90, <span class="str">"giorgi"</span>: 75}
+
+<span class="kw">if</span> <span class="str">"nino"</span> <span class="kw">in</span> scores:
+    <span class="kw">print</span>(<span class="str">"found nino"</span>)
+
+<span class="kw">for</span> name <span class="kw">in</span> scores:
+    <span class="kw">print</span>(name)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">found nino<br>nino<br>giorgi</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px">A check like <span class="mono">"nino" in scores</span> is the safe way to avoid a <span class="hl">KeyError</span> — look before you reach in.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>in · for key in d</span></div>
+    </section>
+
+    <!-- 16 .items() -->
+    <section class="slide" id="s-items">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> KEY AND VALUE TOGETHER ]</div><div class="num">16</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Walk the pairs.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px"><span class="mono" style="font-family:var(--mono)">.items()</span> hands you <span class="hl">two names at once</span> on every pass — the key and its value.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">scores</span> = {<span class="str">"nino"</span>: 90, <span class="str">"giorgi"</span>: 75, <span class="str">"mariami"</span>: 88}
+
+<span class="kw">for</span> name, score <span class="kw">in</span> scores.<span class="kw">items</span>():
+    <span class="kw">print</span>(f<span class="str">"{name}: {score}"</span>)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">nino: 90<br>giorgi: 75<br>mariami: 88</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px"><span class="mono">for name, score in ...</span> unpacks each pair into <span class="hl">two</span> variables. Want just one side? <span class="mono">.keys()</span> gives the names, <span class="mono">.values()</span> gives the numbers.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>for k, v in d.items()</span></div>
+    </section>
+
+    <!-- 17 THE TALLY PATTERN -->
+    <section class="slide" id="s-tally">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> THE CORE PATTERN ]</div><div class="num">17</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Count things up.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">The pattern dictionaries were born for: an empty dict, a loop, and <span class="mono" style="font-family:var(--mono)">.get(key, 0) + 1</span> to tally.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">words</span> = [<span class="str">"milk"</span>, <span class="str">"bread"</span>, <span class="str">"milk"</span>, <span class="str">"eggs"</span>, <span class="str">"milk"</span>]
+<span class="kw">counts</span> = {}
+
+<span class="kw">for</span> word <span class="kw">in</span> words:
+    counts[word] = counts.<span class="kw">get</span>(word, 0) + 1
+
+<span class="kw">print</span>(counts)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">{'milk': 3, 'bread': 1, 'eggs': 1}</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px"><span class="mono">.get(word, 0)</span> is the count so far — <span class="hl">0</span> the first time a word appears — and <span class="mono">+ 1</span> records this sighting. Vote tallies, word frequencies, inventory: all this one shape.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>d[k] = d.get(k, 0) + 1</span></div>
+    </section>
+
+    <!-- 18 LISTS + DICTS -->
+    <section class="slide" id="s-listofdicts">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> LISTS + DICTIONARIES ]</div><div class="num">18</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Real data, combined.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">A <span class="hl">list</span> holds the rows; a <span class="hl">dictionary</span> holds each row&rsquo;s fields. This is what real data looks like.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">students</span> = [
+    {<span class="str">"name"</span>: <span class="str">"nino"</span>, <span class="str">"score"</span>: 90},
+    {<span class="str">"name"</span>: <span class="str">"giorgi"</span>, <span class="str">"score"</span>: 75},
+]
+
+<span class="kw">for</span> s <span class="kw">in</span> students:
+    <span class="kw">print</span>(f<span class="str">'{s["name"]}: {s["score"]}'</span>)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">nino: 90<br>giorgi: 75</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px">Loop the list to get one dict per pass, then read its fields by key. A spreadsheet, a contact list, an API response — all just lists of dictionaries.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>list of dicts</span></div>
+    </section>
+
+    <!-- 19 WORKED BILINGUAL EXAMPLE -->
+    <section class="slide" id="s-worked">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> WORKED EXAMPLE ]</div><div class="num">19</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">A grade book, by name.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px; color:var(--mute); font-size:21px">A dictionary maps each student to a grade. We read it out in Georgian — <span class="mono" style="font-family:var(--mono)">ქულა</span> means &ldquo;points,&rdquo; <span class="mono" style="font-family:var(--mono)">ჯამში</span> means &ldquo;in total.&rdquo;</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">grades</span> = {<span class="str">"ნინო"</span>: 90, <span class="str">"გიორგი"</span>: 75, <span class="str">"მარიამი"</span>: 88}
+
+<span class="kw">for</span> name, grade <span class="kw">in</span> grades.<span class="kw">items</span>():
+    <span class="kw">print</span>(f<span class="str">"{name}: {grade} ქულა"</span>)
+
+<span class="kw">print</span>(f<span class="str">"ჯამში {len(grades)} მოსწავლე"</span>)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">ნინო: 90 ქულა<br>გიორგი: 75 ქულა<br>მარიამი: 88 ქულა<br>ჯამში 3 მოსწავლე</div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>Worked example</span></div>
+    </section>
+
+    <!-- 20 WHERE IT SHOWS UP -->
+    <section class="slide" id="s-where">
+      <div class="head"><div class="kick">[ CLOSING <span class="b">·</span> WHERE THEY SHOW UP ]</div><div class="num">20</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Dictionaries are everywhere.</h1>
+        <div class="grid">
+          <div class="cell r" style="--d:.16s"><div class="ci">01</div><div class="ct">Contacts</div><div class="cd">A name maps to a number — the original phonebook, on every phone.</div></div>
+          <div class="cell r" style="--d:.22s"><div class="ci">02</div><div class="ct">Web &amp; APIs</div><div class="cd">JSON is dictionaries all the way down — it&rsquo;s how apps send data to each other.</div></div>
+          <div class="cell r" style="--d:.28s"><div class="ci">03</div><div class="ct">Settings</div><div class="cd">A config maps each option name to its chosen value.</div></div>
+          <div class="cell r" style="--d:.34s"><div class="ci">04</div><div class="ct">Word counts</div><div class="cd"><span style="font-family:var(--mono)">.get(w, 0) + 1</span> — the tally behind search and analytics.</div></div>
+          <div class="cell r" style="--d:.4s"><div class="ci">05</div><div class="ct">Game state</div><div class="cd">Player &rarr; score, item &rarr; quantity — an inventory is one big dictionary.</div></div>
+          <div class="cell r" style="--d:.46s"><div class="ci">06</div><div class="ct">Caches</div><div class="cd">A remembered answer, looked up by its question — instantly.</div></div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>Dictionaries everywhere</span></div>
+    </section>
+
+    <!-- 21 RECAP + TEASER -->
+    <section class="slide" id="s-recap">
+      <div class="head"><div class="kick">[ RECAP <span class="b">·</span> WORKSHOP 06 ]</div><div class="num">21</div></div>
+      <div class="body">
+        <ul class="recap">
+          <li class="r" style="--d:0s"><span class="rn">01</span><span class="rt">A <span class="hl">dictionary</span> maps keys to values — write it <span class="hl">{key: value}</span>, and <span class="hl">{}</span> is the empty one.</span></li>
+          <li class="r" style="--d:.08s"><span class="rn">02</span><span class="rt">Look up by name: <span class="mono" style="font-family:var(--mono)">d[key]</span>, or <span class="mono" style="font-family:var(--mono)">d.get(key, default)</span> when the key might be missing.</span></li>
+          <li class="r" style="--d:.16s"><span class="rn">03</span><span class="rt"><span class="mono" style="font-family:var(--mono)">d[key] = value</span> both <span class="hl">adds</span> and <span class="hl">updates</span>; <span class="mono" style="font-family:var(--mono)">del d[key]</span> and <span class="mono" style="font-family:var(--mono)">.pop(key)</span> remove.</span></li>
+          <li class="r" style="--d:.24s"><span class="rn">04</span><span class="rt"><span class="hl">in</span> checks the keys; <span class="mono" style="font-family:var(--mono)">for k, v in d.items()</span> walks key and value together.</span></li>
+          <li class="r" style="--d:.32s"><span class="rn">05</span><span class="rt">The pattern to remember: tally with <span class="mono" style="font-family:var(--mono)">d[k] = d.get(k, 0) + 1</span>.</span></li>
+        </ul>
+        <p class="teaser r" style="--d:.4s"><span class="hl">Workshop 07 — Files.</span> Your programs forget everything when they close — until they can read and write files.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 06</span><span>create · look up · edit · tally</span></div>
+    </section>
+
+    <!-- 22 END -->
+    <section class="slide" id="s-end">
+      <div class="body" style="justify-content:center">
+        <div class="kick r" style="--d:0s">[ END <span class="b">·</span> WORKSHOP 06 ]</div>
+        <div class="end-q r" style="--d:.08s">QUESTIONS?</div>
+        <div class="rule r" style="--d:.16s"></div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; print({"see": "you", "next": "week"})</span>
+        <span>Python · Workshop 06</span>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- overlay nav UI -->
+<div class="ui">
+  <span class="count" id="count">01 / 22</span>
+  <div class="prog-track"><div class="prog" id="prog"></div></div>
+  <div class="btns">
+    <button id="prev" aria-label="Previous">&lsaquo;</button>
+    <button id="next" aria-label="Next">&rsaquo;</button>
+  </div>
+</div>
+<div class="hint" id="hint">← → to navigate</div>
+
+<script>
+(function(){
+  /* ---------- setup ---------- */
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  slides.forEach(function(s){
+    var lb=document.createElement('div'); lb.className='brk l';
+    var rb=document.createElement('div'); rb.className='brk r';
+    s.appendChild(lb); s.appendChild(rb);
+  });
+  var count = document.getElementById('count');
+  var prog  = document.getElementById('prog');
+  var hint  = document.getElementById('hint');
+  var cur = 0, timers = [];
+
+  function fit(){
+    var s = Math.min(window.innerWidth/1440, window.innerHeight/900);
+    stage.style.transform = 'translate(-50%,-50%) scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+
+  function resetAnims(){
+    clearTimers();
+    document.querySelectorAll('.gline').forEach(function(l){ l.style.strokeDashoffset = l.getAttribute('data-len') || '1'; });
+    document.querySelectorAll('.gdot').forEach(function(d){ d.setAttribute('r','0'); d.style.opacity='0'; });
+    document.querySelectorAll('.gfade').forEach(function(e){ e.style.opacity='0'; });
+  }
+  function runAnims(i){
+    var s = slides[i];
+    s.querySelectorAll('.gline').forEach(function(l,k){ timers.push(setTimeout(function(){ l.style.strokeDashoffset='0'; }, 260 + k*150)); });
+    s.querySelectorAll('.gdot').forEach(function(d,k){ timers.push(setTimeout(function(){ d.setAttribute('r', d.getAttribute('data-r')||'16'); d.style.opacity='1'; }, 520 + k*130)); });
+    s.querySelectorAll('.gfade').forEach(function(e,k){ timers.push(setTimeout(function(){ e.style.opacity='1'; }, 820 + k*90)); });
+  }
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[cur].classList.remove('active');
+    resetAnims();
+    cur = i;
+    var s = slides[cur];
+    void s.offsetWidth;           /* reflow so reveal anim re-runs */
+    s.classList.add('active');
+    count.textContent = String(i+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+    prog.style.width = (i/(slides.length-1)*100) + '%';
+    runAnims(i);
+  }
+  function nextS(){ goTo(cur+1); }
+  function prevS(){ goTo(cur-1); }
+
+  document.getElementById('next').addEventListener('click', nextS);
+  document.getElementById('prev').addEventListener('click', prevS);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); nextS(); }
+    else if(e.key===' '){ e.preventDefault(); nextS(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prevS(); }
+    else if(e.key==='Home'){ goTo(0); }
+    else if(e.key==='End'){ goTo(slides.length-1); }
+  });
+  /* touch swipe */
+  var tx=0;
+  document.addEventListener('touchstart', function(e){ tx=e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx)>50){ dx<0 ? nextS() : prevS(); }
+  }, {passive:true});
+
+  setTimeout(function(){ hint.style.opacity='0'; }, 4000);
+  goTo(0);
+})();
+</script>
