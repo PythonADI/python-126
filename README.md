@@ -13,5 +13,7 @@
 
 [Workshop 6 - Homework](./docs/workshop_6_homework.md)
 
+[Workshop 7 — Homework](./docs/workshop_7_homework.md)
+
 ## Books
 [Recommended Reading](./docs/resources.md)

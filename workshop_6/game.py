@@ -29,17 +29,33 @@ questions = [
 ]
 
 
-for question in questions:
+def ask(question):
     print(question["question"])
-    for i, answer in enumerate(question["answers"]):
-        print(f"{i}: {answer["text"]}")
-    choice = int(input("Select your answer: "))
-    
-    chosen_aswer = question["answers"][choice]
-    if chosen_aswer["is_correct"]:
-        player["correct"] += 1
-    else:
-        player["wrong"] += 1
-    print("=" * 10)
 
+
+def render_answers(answers):
+    for i, answer in enumerate(answers):
+        print(f"{i}: {answer["text"]}")
+
+def get_user_answer(question):
+    render_answers(question["answers"])
+    return question["answers"][int(input("Select your answer: "))]
+
+def is_answer_correct(answer):
+    return answer["is_correct"]
+
+
+def game_loop():
+    for question in questions:
+        ask(question)
+        chosen_aswer = get_user_answer(question["answers"])
+
+        if is_answer_correct(chosen_aswer):
+            player["correct"] += 1
+        else:
+            player["wrong"] += 1
+        print("=" * 10)
+
+
+game_loop()
 print(player)

@@ -1,0 +1,842 @@
+
+<!-- Python Workshop 07 — Tuples · Files · Error handling · Comprehensions. Self-contained. Use ← → / Space to navigate. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python · Workshop 07 — Tuples, Files, Errors, Comprehensions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --mute:#7a7a7a;
+    /* syntax highlighting */
+    --syn-kw:#0a53be;     /* keywords & builtins */
+    --syn-str:#197a3d;    /* strings            */
+    --syn-com:#9a9a9a;    /* comments           */
+    --hl:rgba(10,10,10,.09);  /* active code line  */
+    --line:#e3e3e3;
+    --line2:#111;
+    --paper:#ffffff;
+    /* Luka's installed Coolvetica Compressed is used automatically if present, else Anton */
+    --display:'Coolvetica Compressed','Coolvetica',Anton,'Arial Narrow',sans-serif;
+    --body:'Inter','Noto Sans Georgian',system-ui,-apple-system,sans-serif;
+    --mono:'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono','Noto Sans Georgian',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{background:var(--paper); color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased; overflow:hidden}
+
+  .viewport{position:fixed; inset:0; overflow:hidden; background:var(--paper)}
+  .stage{position:absolute; top:50%; left:50%; width:1440px; height:900px; transform-origin:center center}
+
+  .slide{position:absolute; inset:0; opacity:0; pointer-events:none; padding:90px 100px; display:flex; flex-direction:column}
+  .slide.active{opacity:1; pointer-events:auto}
+
+  /* header row on each slide */
+  .head{display:flex; justify-content:space-between; align-items:flex-start}
+  .kick{font-size:15px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--ink)}
+  .kick .b{color:var(--mute)}
+  .num{font-family:var(--display); font-size:30px; letter-spacing:.04em; color:var(--mute); line-height:1}
+
+  .foot{position:absolute; left:100px; right:100px; bottom:54px; border-top:1px solid var(--line); padding-top:16px;
+        display:flex; justify-content:space-between; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute)}
+
+  .body{flex:1; display:flex; flex-direction:column; justify-content:center}
+
+  h1{font-family:var(--display); font-weight:400; text-transform:uppercase; line-height:.92; letter-spacing:.005em}
+  .h-xl{font-size:108px}
+  .h-lg{font-size:84px}
+  .h-md{font-size:64px}
+  .lead{font-size:27px; line-height:1.5; color:#222; max-width:62ch}
+  .lead .hl{color:var(--ink); font-weight:600}
+  .mut{color:var(--mute)}
+  .tag{display:inline-block; font-weight:600; letter-spacing:.04em}
+
+  /* entrance reveal */
+  @keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:none}}
+  .slide .r{opacity:0}
+  .slide.active .r{animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards; animation-delay:var(--d,0s)}
+
+  /* bracket frame — opens from center on every slide */
+  .brk{position:absolute; width:34px; top:50%; transform:translateY(-50%); pointer-events:none; z-index:2}
+  .brk.l{left:42px; border-left:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .brk.r{right:42px; border-right:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .slide .brk{height:0; opacity:0}
+  .slide.active .brk{animation:brkopen .55s cubic-bezier(.16,.84,.3,1) forwards}
+  @keyframes brkopen{from{height:0; opacity:0} to{height:780px; opacity:1}}
+
+  /* title / divider */
+  .title-wrap{display:flex; flex-direction:column; justify-content:center; height:100%}
+  .title-wrap .kick{margin-bottom:40px}
+  .py{font-family:var(--display); font-size:300px; line-height:.9; letter-spacing:.02em}
+  .py.fit{font-size:200px}
+  .rule{height:2px; background:var(--ink); margin:30px 0}
+  .subline{font-size:30px; color:#222; font-weight:500}
+  .subline .b{color:var(--mute)}
+  .motif{font-family:var(--mono); font-size:22px; color:var(--mute)}
+
+  /* two columns (compare) */
+  .cols2{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:36px; border:1.5px solid var(--ink)}
+  .cols2 .c{padding:28px 32px}
+  .cols2 .c:first-child{border-right:1.5px solid var(--ink)}
+  .cols2 .lbl{font-size:14px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:16px}
+  .cols2 ul{list-style:none}
+  .cols2 li{font-size:20px; line-height:1.5; padding:8px 0; color:#222}
+  .cols2 li::before{content:"\2014"; color:var(--mute); margin-right:10px}
+  .colcode{font-family:var(--mono); font-size:21px; line-height:1.7; white-space:pre}
+  .colcode .kw{font-weight:700; color:var(--syn-kw)}
+  .colcode .str{color:var(--syn-str)}
+  .colcode .com{color:var(--syn-com)}
+
+  /* grid of cells (applications) */
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:38px}
+  .cell{border:1.5px solid var(--ink); padding:24px 24px; min-height:148px}
+  .cell .ci{font-family:var(--display); font-size:34px; line-height:1; color:var(--mute)}
+  .cell .ct{font-size:21px; font-weight:600; margin-top:12px}
+  .cell .cd{font-size:15px; color:var(--mute); margin-top:8px; line-height:1.5}
+
+  /* code slides */
+  .code{font-family:var(--mono); border:1.5px solid var(--ink); padding:32px 38px; font-size:27px; line-height:1.8; white-space:pre; overflow-x:auto}
+  .code.sm{font-size:23px; line-height:1.62; padding:26px 32px}
+  .code .kw{font-weight:700; color:var(--syn-kw)}
+  .code .com{color:var(--syn-com)}
+  .code .str{color:var(--syn-str)}
+
+  /* step-highlighted code (animated demos) — one line lights up at a time */
+  .code.steps{padding-left:0; padding-right:0; white-space:normal}
+  .code.steps .cl{display:block; white-space:pre; padding:2px 30px; border-left:3px solid transparent; background:transparent; transition:background .25s, border-color .25s}
+  .cl.on{background:var(--hl); border-left-color:var(--ink)}
+  .cl.dim{background:rgba(10,10,10,.045); border-left-color:#c4c4c4}
+  /* which code line lights up at each step */
+  #s-lines[data-step="1"] .cl-open{background:var(--hl); border-left-color:var(--ink)}
+  #s-lines[data-step="2"] .cl-for,#s-lines[data-step="3"] .cl-for,#s-lines[data-step="4"] .cl-for{background:rgba(10,10,10,.045); border-left-color:#c4c4c4}
+  #s-lines[data-step="2"] .cl-prn,#s-lines[data-step="3"] .cl-prn,#s-lines[data-step="4"] .cl-prn{background:var(--hl); border-left-color:var(--ink)}
+  #s-write[data-step="1"] .cl-open{background:var(--hl); border-left-color:var(--ink)}
+  #s-write[data-step="2"] .cl-w1{background:var(--hl); border-left-color:var(--ink)}
+  #s-write[data-step="3"] .cl-w2{background:var(--hl); border-left-color:var(--ink)}
+  #s-try[data-step="1"] .cl-int,#s-try[data-step="2"] .cl-int{background:var(--hl); border-left-color:var(--ink)}
+  #s-try[data-step="3"] .cl-exc{background:var(--hl); border-left-color:var(--ink)}
+  #s-try[data-step="4"] .cl-hnd{background:var(--hl); border-left-color:var(--ink)}
+  /* indexing (slide 3) + comprehension (slide 17): cells lit by step */
+  #s-tuple-create[data-step="1"] .vcell.v0,#s-tuple-create[data-step="2"] .vcell.v1,#s-tuple-create[data-step="3"] .vcell.v2{background:var(--ink); color:#fff}
+  #s-tuple-create[data-step="1"] .vcell.v0 .ix,#s-tuple-create[data-step="2"] .vcell.v1 .ix,#s-tuple-create[data-step="3"] .vcell.v2 .ix{color:#cfcfcf}
+  /* comprehension build (slide 17): current source lit, result cells appear */
+  #s-listcomp .res{opacity:0; transform:translateY(8px)}
+  #s-listcomp[data-step="1"] .res.r0,#s-listcomp[data-step="2"] .res.r0,#s-listcomp[data-step="3"] .res.r0,
+  #s-listcomp[data-step="2"] .res.r1,#s-listcomp[data-step="3"] .res.r1,
+  #s-listcomp[data-step="3"] .res.r2{opacity:1; transform:none}
+  #s-listcomp[data-step="1"] .src.s0,#s-listcomp[data-step="2"] .src.s1,#s-listcomp[data-step="3"] .src.s2{background:var(--ink); color:#fff}
+  #s-listcomp .cl-comp{transition:background .25s, border-color .25s}
+  #s-listcomp[data-step="1"] .cl-comp,#s-listcomp[data-step="2"] .cl-comp,#s-listcomp[data-step="3"] .cl-comp{background:var(--hl); border-left-color:var(--ink)}
+
+  /* ---- step controls (click to advance the example) ---- */
+  .stepper{display:flex; align-items:center; gap:12px; margin-top:22px; flex-wrap:wrap}
+  .sbtn{font-family:var(--body); font-size:16px; font-weight:600; padding:9px 17px; border:1.5px solid var(--ink); background:#fff; color:var(--ink); cursor:pointer; letter-spacing:.02em; line-height:1}
+  .sbtn:hover{background:var(--ink); color:#fff}
+  .sbtn.go{background:var(--ink); color:#fff}
+  .sbtn.go:hover{background:#333}
+  .sbtn:disabled{opacity:.28; cursor:default; background:#fff; color:var(--ink)}
+  .sbtn.auto::before{content:"\25B6"; font-size:12px; margin-right:7px}   /* play ▶ when paused */
+  .sbtn.auto.on{background:var(--ink); color:#fff}
+  .sbtn.auto.on::before{content:"\23F8"}                                  /* pause ⏸ when playing */
+  .sbtn.auto.on:hover{background:#333}
+  .sstat{font-family:var(--mono); font-size:15px; color:var(--mute); margin-left:2px}
+  .sstat b{color:var(--ink); font-weight:600}
+  .scap{font-size:16px; color:#222; margin-left:8px; min-height:1.2em}
+  .scap b{font-weight:600}
+  .out{margin-top:22px; border-left:3px solid var(--ink); padding:14px 0 14px 22px}
+  .out .ol{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:8px}
+  .out .ov{font-family:var(--mono); font-size:22px; line-height:1.6}
+  .note{font-size:21px; color:#222; margin-top:24px; line-height:1.55; max-width:84ch}
+  .note .hl{font-weight:600}
+  .note .mono{font-family:var(--mono); font-size:19px}
+
+  /* warning callout */
+  .warn{margin-top:24px; border-left:3px solid var(--ink); background:#f6f6f6; padding:18px 22px; font-size:20px; line-height:1.55; max-width:88ch}
+  .warn .wl{display:block; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:7px}
+  .warn .hl{font-weight:600}
+  .warn .mono{font-family:var(--mono); font-size:18px}
+
+  /* range table */
+  .mtab{border:1.5px solid var(--ink); margin-top:30px}
+  .mrow{display:grid; grid-template-columns:340px 56px 1fr; align-items:center; padding:20px 34px; border-bottom:1px solid var(--line)}
+  .mrow:last-child{border-bottom:0}
+  .mrow .ex{font-family:var(--mono); font-size:24px; font-weight:500}
+  .mrow .ar{color:var(--mute); text-align:center; font-family:var(--mono); font-size:24px}
+  .mrow .re{display:flex; justify-content:space-between; align-items:center; gap:20px}
+  .mrow .mean{font-family:var(--mono); font-size:22px; font-weight:500}
+  .mrow .rc{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute); font-family:var(--body)}
+
+  /* recap */
+  .recap{list-style:none; margin-top:26px}
+  .recap li{font-size:25px; line-height:1.4; padding:18px 0; border-bottom:1px solid var(--line); display:flex; gap:20px}
+  .recap li:first-child{border-top:1px solid var(--line)}
+  .recap .rn{font-family:var(--display); font-size:28px; color:var(--mute); min-width:44px}
+  .recap .rt .hl{font-weight:600}
+  .teaser{margin-top:30px; font-size:23px}
+  .teaser .hl{font-weight:600}
+
+  /* end */
+  .end-q{font-family:var(--display); font-size:200px; line-height:.9}
+  #s-end .kick{margin-bottom:30px}
+
+  /* flow / box diagrams (SVG) */
+  .flowwrap{display:flex; align-items:center; justify-content:center; margin-top:10px}
+  .flowwrap svg{width:100%; height:auto; max-height:560px}
+  .gline{fill:none; stroke:var(--ink); stroke-width:2.5; transition:stroke-dashoffset .9s cubic-bezier(.4,0,.2,1)}
+  .gdot{fill:var(--ink); transition:r .4s ease, opacity .4s ease}
+  .gfade{transition:opacity .55s ease}
+  .gtxt{font-family:var(--mono); fill:var(--ink)}
+  .glabel{font-family:var(--body); font-weight:700; letter-spacing:.06em; fill:var(--ink)}
+  .gnote{font-family:var(--body); font-size:15px; fill:var(--mute)}
+
+  /* ---- animated concept demos (write · read · try) ---- */
+  .demo{display:flex; gap:26px; margin-top:22px; align-items:stretch}
+  .demo .code{flex:1.05; margin:0; align-self:flex-start}
+  .viz{flex:.95; border:1.5px solid var(--ink); display:flex; flex-direction:column; overflow:hidden; background:#fff; min-height:230px}
+  .viz .vlabel{font-family:var(--body); font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:#fff; background:var(--ink); padding:9px 16px; display:flex; justify-content:space-between}
+  .viz .vlabel .vd{color:#9a9a9a; letter-spacing:0}
+
+  /* file reel + moving read-head (read & try) */
+  .reel{position:relative; padding:8px 0}
+  .rrow{position:relative; z-index:1; font-family:var(--mono); font-size:21px; height:46px; display:flex; align-items:center; padding:0 16px 0 32px; white-space:pre; color:var(--ink)}
+  .rrow .nl{color:#bbb}
+  .scan{position:absolute; left:0; right:0; top:8px; height:46px; background:rgba(10,10,10,.08); border-left:4px solid var(--ink); z-index:0; opacity:0;
+        transition:transform .42s cubic-bezier(.5,0,.2,1), opacity .28s ease}
+  .scan::before{content:"\25B6"; position:absolute; left:9px; top:50%; transform:translateY(-50%); font-size:13px; color:var(--ink)}
+  /* reading: read-head position + cumulative output, driven by data-step */
+  #s-lines[data-step="2"] .scan,#s-lines[data-step="3"] .scan,#s-lines[data-step="4"] .scan{opacity:1}
+  #s-lines[data-step="2"] .scan{transform:translateY(0)}
+  #s-lines[data-step="3"] .scan{transform:translateY(46px)}
+  #s-lines[data-step="4"] .scan{transform:translateY(92px)}
+  .readout{border-top:1px solid var(--line); padding:11px 16px 13px 32px; font-family:var(--mono); font-size:17px; color:var(--ink); min-height:78px}
+  .readout .ro{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#aaa; display:block; margin-bottom:6px; font-family:var(--body)}
+  .readout .pl{opacity:0; display:block; line-height:1.5; transition:opacity .3s ease}
+  #s-lines[data-step="2"] .pl:nth-child(2){opacity:1}
+  #s-lines[data-step="3"] .pl:nth-child(2),#s-lines[data-step="3"] .pl:nth-child(3){opacity:1}
+  #s-lines[data-step="4"] .pl:nth-child(2),#s-lines[data-step="4"] .pl:nth-child(3),#s-lines[data-step="4"] .pl:nth-child(4){opacity:1}
+
+  /* typing into a file (write), driven by data-step */
+  .tw{padding:16px 20px; font-family:var(--mono); font-size:21px; line-height:1.75; min-height:150px}
+  .tw .twl{opacity:0; white-space:pre; transform:translateY(7px); transition:opacity .3s ease, transform .3s ease}
+  .tw .twl .nl{color:#bbb}
+  #s-write[data-step="2"] .twl:nth-of-type(1),#s-write[data-step="3"] .twl:nth-of-type(1){opacity:1; transform:none}
+  #s-write[data-step="3"] .twl:nth-of-type(2){opacity:1; transform:none}
+  .twcaret{display:inline-block; width:9px; height:21px; background:var(--ink); vertical-align:-3px; margin-left:2px; opacity:0}
+  #s-write[data-step="3"] .twcaret{animation:blink 1.05s steps(1) infinite}
+  @keyframes blink{0%,49%{opacity:1} 50%,100%{opacity:0}}
+
+  /* execution flow through try / except, driven by data-step */
+  #s-try .rrow{height:50px}
+  #s-try .scan{height:50px}
+  #s-try .rrow.err{color:var(--mute)}
+  #s-try .rrow.err b{color:var(--ink)}
+  #s-try[data-step="1"] .scan,#s-try[data-step="2"] .scan,#s-try[data-step="3"] .scan,#s-try[data-step="4"] .scan{opacity:1}
+  #s-try[data-step="1"] .scan{transform:translateY(0)}
+  #s-try[data-step="2"] .scan{transform:translateY(50px)}
+  #s-try[data-step="3"] .scan{transform:translateY(100px)}
+  #s-try[data-step="4"] .scan{transform:translateY(150px)}
+
+  /* tuple indexing (slide 3) + comprehension build (slide 17) cells */
+  .cellrow{display:flex; gap:14px; margin-top:6px; flex-wrap:wrap}
+  .vcell{min-width:66px; padding:14px 18px; border:1.5px solid var(--ink); font-family:var(--mono); font-size:24px; text-align:center; background:#fff; transition:background .25s, color .25s, transform .25s}
+  .vcell .ix{display:block; font-family:var(--body); font-size:12px; color:var(--mute); letter-spacing:.1em; margin-bottom:4px}
+  .vcell.lit{background:var(--ink); color:#fff}
+  .vcell.lit .ix{color:#cfcfcf}
+  .vcell.pend{opacity:0; transform:translateY(8px)}
+  .varrow{font-family:var(--mono); font-size:22px; color:var(--mute); align-self:center}
+  .vline{font-family:var(--mono); font-size:22px; margin-top:18px; min-height:1.4em; color:var(--ink)}
+  .vline .muted{color:var(--mute)}
+
+  /* overlay UI (outside scaled stage) */
+  .ui{position:fixed; left:0; right:0; bottom:0; height:46px; display:flex; align-items:center; gap:18px; padding:0 20px; z-index:50; pointer-events:none}
+  .ui .prog-track{flex:1; height:2px; background:var(--line)}
+  .ui .prog{height:2px; background:var(--ink); width:0; transition:width .4s ease}
+  .ui .count{font-family:var(--mono); font-size:13px; color:var(--mute); letter-spacing:.1em}
+  .ui .btns{display:flex; gap:8px; pointer-events:auto}
+  .ui button{font-family:var(--body); font-size:16px; width:34px; height:30px; border:1px solid var(--ink); background:#fff; cursor:pointer; line-height:1}
+  .ui button:hover{background:var(--ink); color:#fff}
+  .hint{position:fixed; bottom:60px; right:24px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); z-index:50; transition:opacity .6s; pointer-events:none}
+</style>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- 01 COVER -->
+    <section class="slide" id="s-title">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PYTHON <span class="b">·</span> WORKSHOP 07 ]</div>
+        <div class="py fit r" style="--d:.08s">TUPLES &amp; FILES</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Tuples <span class="b">·</span> Files <span class="b">·</span> Error handling <span class="b">·</span> Comprehensions</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; x, y = (3, 4)</span>
+        <span>Workshop 07 / 20</span>
+      </div>
+    </section>
+
+    <!-- 02 LEAD-IN -->
+    <section class="slide" id="s-leadin">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> TUPLES ]</div><div class="num">02</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">A list that<br>won&rsquo;t change.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:24px">A <span class="mono" style="font-family:var(--mono)">list</span> is for things that grow, shrink and shuffle. But some groups are <span class="hl">fixed</span> — a point <span class="mono" style="font-family:var(--mono)">(x, y)</span>, a colour <span class="mono" style="font-family:var(--mono)">(r, g, b)</span>, a date. They have a set number of parts, always in the same order.</p>
+        <p class="lead r mut" style="--d:.18s; margin-top:16px">For those, Python has a <span class="hl">tuple</span> — written with round brackets <span class="mono" style="font-family:var(--mono)">( )</span>. It looks like a list, but once made it <span class="hl">can&rsquo;t be edited</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>fixed · ordered · grouped</span></div>
+    </section>
+
+    <!-- 03 CREATING A TUPLE -->
+    <section class="slide" id="s-tuple-create" data-steps="3">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> CREATING ]</div><div class="num">03</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Round brackets, commas.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:14px">Group values in <span class="mono" style="font-family:var(--mono)">( )</span>, separated by commas. Reach in by <span class="hl">index</span> — counting from <span class="mono" style="font-family:var(--mono)">0</span>. Step through it:</p>
+        <div class="code sm r" style="--d:.18s; margin-top:14px"><span class="kw">rgb</span> = (255, 128, 0)</div>
+        <div class="cellrow r" style="--d:.24s; margin-top:18px">
+          <div class="vcell v0"><span class="ix">[0]</span>255</div>
+          <div class="vcell v1"><span class="ix">[1]</span>128</div>
+          <div class="vcell v2"><span class="ix">[2]</span>0</div>
+        </div>
+        <div class="stepper r" style="--d:.3s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.36s; margin-top:16px">Indexing, <span class="mono">len()</span> and <span class="mono">for</span> all work just like a list. The one difference is what comes next.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>( a, b, c )</span></div>
+    </section>
+
+    <!-- 04 IMMUTABILITY -->
+    <section class="slide" id="s-tuple-immut">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> CAN&rsquo;T CHANGE ]</div><div class="num">04</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Try to change it.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">A list lets you reassign an item. A tuple <span class="hl">refuses</span> — it is locked the moment it&rsquo;s made.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">point</span> = (3, 4)
+point[0] = 99        <span class="com"># trying to edit</span></div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">TypeError: 'tuple' object does not support item assignment</div>
+        </div>
+        <p class="warn r" style="--d:.34s"><span class="wl">[ Locked on purpose ]</span>This is a <span class="hl">feature</span>, not a limit. When a value should never change — a coordinate, a fixed config — a tuple guarantees nobody edits it by accident. Need to change it? Make a <span class="hl">new</span> tuple.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>immutable</span></div>
+    </section>
+
+    <!-- 05 UNPACKING (visual) -->
+    <section class="slide" id="s-unpack">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> UNPACKING ]</div><div class="num">05</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">One tuple, several names.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:8px; font-size:20px; color:var(--mute)">Split a tuple into separate variables in one line — <span class="mono" style="font-family:var(--mono)">x, y = point</span></p>
+        <div class="flowwrap r" style="--d:.15s">
+          <svg viewBox="0 0 1080 360" xmlns="http://www.w3.org/2000/svg">
+            <!-- source tuple -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M380 60 h320 v80 h-320 Z"/>
+            <text class="gtxt gfade" x="540" y="108" text-anchor="middle" font-size="26">point = (3, 4)</text>
+            <!-- arrows down to two boxes -->
+            <path class="gfade" d="M460 142 v40 h-120 v36" fill="none" stroke="#0a0a0a" stroke-width="2.5"/>
+            <path class="gfade" d="M330 256 l10 -16 l10 16 Z" fill="#0a0a0a"/>
+            <path class="gfade" d="M620 142 v40 h120 v36" fill="none" stroke="#0a0a0a" stroke-width="2.5"/>
+            <path class="gfade" d="M730 256 l10 -16 l10 16 Z" fill="#0a0a0a"/>
+            <!-- target boxes -->
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M250 260 h180 v70 h-180 Z"/>
+            <text class="gtxt gfade" x="340" y="304" text-anchor="middle" font-size="24">x = 3</text>
+            <path class="gline" pathLength="1" style="stroke-dasharray:1" data-len="1" d="M650 260 h180 v70 h-180 Z"/>
+            <text class="gtxt gfade" x="740" y="304" text-anchor="middle" font-size="24">y = 4</text>
+            <text class="gnote gfade" x="540" y="40" text-anchor="middle" font-size="17">each part goes to its own variable, in order</text>
+          </svg>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:4px">The number of names must match the number of parts. You&rsquo;ve seen this before: <span class="mono">for name, score in d.items()</span> was tuple unpacking all along.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>x, y = point</span></div>
+    </section>
+
+    <!-- 06 RETURNING MULTIPLE VALUES -->
+    <section class="slide" id="s-return">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> RETURN MANY ]</div><div class="num">06</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Return more than one.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">A function can hand back <span class="hl">several values at once</span> — just separate them with commas. Python packs them into a tuple; you unpack them on the way out.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">def</span> min_max(nums):
+    <span class="kw">return</span> <span class="kw">min</span>(nums), <span class="kw">max</span>(nums)   <span class="com"># a tuple</span>
+
+low, high = min_max([4, 9, 1, 7])
+<span class="kw">print</span>(low, high)              <span class="com"># 1 9</span></div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">1 9</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px"><span class="mono">return a, b</span> builds a tuple; <span class="mono">low, high = ...</span> unpacks it. That&rsquo;s how one function returns a pair, neatly.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>return a, b</span></div>
+    </section>
+
+    <!-- 07 DIVIDER: FILES -->
+    <section class="slide" id="s-part2">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PART 2 <span class="b">·</span> FILES ]</div>
+        <div class="py r" style="--d:.08s">FILES</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Programs forget when they close — files let them remember.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; open("notes.txt", "w")</span>
+        <span>Part 2 · Reading and writing files</span>
+      </div>
+    </section>
+
+    <!-- 08 WRITING A FILE -->
+    <section class="slide" id="s-write" data-steps="3">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> WRITING ]</div><div class="num">08</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Save it with <span style="font-family:var(--mono); text-transform:none">open</span>.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:12px"><span class="mono" style="font-family:var(--mono)">with open(path, "w") as f:</span> opens a file for writing. Each <span class="mono" style="font-family:var(--mono)">f.write(...)</span> lands a line in the file — watch it fill in.</p>
+        <div class="demo r" style="--d:.2s">
+          <div class="code sm steps"><span class="cl cl-open"><span class="kw">with</span> <span class="kw">open</span>(<span class="str">"notes.txt"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:</span><span class="cl cl-w1">    f.write(<span class="str">"first line\n"</span>)</span><span class="cl cl-w2">    f.write(<span class="str">"second line\n"</span>)</span></div>
+          <div class="viz">
+            <div class="vlabel">notes.txt<span class="vd">mode "w"</span></div>
+            <div class="tw">
+              <div class="twl">first line<span class="nl">⏎</span></div>
+              <div class="twl">second line<span class="nl">⏎</span><span class="twcaret"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.34s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.4s; margin-top:16px">Mode <span class="mono">"w"</span> means <span class="hl">write from scratch</span> — it wipes the file first. The <span class="mono">\n</span> (shown as <span class="mono">⏎</span>) is a newline, so each <span class="mono">write</span> lands on its own line.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>open(path, "w") · f.write</span></div>
+    </section>
+
+    <!-- 09 READING A FILE -->
+    <section class="slide" id="s-read">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> READING ]</div><div class="num">09</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Read it back.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Open with mode <span class="mono" style="font-family:var(--mono)">"r"</span> to read. <span class="mono" style="font-family:var(--mono)">f.read()</span> gives the whole file as one string.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">with</span> <span class="kw">open</span>(<span class="str">"notes.txt"</span>, <span class="str">"r"</span>) <span class="kw">as</span> f:
+    text = f.read()
+
+<span class="kw">print</span>(text)</div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">first line<br>second line</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px"><span class="mono">"r"</span> is the default mode, so <span class="mono">open("notes.txt")</span> reads too. Ask for a file that isn&rsquo;t there and you get a <span class="hl">FileNotFoundError</span> — Part 3 shows how to handle that.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>f.read()</span></div>
+    </section>
+
+    <!-- 10 LOOPING OVER LINES -->
+    <section class="slide" id="s-lines" data-steps="4">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> LINE BY LINE ]</div><div class="num">10</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Walk the lines.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:12px">Loop over the file and Python hands you <span class="hl">one line at a time</span> — a read-head moving down the file. <span class="mono" style="font-family:var(--mono)">.strip()</span> trims the trailing newline as each line prints.</p>
+        <div class="demo r" style="--d:.2s">
+          <div class="code sm steps"><span class="cl cl-open"><span class="kw">with</span> <span class="kw">open</span>(<span class="str">"notes.txt"</span>) <span class="kw">as</span> f:</span><span class="cl cl-for">    <span class="kw">for</span> line <span class="kw">in</span> f:</span><span class="cl cl-prn">        <span class="kw">print</span>(line.strip())</span></div>
+          <div class="viz">
+            <div class="vlabel">notes.txt<span class="vd">read-head &#9654;</span></div>
+            <div class="reel">
+              <div class="rrow">first line<span class="nl">⏎</span></div>
+              <div class="rrow">second line<span class="nl">⏎</span></div>
+              <div class="rrow">third line<span class="nl">⏎</span></div>
+              <div class="scan"></div>
+            </div>
+            <div class="readout">
+              <span class="ro">[ print output ]</span>
+              <span class="pl">first line</span>
+              <span class="pl">second line</span>
+              <span class="pl">third line</span>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.34s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">4</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.4s; margin-top:14px"><span class="mono">for line in f</span> reads lazily, one line per pass — kind to memory. Want them all at once? <span class="mono">f.readlines()</span> hands back a <span class="hl">list</span> of every line.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>for line in f · .readlines()</span></div>
+    </section>
+
+    <!-- 11 THE MODES -->
+    <section class="slide" id="s-modes">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> THE MODES ]</div><div class="num">11</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Three modes to know.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:14px; font-size:21px; color:var(--mute)">The second argument to <span class="mono" style="font-family:var(--mono)">open(path, mode)</span> decides what you may do.</p>
+        <div class="mtab r" style="--d:.15s">
+          <div class="mrow">
+            <div class="ex">"r"</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">read an existing file</span><span class="rc">read · the default</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">"w"</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">write fresh &mdash; erases first</span><span class="rc">write · overwrites</span></div>
+          </div>
+          <div class="mrow">
+            <div class="ex">"a"</div><div class="ar">&rarr;</div>
+            <div class="re"><span class="mean">add to the end &mdash; keeps the rest</span><span class="rc">append</span></div>
+          </div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px"><span class="hl">Careful:</span> <span class="mono">"w"</span> wipes the file the instant you open it. To keep what&rsquo;s there and tack on more, reach for <span class="mono">"a"</span> instead.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>r · w · a</span></div>
+    </section>
+
+    <!-- 12 DIVIDER: ERROR HANDLING -->
+    <section class="slide" id="s-part3">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PART 3 <span class="b">·</span> ERROR HANDLING ]</div>
+        <div class="py r" style="--d:.08s">TRY</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Catch the crash before it ends your program.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; try: ... except ValueError: ...</span>
+        <span>Part 3 · Handling errors gracefully</span>
+      </div>
+    </section>
+
+    <!-- 13 THE CRASH -->
+    <section class="slide" id="s-crash">
+      <div class="head"><div class="kick">[ PART 3 <span class="b">·</span> THE CRASH ]</div><div class="num">13</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">One bad input, dead program.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">You&rsquo;ve hit these: a missing dictionary key gives a <span class="hl">KeyError</span>; text that isn&rsquo;t a number gives a <span class="hl">ValueError</span>. Either one stops everything.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px"><span class="kw">age</span> = <span class="kw">int</span>(<span class="kw">input</span>(<span class="str">"რამდენი წლის ხარ?\n"</span>))
+<span class="kw">print</span>(<span class="str">"next year:"</span>, age + 1)
+
+<span class="com"># user types "abc" instead of a number...</span></div>
+        <div class="out r" style="--d:.3s; margin-top:18px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">ValueError: invalid literal for int() with base 10: 'abc'</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:16px">The line after never runs. One typo from the user and the whole program falls over. We need a way to <span class="hl">catch</span> the error and carry on.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>ValueError · KeyError</span></div>
+    </section>
+
+    <!-- 14 TRY / EXCEPT -->
+    <section class="slide" id="s-try" data-steps="4">
+      <div class="head"><div class="kick">[ PART 3 <span class="b">·</span> TRY / EXCEPT ]</div><div class="num">14</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Try it. Catch the fall.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:12px">Put the risky line in <span class="mono" style="font-family:var(--mono)">try</span>. The moment it blows up, Python <span class="hl">jumps</span> to the matching <span class="mono" style="font-family:var(--mono)">except</span> instead of crashing — follow the read-head.</p>
+        <div class="demo r" style="--d:.2s">
+          <div class="code sm steps"><span class="cl"><span class="kw">try</span>:</span><span class="cl cl-int">    age = <span class="kw">int</span>(<span class="str">"abc"</span>)</span><span class="cl cl-exc"><span class="kw">except</span> ValueError:</span><span class="cl cl-hnd">    <span class="kw">print</span>(<span class="str">"არ არის რიცხვი"</span>)</span><span class="cl"><span class="kw">print</span>(<span class="str">"...moving on"</span>)</span></div>
+          <div class="viz">
+            <div class="vlabel">execution<span class="vd">flow</span></div>
+            <div class="reel">
+              <div class="rrow">int("abc")</div>
+              <div class="rrow err">&#10007; <b>ValueError</b></div>
+              <div class="rrow">except: match!</div>
+              <div class="rrow">print("არ არის რიცხვი")</div>
+              <div class="scan"></div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.34s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">4</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.4s; margin-top:14px">Name the error you expect — here <span class="mono">ValueError</span>. The program <span class="hl">keeps running</span> past the block. The same shape catches the <span class="mono">KeyError</span> from those &ldquo;fix the bug&rdquo; homework tasks.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>try · except</span></div>
+    </section>
+
+    <!-- 15 ELSE / FINALLY -->
+    <section class="slide" id="s-finally">
+      <div class="head"><div class="kick">[ PART 3 <span class="b">·</span> ELSE / FINALLY ]</div><div class="num">15</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">The full four parts.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:12px; font-size:21px; color:var(--mute)">Catch a missing key, then choose what runs on success and what runs no matter what.</p>
+        <div class="code sm r" style="--d:.18s; margin-top:12px; font-size:21px; line-height:1.5; padding:22px 30px"><span class="kw">scores</span> = {<span class="str">"nino"</span>: 90}
+<span class="kw">try</span>:
+    value = scores[<span class="str">"luka"</span>]          <span class="com"># risky lookup</span>
+<span class="kw">except</span> KeyError:
+    <span class="kw">print</span>(<span class="str">"no such student"</span>)        <span class="com"># ran on error</span>
+<span class="kw">else</span>:
+    <span class="kw">print</span>(<span class="str">"found:"</span>, value)         <span class="com"># ran if NO error</span>
+<span class="kw">finally</span>:
+    <span class="kw">print</span>(<span class="str">"done checking"</span>)         <span class="com"># always runs</span></div>
+        <div class="out r" style="--d:.3s; margin-top:14px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">no such student<br>done checking</div>
+        </div>
+        <p class="note r" style="--d:.32s; margin-top:12px; font-size:19px"><span class="mono">else</span> runs only when the <span class="mono">try</span> succeeded; <span class="mono">finally</span> runs either way — perfect for cleanup. Both are optional.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>try · except · else · finally</span></div>
+    </section>
+
+    <!-- 16 DIVIDER: COMPREHENSIONS -->
+    <section class="slide" id="s-part4">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PART 4 <span class="b">·</span> COMPREHENSIONS ]</div>
+        <div class="py fit r" style="--d:.08s">[ x*2 for x ]</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Build a whole list in one elegant line.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; [n*n for n in nums]</span>
+        <span>Part 4 · List &amp; dict comprehensions</span>
+      </div>
+    </section>
+
+    <!-- 17 LIST COMPREHENSION -->
+    <section class="slide" id="s-listcomp" data-steps="3">
+      <div class="head"><div class="kick">[ PART 4 <span class="b">·</span> THE SHORTCUT ]</div><div class="num">17</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">A loop, in one line.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:10px; font-size:21px; color:var(--mute)">Watch the comprehension take each item from <span class="mono" style="font-family:var(--mono)">nums</span>, run <span class="mono" style="font-family:var(--mono)">x * 2</span>, and drop the result into the new list.</p>
+        <div class="code sm steps r" style="--d:.16s; margin-top:14px"><span class="cl"><span class="kw">nums</span> = [1, 2, 3]</span><span class="cl cl-comp"><span class="kw">doubled</span> = [x * 2 <span class="kw">for</span> x <span class="kw">in</span> nums]</span></div>
+        <div class="cellrow r" style="--d:.22s; margin-top:18px; align-items:center">
+          <span class="varrow" style="font-family:var(--body); font-size:14px; letter-spacing:.14em; text-transform:uppercase; min-width:70px">nums</span>
+          <div class="vcell src s0">1</div>
+          <div class="vcell src s1">2</div>
+          <div class="vcell src s2">3</div>
+        </div>
+        <div class="cellrow r" style="--d:.26s; margin-top:14px; align-items:center">
+          <span class="varrow" style="font-family:var(--body); font-size:14px; letter-spacing:.14em; text-transform:uppercase; min-width:70px">doubled</span>
+          <div class="vcell res r0">2</div>
+          <div class="vcell res r1">4</div>
+          <div class="vcell res r2">6</div>
+        </div>
+        <div class="stepper r" style="--d:.3s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>[ expr for x in items ]</span></div>
+    </section>
+
+    <!-- 18 WITH A CONDITION + DICT COMP -->
+    <section class="slide" id="s-cond">
+      <div class="head"><div class="kick">[ PART 4 <span class="b">·</span> FILTER &amp; DICTS ]</div><div class="num">18</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Add an <span style="font-family:var(--mono); text-transform:none">if</span>. Make a dict.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:14px">Tack on <span class="mono" style="font-family:var(--mono)">if</span> to <span class="hl">keep only some</span> items. The same idea builds dictionaries with <span class="mono" style="font-family:var(--mono)">{ }</span>.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:14px"><span class="kw">nums</span> = [-2, 5, -1, 8, 3]
+
+<span class="kw">positives</span> = [x <span class="kw">for</span> x <span class="kw">in</span> nums <span class="kw">if</span> x &gt; 0]
+<span class="kw">print</span>(positives)               <span class="com"># [5, 8, 3]</span>
+
+<span class="kw">squares</span> = {x: x * x <span class="kw">for</span> x <span class="kw">in</span> [1, 2, 3]}
+<span class="kw">print</span>(squares)                 <span class="com"># {1: 1, 2: 4, 3: 9}</span></div>
+        <div class="out r" style="--d:.3s; margin-top:16px">
+          <div class="ol">[ Output ]</div>
+          <div class="ov">[5, 8, 3]<br>{1: 1, 2: 4, 3: 9}</div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:14px"><span class="mono">if x &gt; 0</span> filters as it goes. Swap <span class="mono">[ ]</span> for <span class="mono">{ }</span> with a <span class="mono">key: value</span> and you get a <span class="hl">dict comprehension</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>[x for x in xs if ...] · {k: v for ...}</span></div>
+    </section>
+
+    <!-- 19 RECAP + TEASER -->
+    <section class="slide" id="s-recap">
+      <div class="head"><div class="kick">[ RECAP <span class="b">·</span> WORKSHOP 07 ]</div><div class="num">19</div></div>
+      <div class="body">
+        <ul class="recap">
+          <li class="r" style="--d:0s"><span class="rn">01</span><span class="rt">A <span class="hl">tuple</span> <span class="mono" style="font-family:var(--mono)">(a, b, c)</span> is a fixed, ordered group — index it like a list, but it <span class="hl">can&rsquo;t change</span>. Unpack with <span class="mono" style="font-family:var(--mono)">x, y = point</span>, and return many values with <span class="mono" style="font-family:var(--mono)">return a, b</span>.</span></li>
+          <li class="r" style="--d:.08s"><span class="rn">02</span><span class="rt"><span class="hl">Files:</span> <span class="mono" style="font-family:var(--mono)">with open(path, mode) as f:</span> — <span class="mono" style="font-family:var(--mono)">f.write()</span>, <span class="mono" style="font-family:var(--mono)">f.read()</span>, loop the lines. Modes <span class="mono" style="font-family:var(--mono)">"r"</span> / <span class="mono" style="font-family:var(--mono)">"w"</span> / <span class="mono" style="font-family:var(--mono)">"a"</span>.</span></li>
+          <li class="r" style="--d:.16s"><span class="rn">03</span><span class="rt"><span class="hl">try / except</span> catches errors like <span class="mono" style="font-family:var(--mono)">ValueError</span> and <span class="mono" style="font-family:var(--mono)">KeyError</span> so a bad input doesn&rsquo;t kill the program; <span class="mono" style="font-family:var(--mono)">else</span> / <span class="mono" style="font-family:var(--mono)">finally</span> round it out.</span></li>
+          <li class="r" style="--d:.24s"><span class="rn">04</span><span class="rt"><span class="hl">Comprehensions</span> build a list in one line: <span class="mono" style="font-family:var(--mono)">[x*2 for x in nums]</span>, filter with <span class="mono" style="font-family:var(--mono)">if</span>, and build dicts with <span class="mono" style="font-family:var(--mono)">{k: v for ...}</span>.</span></li>
+        </ul>
+        <p class="teaser r" style="--d:.4s"><span class="hl">You can now store data, save it to disk, survive errors, and transform collections cleanly.</span> Real programs are built from exactly these pieces.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 07</span><span>tuples · files · errors · comprehensions</span></div>
+    </section>
+
+    <!-- 20 END -->
+    <section class="slide" id="s-end">
+      <div class="body" style="justify-content:center">
+        <div class="kick r" style="--d:0s">[ END <span class="b">·</span> WORKSHOP 07 ]</div>
+        <div class="end-q r" style="--d:.08s">QUESTIONS?</div>
+        <div class="rule r" style="--d:.16s"></div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; print({"see": "you", "next": "week"})</span>
+        <span>Python · Workshop 07</span>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- overlay nav UI -->
+<div class="ui">
+  <span class="count" id="count">01 / 20</span>
+  <div class="prog-track"><div class="prog" id="prog"></div></div>
+  <div class="btns">
+    <button id="prev" aria-label="Previous">&lsaquo;</button>
+    <button id="next" aria-label="Next">&rsaquo;</button>
+  </div>
+</div>
+<div class="hint" id="hint">← → navigate · ↓ step through demos</div>
+
+<script>
+(function(){
+  /* ---------- setup ---------- */
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  slides.forEach(function(s){
+    var lb=document.createElement('div'); lb.className='brk l';
+    var rb=document.createElement('div'); rb.className='brk r';
+    s.appendChild(lb); s.appendChild(rb);
+  });
+  /* inject an Auto-play toggle into every step control bar */
+  document.querySelectorAll('.stepper').forEach(function(st){
+    var b=document.createElement('button');
+    b.className='sbtn auto on';
+    b.setAttribute('data-act','auto');
+    b.textContent='Auto';
+    var go=st.querySelector('.go');
+    if(go) go.insertAdjacentElement('afterend', b); else st.appendChild(b);
+  });
+  var count = document.getElementById('count');
+  var prog  = document.getElementById('prog');
+  var hint  = document.getElementById('hint');
+  var cur = 0, timers = [];
+
+  function fit(){
+    var s = Math.min(window.innerWidth/1440, window.innerHeight/900);
+    stage.style.transform = 'translate(-50%,-50%) scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+
+  function resetAnims(){
+    clearTimers();
+    document.querySelectorAll('.gline').forEach(function(l){ l.style.strokeDashoffset = l.getAttribute('data-len') || '1'; });
+    document.querySelectorAll('.gdot').forEach(function(d){ d.setAttribute('r','0'); d.style.opacity='0'; });
+    document.querySelectorAll('.gfade').forEach(function(e){ e.style.opacity='0'; });
+  }
+  function runAnims(i){
+    var s = slides[i];
+    s.querySelectorAll('.gline').forEach(function(l,k){ timers.push(setTimeout(function(){ l.style.strokeDashoffset='0'; }, 260 + k*150)); });
+    s.querySelectorAll('.gdot').forEach(function(d,k){ timers.push(setTimeout(function(){ d.setAttribute('r', d.getAttribute('data-r')||'16'); d.style.opacity='1'; }, 520 + k*130)); });
+    s.querySelectorAll('.gfade').forEach(function(e,k){ timers.push(setTimeout(function(){ e.style.opacity='1'; }, 820 + k*90)); });
+  }
+
+  /* ---------- click-driven step demos ---------- */
+  var STEP_CAPS = {
+    's-tuple-create':['rgb[0]  →  255','rgb[1]  →  128','rgb[2]  →  0'],
+    's-write':['open("notes.txt", "w")  —  file wiped clean','f.write("first line\\n")','f.write("second line\\n")'],
+    's-lines':['open the file','read line 1  →  print "first line"','read line 2  →  print "second line"','read line 3  →  print "third line"'],
+    's-try':['run  int("abc")  …','✕  ValueError raised','except ValueError matches  —  jump in','print("არ არის რიცხვი")  —  then carry on'],
+    's-listcomp':['x = 1  →  1 * 2  →  append 2','x = 2  →  2 * 2  →  append 4','x = 3  →  3 * 2  →  append 6']
+  };
+  function setStep(slide, k){
+    var max = parseInt(slide.getAttribute('data-steps'),10) || 0;
+    k = Math.max(0, Math.min(max, k));
+    slide.setAttribute('data-step', k);
+    var curEl = slide.querySelector('.scur'); if(curEl) curEl.textContent = k;
+    var caps = STEP_CAPS[slide.id] || [];
+    var cap = slide.querySelector('.scap'); if(cap) cap.textContent = k>0 ? (caps[k-1]||'') : '';
+    var pv = slide.querySelector('[data-act="prev"]');  if(pv) pv.disabled = (k===0);
+    var rs = slide.querySelector('[data-act="reset"]'); if(rs) rs.disabled = (k===0);
+    var nx = slide.querySelector('[data-act="next"]');  if(nx) nx.disabled = (k===max);
+  }
+  function stepSlide(slide, d){ setStep(slide, (parseInt(slide.getAttribute('data-step'),10)||0) + d); }
+
+  /* ---------- auto-play (on by default) ---------- */
+  var auto = true, autoTimer = null;
+  function stopAuto(){ if(autoTimer){ clearTimeout(autoTimer); autoTimer = null; } }
+  function startAuto(slide){
+    stopAuto();
+    var max = parseInt(slide.getAttribute('data-steps'),10) || 0;
+    function tick(){
+      var k = parseInt(slide.getAttribute('data-step'),10) || 0;
+      if(k>=max){ setStep(slide, 0); autoTimer = setTimeout(tick, 1300); }
+      else { setStep(slide, k+1); autoTimer = setTimeout(tick, (k+1>=max) ? 1900 : 1300); }
+    }
+    autoTimer = setTimeout(tick, 1100);
+  }
+  function syncAutoBtns(){
+    document.querySelectorAll('.sbtn.auto').forEach(function(b){ b.classList.toggle('on', auto); });
+  }
+  function setManual(){ if(auto){ auto = false; stopAuto(); syncAutoBtns(); } }
+
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.sbtn') : null; if(!b) return;
+    var slide = b.closest('.slide'); if(!slide) return;
+    var act = b.getAttribute('data-act');
+    if(act==='auto'){
+      auto = !auto; syncAutoBtns();
+      if(auto) startAuto(slide); else stopAuto();
+    } else {
+      setManual();                       /* any manual press pauses auto */
+      if(act==='next') stepSlide(slide, 1);
+      else if(act==='prev') stepSlide(slide, -1);
+      else if(act==='reset') setStep(slide, 0);
+    }
+  });
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[cur].classList.remove('active');
+    resetAnims();
+    cur = i;
+    var s = slides[cur];
+    void s.offsetWidth;           /* reflow so reveal anim re-runs */
+    s.classList.add('active');
+    stopAuto();
+    syncAutoBtns();
+    if(s.hasAttribute('data-steps')){
+      setStep(s, 0);                                  /* demos start fresh */
+      if(auto) startAuto(s);                          /* ...and auto-play by default */
+    }
+    count.textContent = String(i+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+    prog.style.width = (i/(slides.length-1)*100) + '%';
+    runAnims(i);
+  }
+  function nextS(){ goTo(cur+1); }
+  function prevS(){ goTo(cur-1); }
+
+  document.getElementById('next').addEventListener('click', nextS);
+  document.getElementById('prev').addEventListener('click', prevS);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); nextS(); }
+    else if(e.key===' '){ e.preventDefault(); nextS(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prevS(); }
+    else if(e.key==='ArrowDown'){ var s=slides[cur]; if(s.hasAttribute('data-steps')){ e.preventDefault(); setManual(); stepSlide(s,1); } }
+    else if(e.key==='ArrowUp'){ var s=slides[cur]; if(s.hasAttribute('data-steps')){ e.preventDefault(); setManual(); stepSlide(s,-1); } }
+    else if(e.key==='Home'){ goTo(0); }
+    else if(e.key==='End'){ goTo(slides.length-1); }
+  });
+  /* touch swipe */
+  var tx=0;
+  document.addEventListener('touchstart', function(e){ tx=e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx)>50){ dx<0 ? nextS() : prevS(); }
+  }, {passive:true});
+
+  setTimeout(function(){ hint.style.opacity='0'; }, 4000);
+  goTo(0);
+})();
+</script>
