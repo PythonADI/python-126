@@ -1,0 +1,1011 @@
+
+<!-- Python Workshop 08 — Modules · Standard library · Classes. Self-contained. Use ← → / Space to navigate. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python · Workshop 08 — Modules &amp; Classes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --mute:#7a7a7a;
+    --syn-kw:#0a53be;     /* keywords & builtins */
+    --syn-str:#197a3d;    /* strings            */
+    --syn-com:#9a9a9a;    /* comments           */
+    --hl:rgba(10,10,10,.09);  /* active code line  */
+    --line:#e3e3e3;
+    --line2:#111;
+    --paper:#ffffff;
+    --display:'Coolvetica Compressed','Coolvetica',Anton,'Arial Narrow',sans-serif;
+    --body:'Inter','Noto Sans Georgian',system-ui,-apple-system,sans-serif;
+    --mono:'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono','Noto Sans Georgian',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{background:var(--paper); color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased; overflow:hidden}
+
+  .viewport{position:fixed; inset:0; overflow:hidden; background:var(--paper)}
+  .stage{position:absolute; top:50%; left:50%; width:1440px; height:900px; transform-origin:center center}
+
+  .slide{position:absolute; inset:0; opacity:0; pointer-events:none; padding:90px 100px; display:flex; flex-direction:column}
+  .slide.active{opacity:1; pointer-events:auto}
+
+  .head{display:flex; justify-content:space-between; align-items:flex-start}
+  .kick{font-size:15px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--ink)}
+  .kick .b{color:var(--mute)}
+  .num{font-family:var(--display); font-size:30px; letter-spacing:.04em; color:var(--mute); line-height:1}
+
+  .foot{position:absolute; left:100px; right:100px; bottom:54px; border-top:1px solid var(--line); padding-top:16px;
+        display:flex; justify-content:space-between; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute)}
+
+  .body{flex:1; display:flex; flex-direction:column; justify-content:center}
+
+  h1{font-family:var(--display); font-weight:400; text-transform:uppercase; line-height:.92; letter-spacing:.005em}
+  .h-xl{font-size:108px}
+  .h-lg{font-size:84px}
+  .h-md{font-size:64px}
+  .lead{font-size:27px; line-height:1.5; color:#222; max-width:62ch}
+  .lead .hl{color:var(--ink); font-weight:600}
+  .mut{color:var(--mute)}
+  .tag{display:inline-block; font-weight:600; letter-spacing:.04em}
+
+  @keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:none}}
+  .slide .r{opacity:0}
+  .slide.active .r{animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards; animation-delay:var(--d,0s)}
+
+  .brk{position:absolute; width:34px; top:50%; transform:translateY(-50%); pointer-events:none; z-index:2}
+  .brk.l{left:42px; border-left:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .brk.r{right:42px; border-right:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .slide .brk{height:0; opacity:0}
+  .slide.active .brk{animation:brkopen .55s cubic-bezier(.16,.84,.3,1) forwards}
+  @keyframes brkopen{from{height:0; opacity:0} to{height:780px; opacity:1}}
+
+  .title-wrap{display:flex; flex-direction:column; justify-content:center; height:100%}
+  .title-wrap .kick{margin-bottom:40px}
+  .py{font-family:var(--display); font-size:300px; line-height:.9; letter-spacing:.02em}
+  .py.fit{font-size:200px}
+  .rule{height:2px; background:var(--ink); margin:30px 0}
+  .subline{font-size:30px; color:#222; font-weight:500}
+  .subline .b{color:var(--mute)}
+  .motif{font-family:var(--mono); font-size:22px; color:var(--mute)}
+
+  .cols2{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:36px; border:1.5px solid var(--ink)}
+  .cols2 .c{padding:28px 32px}
+  .cols2 .c:first-child{border-right:1.5px solid var(--ink)}
+  .cols2 .lbl{font-size:14px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:16px}
+  .cols2 ul{list-style:none}
+  .cols2 li{font-size:20px; line-height:1.5; padding:8px 0; color:#222}
+  .cols2 li::before{content:"\2014"; color:var(--mute); margin-right:10px}
+  .colcode{font-family:var(--mono); font-size:21px; line-height:1.7; white-space:pre}
+  .colcode .kw{font-weight:700; color:var(--syn-kw)}
+  .colcode .str{color:var(--syn-str)}
+  .colcode .com{color:var(--syn-com)}
+
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:38px}
+  .cell{border:1.5px solid var(--ink); padding:24px 24px; min-height:148px}
+  .cell .ci{font-family:var(--mono); font-size:22px; line-height:1; color:var(--syn-kw); font-weight:700}
+  .cell .ct{font-size:21px; font-weight:600; margin-top:12px}
+  .cell .cd{font-size:15px; color:var(--mute); margin-top:8px; line-height:1.5}
+
+  .code{font-family:var(--mono); border:1.5px solid var(--ink); padding:32px 38px; font-size:27px; line-height:1.8; white-space:pre; overflow-x:auto}
+  .code.sm{font-size:23px; line-height:1.62; padding:26px 32px}
+  .code .kw{font-weight:700; color:var(--syn-kw)}
+  .code .com{color:var(--syn-com)}
+  .code .str{color:var(--syn-str)}
+
+  .code.steps{padding-left:0; padding-right:0; white-space:normal}
+  .code.steps .cl{display:block; white-space:pre; padding:2px 30px; border-left:3px solid transparent; background:transparent; transition:background .25s, border-color .25s}
+  .cl.on{background:var(--hl); border-left-color:var(--ink)}
+  .cl.dim{background:rgba(10,10,10,.045); border-left-color:#c4c4c4}
+  /* import slide — light one import style at a time */
+  #s-import[data-step="1"] .cl-i1{background:var(--hl); border-left-color:var(--ink)}
+  #s-import[data-step="2"] .cl-i2{background:var(--hl); border-left-color:var(--ink)}
+  #s-import[data-step="3"] .cl-i3{background:var(--hl); border-left-color:var(--ink)}
+  /* import: standard library → your program */
+  .impviz{flex:.95; border:1.5px solid var(--ink); display:flex; flex-direction:column; overflow:hidden; align-self:flex-start}
+  .impsec{padding:14px 18px}
+  .impsec .sl{font-family:var(--body); font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--mute); margin-bottom:12px}
+  .implib{background:#f6f6f6; border-bottom:1.5px solid var(--ink)}
+  .modrow{display:flex; gap:12px}
+  .modbox{flex:1; border:1.5px solid var(--ink); background:#fff; text-align:center; padding:11px 6px; font-family:var(--mono); font-size:18px; transition:background .3s, color .3s, transform .3s}
+  .modbox .mi{display:block; font-size:11px; color:var(--mute); margin-top:5px; font-family:var(--body); letter-spacing:.03em}
+  .impprog{flex:1; min-height:158px}
+  .toks{display:flex; flex-direction:column; gap:10px}
+  .tok{font-family:var(--mono); font-size:18px; padding:9px 14px; border-left:3px solid var(--ink); background:var(--hl); opacity:0; transform:translateY(-16px); transition:opacity .4s ease, transform .4s ease}
+  .tok .com{color:var(--syn-com); font-family:var(--body); font-size:13px; margin-left:6px}
+  #s-import[data-step="1"] .m-math,#s-import[data-step="2"] .m-random,#s-import[data-step="3"] .m-datetime{background:var(--ink); color:#fff; transform:translateY(-3px)}
+  #s-import[data-step="1"] .m-math .mi,#s-import[data-step="2"] .m-random .mi,#s-import[data-step="3"] .m-datetime .mi{color:#cfcfcf}
+  #s-import[data-step="1"] .t-math,#s-import[data-step="2"] .t-math,#s-import[data-step="3"] .t-math{opacity:1; transform:none}
+  #s-import[data-step="2"] .t-randint,#s-import[data-step="3"] .t-randint{opacity:1; transform:none}
+  #s-import[data-step="3"] .t-dt{opacity:1; transform:none}
+
+  .stepper{display:flex; align-items:center; gap:12px; margin-top:22px; flex-wrap:wrap}
+  .sbtn{font-family:var(--body); font-size:16px; font-weight:600; padding:9px 17px; border:1.5px solid var(--ink); background:#fff; color:var(--ink); cursor:pointer; letter-spacing:.02em; line-height:1}
+  .sbtn:hover{background:var(--ink); color:#fff}
+  .sbtn.go{background:var(--ink); color:#fff}
+  .sbtn.go:hover{background:#333}
+  .sbtn:disabled{opacity:.28; cursor:default; background:#fff; color:var(--ink)}
+  .sbtn.auto::before{content:"\25B6"; font-size:12px; margin-right:7px}
+  .sbtn.auto.on{background:var(--ink); color:#fff}
+  .sbtn.auto.on::before{content:"\23F8"}
+  .sbtn.auto.on:hover{background:#333}
+  .sstat{font-family:var(--mono); font-size:15px; color:var(--mute); margin-left:2px}
+  .sstat b{color:var(--ink); font-weight:600}
+  .scap{font-size:16px; color:#222; margin-left:8px; min-height:1.2em}
+  .scap b{font-weight:600}
+  .out{margin-top:22px; border-left:3px solid var(--ink); padding:14px 0 14px 22px}
+  .out .ol{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:8px}
+  .out .ov{font-family:var(--mono); font-size:22px; line-height:1.6}
+  .note{font-size:21px; color:#222; margin-top:24px; line-height:1.55; max-width:84ch}
+  .note .hl{font-weight:600}
+  .note .mono{font-family:var(--mono); font-size:19px}
+
+  .warn{margin-top:24px; border-left:3px solid var(--ink); background:#f6f6f6; padding:18px 22px; font-size:20px; line-height:1.55; max-width:88ch}
+  .warn .wl{display:block; font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:7px}
+  .warn .hl{font-weight:600}
+  .warn .mono{font-family:var(--mono); font-size:18px}
+
+  .recap{list-style:none; margin-top:26px}
+  .recap li{font-size:25px; line-height:1.4; padding:18px 0; border-bottom:1px solid var(--line); display:flex; gap:20px}
+  .recap li:first-child{border-top:1px solid var(--line)}
+  .recap .rn{font-family:var(--display); font-size:28px; color:var(--mute); min-width:44px}
+  .recap .rt .hl{font-weight:600}
+  .teaser{margin-top:30px; font-size:23px}
+  .teaser .hl{font-weight:600}
+
+  .end-q{font-family:var(--display); font-size:200px; line-height:.9}
+  #s-end .kick{margin-bottom:30px}
+
+  /* demo layout (code beside a visual) */
+  .demo{display:flex; gap:26px; margin-top:22px; align-items:stretch}
+  .demo .code{flex:1.05; margin:0; align-self:flex-start}
+
+  /* ===== animated dog builder (classes) ===== */
+  .dogwrap{flex:.95; display:flex; flex-direction:column; align-items:center; justify-content:center}
+  .dogsvg{width:100%; max-width:430px; height:auto; overflow:visible}
+  .dogsvg .fillable{fill:var(--dog,#e0a14a); transition:fill .55s ease}
+  .dogsvg .ink{fill:var(--ink)}
+  @keyframes wag{0%,100%{transform:rotate(-10deg)} 50%{transform:rotate(16deg)}}
+  .dogsvg.full .dog-tail{transform-box:fill-box; transform-origin:88% 88%; animation:wag .7s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)}}
+  .dogsvg.full{animation:bob 2.4s ease-in-out infinite}
+
+  /* build slide: each part hidden until its step */
+  #s-build .dog-base,#s-build .dog-legs,#s-build .dog-ears,#s-build .dog-tail{opacity:0; transition:opacity .5s ease, transform .5s ease}
+  #s-build .dog-legs,#s-build .dog-ears,#s-build .dog-tail{transform:translateY(14px)}
+  #s-build .fillable{fill:#dcdcdc}
+  #s-build .leg{transition:opacity .45s ease, transform .45s ease}
+  #s-build .leg:nth-child(2){transition-delay:.08s}
+  #s-build .leg:nth-child(3){transition-delay:.16s}
+  #s-build .leg:nth-child(4){transition-delay:.24s}
+  #s-build[data-step="1"] .dog-base,#s-build[data-step="2"] .dog-base,#s-build[data-step="3"] .dog-base,#s-build[data-step="4"] .dog-base,#s-build[data-step="5"] .dog-base{opacity:1}
+  #s-build[data-step="2"] .fillable,#s-build[data-step="3"] .fillable,#s-build[data-step="4"] .fillable,#s-build[data-step="5"] .fillable{fill:var(--dog)}
+  #s-build[data-step="3"] .dog-legs,#s-build[data-step="4"] .dog-legs,#s-build[data-step="5"] .dog-legs{opacity:1; transform:none}
+  #s-build[data-step="4"] .dog-ears,#s-build[data-step="5"] .dog-ears{opacity:1; transform:none}
+  #s-build[data-step="5"] .dog-tail{opacity:1; transform:none; transform-box:fill-box; transform-origin:88% 88%; animation:wag .6s ease-in-out infinite}
+  /* code line lighting per step */
+  #s-build[data-step="1"] .cl-c0,#s-build[data-step="1"] .cl-d0{background:var(--hl); border-left-color:var(--ink)}
+  #s-build[data-step="2"] .cl-color{background:var(--hl); border-left-color:var(--ink)}
+  #s-build[data-step="3"] .cl-legs{background:var(--hl); border-left-color:var(--ink)}
+  #s-build[data-step="4"] .cl-ears{background:var(--hl); border-left-color:var(--ink)}
+  #s-build[data-step="5"] .cl-tail{background:var(--hl); border-left-color:var(--ink)}
+  /* attribute chips fill in alongside the dog */
+  .attrlist{display:flex; flex-direction:column; gap:9px; margin-top:16px; max-width:320px}
+  .arow{display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:19px; opacity:.22; transition:opacity .4s ease}
+  .arow .ak{color:var(--syn-kw); font-weight:700}
+  .arow .av{color:var(--syn-str)}
+  .arow .swatch{width:18px; height:18px; border:1.5px solid var(--ink); background:var(--dog,#e0a14a); display:inline-block}
+  #s-build[data-step="2"] .a-color,#s-build[data-step="3"] .a-color,#s-build[data-step="4"] .a-color,#s-build[data-step="5"] .a-color{opacity:1}
+  #s-build[data-step="3"] .a-legs,#s-build[data-step="4"] .a-legs,#s-build[data-step="5"] .a-legs{opacity:1}
+  #s-build[data-step="4"] .a-ears,#s-build[data-step="5"] .a-ears{opacity:1}
+  #s-build[data-step="5"] .a-tail{opacity:1}
+  /* two dogs side by side */
+  .dogrow{display:flex; gap:50px; justify-content:center; align-items:flex-end; margin-top:18px}
+  .dogcard{display:flex; flex-direction:column; align-items:center; gap:10px}
+  .dogcard .dn{font-family:var(--mono); font-size:21px}
+  .dogcard .dn .sw{display:inline-block; width:15px; height:15px; border:1.5px solid var(--ink); vertical-align:-2px; margin-right:9px; background:var(--dog)}
+  .dogsvg.mini{max-width:300px}
+
+  /* ===== blueprint → stamped instances ===== */
+  .bpwrap{display:flex; gap:30px; align-items:center; margin-top:16px}
+  .bpcard{position:relative; width:340px; flex:none; background:#0b2a6b; border:2px solid #0b2a6b; padding:14px 14px 8px;
+    background-image:linear-gradient(rgba(255,255,255,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.10) 1px,transparent 1px);
+    background-size:26px 26px}
+  .bpcard .bplabel{position:absolute; top:10px; left:14px; font-family:var(--mono); font-size:14px; letter-spacing:.04em; color:#cfe0ff}
+  .bpcard .bptag{position:absolute; top:10px; right:12px; font-family:var(--body); font-size:11px; letter-spacing:.2em; color:#0b2a6b; background:#cfe0ff; padding:3px 9px; font-weight:700}
+  .bpcard .dogsvg .fillable{fill:none; stroke:#9db8ff; stroke-width:2.4; stroke-dasharray:6 5}
+  .bpcard .dogsvg .ink{fill:#9db8ff}
+  .bparrow{display:flex; flex-direction:column; align-items:center; gap:6px; flex:none}
+  .bparrow .ar{font-family:var(--display); font-size:46px; line-height:1; color:var(--ink)}
+  .bparrow .al{font-family:var(--body); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute)}
+  .insts{display:flex; gap:18px; flex-wrap:wrap; flex:1}
+  .inst{display:flex; flex-direction:column; align-items:center; gap:4px; opacity:0; transform:scale(.25)}
+  .inst .dn{font-family:var(--mono); font-size:17px}
+  .inst .dn .sw{display:inline-block; width:13px; height:13px; border:1.5px solid var(--ink); vertical-align:-1px; margin-right:6px; background:var(--dog)}
+  @keyframes stamp{0%{transform:scale(.2); opacity:0} 55%{transform:scale(1.12); opacity:1} 100%{transform:scale(1); opacity:1}}
+  #s-blueprint[data-step="1"] .inst.i0,#s-blueprint[data-step="2"] .inst.i0,#s-blueprint[data-step="3"] .inst.i0{opacity:1; transform:none; animation:stamp .5s ease-out}
+  #s-blueprint[data-step="2"] .inst.i1,#s-blueprint[data-step="3"] .inst.i1{opacity:1; transform:none; animation:stamp .5s ease-out}
+  #s-blueprint[data-step="3"] .inst.i2{opacity:1; transform:none; animation:stamp .5s ease-out}
+  #s-blueprint[data-step="1"] .cl-r{background:var(--hl); border-left-color:var(--ink)}
+  #s-blueprint[data-step="2"] .cl-b{background:var(--hl); border-left-color:var(--ink)}
+  #s-blueprint[data-step="3"] .cl-m{background:var(--hl); border-left-color:var(--ink)}
+
+  /* ===== bank balance meter ===== */
+  .bankwrap{flex:.95; display:flex; flex-direction:column; gap:14px}
+  .bankcard{border:1.5px solid var(--ink); padding:18px 22px}
+  .bankcard .bh{display:flex; justify-content:space-between; align-items:baseline}
+  .bankcard .who{font-family:var(--body); font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute)}
+  .bankcard .tag2{font-family:var(--mono); font-size:13px; color:var(--mute)}
+  .bankcard .mval{font-family:var(--display); font-size:60px; line-height:1.05}
+  .bankcard .mval span{display:none}
+  .bankcard .mval .cur{font-size:30px; color:var(--mute); margin-right:4px}
+  .meter{height:24px; border:1.5px solid var(--ink); margin-top:12px; overflow:hidden; background:#f4f4f4}
+  .mfill{height:100%; width:0; background:var(--ink); transition:width .6s cubic-bezier(.3,.8,.3,1), background .3s}
+  .mscale{display:flex; justify-content:space-between; font-family:var(--mono); font-size:12px; color:var(--mute); margin-top:6px}
+  .refuse{font-family:var(--mono); font-size:19px; color:#c0392b; opacity:0; transition:opacity .25s; min-height:1.3em}
+  @keyframes shake{0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 60%{transform:translateX(7px)} 80%{transform:translateX(-4px)}}
+  #s-bank[data-step="0"] .b0{display:inline}
+  #s-bank[data-step="1"] .b1,#s-bank[data-step="2"] .b2,#s-bank[data-step="3"] .b3,#s-bank[data-step="4"] .b4{display:inline}
+  #s-bank[data-step="1"] .mfill{width:50%}
+  #s-bank[data-step="2"] .mfill{width:75%; background:#1f8a4c}
+  #s-bank[data-step="3"] .mfill{width:60%}
+  #s-bank[data-step="4"] .mfill{width:60%; background:#c0392b; animation:shake .4s}
+  #s-bank[data-step="4"] .refuse{opacity:1}
+  #s-bank[data-step="1"] .cl-u1{background:var(--hl); border-left-color:var(--ink)}
+  #s-bank[data-step="2"] .cl-u2{background:var(--hl); border-left-color:var(--ink)}
+  #s-bank[data-step="3"] .cl-u3{background:var(--hl); border-left-color:var(--ink)}
+  #s-bank[data-step="4"] .cl-u4{background:var(--hl); border-left-color:var(--ink)}
+
+  /* ===== unified terminal output surface ===== */
+  .term{background:#141416; border:1.5px solid var(--ink); overflow:hidden; font-family:var(--mono); display:flex; flex-direction:column}
+  .term .tbar{display:flex; align-items:center; gap:7px; padding:8px 12px; background:#2a2a2c}
+  .term .tdot{width:11px; height:11px; border-radius:50%; background:#555}
+  .term .tdot.cr{background:#ff5f57} .term .tdot.cy{background:#febc2e} .term .tdot.cg{background:#28c840}
+  .term .ttl{margin-left:8px; font-family:var(--body); font-size:12px; letter-spacing:.05em; color:#9a9a9a}
+  .term .tbody{padding:13px 16px; font-size:18px; line-height:1.7; color:#e8e8e8}
+  .term .cmd{display:block; color:#9a9a9a}
+  .term .cmd .pr{color:#28c840; margin-right:8px}
+  .term .o{display:block; color:#fff; margin-top:4px}
+  .term .o.ok{color:#7ee0a0}
+  .term .o.bad{color:#ff8a80}
+  .term .o.dim{color:#8a8a8a}
+  .term .o.reveal{opacity:0; transition:opacity .4s ease}
+  .term.mini .tbar{padding:6px 11px}
+  .term.mini .tdot{width:9px; height:9px}
+  .term.mini .tbody{font-size:15px; padding:11px 14px}
+
+  /* ===== own-module import flow ===== */
+  .ownrow{display:flex; gap:16px; align-items:stretch; margin-top:14px}
+  .fcard{flex:1; border:1.5px solid var(--ink); align-self:flex-start; transition:box-shadow .3s}
+  .fcard .fh{font-family:var(--mono); font-size:14px; background:#f0f0f0; border-bottom:1.5px solid var(--ink); padding:8px 14px; color:var(--ink)}
+  .fcard .fc{padding:12px 16px; font-family:var(--mono); font-size:18px; line-height:1.7}
+  .fcard .fc .ln{display:block; white-space:pre; padding:1px 6px; border-left:3px solid transparent; transition:background .25s, border-color .25s}
+  .ownarrow{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; color:var(--mute); font-size:11px; letter-spacing:.14em; text-transform:uppercase; flex:none}
+  .ownarrow .a2{font-family:var(--display); font-size:38px; color:var(--ink); line-height:1; opacity:.2; transition:opacity .35s}
+  .ownterm{margin-top:14px}
+  #s-ownmod[data-step="1"] .f-mod,#s-ownmod[data-step="2"] .f-mod,#s-ownmod[data-step="3"] .f-mod{box-shadow:0 0 0 2.5px var(--ink)}
+  #s-ownmod[data-step="1"] .ownarrow .a2,#s-ownmod[data-step="2"] .ownarrow .a2,#s-ownmod[data-step="3"] .ownarrow .a2{opacity:1}
+  #s-ownmod[data-step="1"] .ln-imp,#s-ownmod[data-step="2"] .ln-imp,#s-ownmod[data-step="3"] .ln-imp{background:var(--hl); border-left-color:var(--ink)}
+  #s-ownmod[data-step="2"] .ln-fn,#s-ownmod[data-step="3"] .ln-fn,#s-ownmod[data-step="2"] .ln-call,#s-ownmod[data-step="3"] .ln-call{background:var(--hl); border-left-color:var(--ink)}
+  #s-ownmod[data-step="3"] .o.reveal{opacity:1}
+
+  /* ===== __main__ guard: with vs without ===== */
+  .gctx{font-family:var(--mono); font-size:17px; border:1.5px dashed var(--ink); padding:9px 14px; margin-top:10px; display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+  .gctx .gk{color:var(--mute); font-family:var(--body); font-size:13px; letter-spacing:.06em}
+  .gctx .nm{background:var(--ink); color:#fff; padding:2px 9px; font-size:15px}
+  .grow{display:flex; gap:18px; margin-top:14px}
+  .gcard{flex:1; border:1.5px solid var(--ink); display:flex; flex-direction:column}
+  .gcard .gh{font-family:var(--body); font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:9px 14px; border-bottom:1.5px solid var(--ink)}
+  .gcard.g-no .gh{color:#c0392b}
+  .gcard.g-yes .gh{color:#1f8a4c}
+  .gcard .gc{padding:11px 16px; font-family:var(--mono); font-size:16px; line-height:1.6}
+  .gcard .gc .ln{display:block; white-space:pre; padding:1px 6px; border-left:3px solid transparent; transition:background .25s, border-color .25s}
+  .gcard .term{margin-top:auto; border:0; border-top:1.5px solid var(--ink)}
+  #s-guard[data-step="2"] .g-no .ln-print,#s-guard[data-step="3"] .g-no .ln-print{background:#fbe3e0; border-left-color:#c0392b}
+  #s-guard[data-step="2"] .g-no .leak,#s-guard[data-step="3"] .g-no .leak{opacity:1}
+  #s-guard[data-step="3"] .g-yes .ln-guard{background:#e3f3e9; border-left-color:#1f8a4c}
+  #s-guard[data-step="3"] .g-yes .quiet{opacity:1}
+
+  /* ===== random dice example ===== */
+  .dicewrap{flex:.95; display:flex; flex-direction:column; align-items:center; gap:16px}
+  .die{width:118px; height:118px; border:2px solid var(--ink); border-radius:18px; background:#fff; position:relative; flex:none}
+  @keyframes diceroll{0%{transform:rotate(0) translateY(0)}20%{transform:rotate(-13deg) translateY(-10px)}45%{transform:rotate(11deg) translateY(0)}70%{transform:rotate(-7deg) translateY(-5px)}100%{transform:rotate(0) translateY(0)}}
+  .die .q{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--display); font-size:62px; color:var(--mute); transition:opacity .2s}
+  .die .pip{position:absolute; width:20px; height:20px; border-radius:50%; background:var(--ink); opacity:0; transition:opacity .25s}
+  .die .p-tl{top:20px; left:20px} .die .p-tr{top:20px; right:20px} .die .p-bl{bottom:20px; left:20px} .die .p-br{bottom:20px; right:20px}
+  #s-dice[data-step="2"] .die{animation:diceroll .6s ease}
+  #s-dice[data-step="2"] .pip,#s-dice[data-step="3"] .pip{opacity:1}
+  #s-dice[data-step="2"] .q,#s-dice[data-step="3"] .q{opacity:0}
+  #s-dice[data-step="1"] .cl-d1,#s-dice[data-step="2"] .cl-d1,#s-dice[data-step="3"] .cl-d1{background:var(--hl); border-left-color:var(--ink)}
+  #s-dice[data-step="2"] .cl-d2,#s-dice[data-step="3"] .cl-d2{background:var(--hl); border-left-color:var(--ink)}
+  #s-dice[data-step="3"] .cl-d3{background:var(--hl); border-left-color:var(--ink)}
+  #s-dice[data-step="3"] .o.reveal{opacity:1}
+
+  /* ===== shopping cart class example ===== */
+  .cartwrap{flex:.95; display:flex; flex-direction:column; gap:12px}
+  .cartcard{border:1.5px solid var(--ink)}
+  .cartcard .ch{font-family:var(--mono); font-size:14px; background:#f0f0f0; border-bottom:1.5px solid var(--ink); padding:8px 14px}
+  .cartlist{padding:9px 14px; font-family:var(--mono); font-size:18px; min-height:104px}
+  .citem{display:flex; justify-content:space-between; gap:24px; padding:5px 2px; opacity:0; transform:translateY(-8px); transition:opacity .35s, transform .35s}
+  .citem .cp{color:var(--mute)}
+  .cartempty{color:var(--mute); font-size:15px; padding:4px 2px}
+  #s-cart[data-step="2"] .ci0,#s-cart[data-step="3"] .ci0,#s-cart[data-step="4"] .ci0{opacity:1; transform:none}
+  #s-cart[data-step="3"] .ci1,#s-cart[data-step="4"] .ci1{opacity:1; transform:none}
+  #s-cart[data-step="2"] .cartempty,#s-cart[data-step="3"] .cartempty,#s-cart[data-step="4"] .cartempty{display:none}
+  #s-cart[data-step="1"] .cl-x1{background:var(--hl); border-left-color:var(--ink)}
+  #s-cart[data-step="2"] .cl-x2{background:var(--hl); border-left-color:var(--ink)}
+  #s-cart[data-step="3"] .cl-x3{background:var(--hl); border-left-color:var(--ink)}
+  #s-cart[data-step="4"] .cl-x4{background:var(--hl); border-left-color:var(--ink)}
+  #s-cart[data-step="4"] .o.reveal{opacity:1}
+
+  .ui{position:fixed; left:0; right:0; bottom:0; height:46px; display:flex; align-items:center; gap:18px; padding:0 20px; z-index:50; pointer-events:none}
+  .ui .prog-track{flex:1; height:2px; background:var(--line)}
+  .ui .prog{height:2px; background:var(--ink); width:0; transition:width .4s ease}
+  .ui .count{font-family:var(--mono); font-size:13px; color:var(--mute); letter-spacing:.1em}
+  .ui .btns{display:flex; gap:8px; pointer-events:auto}
+  .ui button{font-family:var(--body); font-size:16px; width:34px; height:30px; border:1px solid var(--ink); background:#fff; cursor:pointer; line-height:1}
+  .ui button:hover{background:var(--ink); color:#fff}
+  .hint{position:fixed; bottom:60px; right:24px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); z-index:50; transition:opacity .6s; pointer-events:none}
+</style>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- 01 COVER -->
+    <section class="slide" id="s-title">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PYTHON <span class="b">·</span> WORKSHOP 08 ]</div>
+        <div class="py fit r" style="--d:.08s">MODULES &amp; CLASSES</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Modules <span class="b">·</span> The standard library <span class="b">·</span> Classes &amp; objects</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; import math</span>
+        <span>Workshop 08 / 19</span>
+      </div>
+    </section>
+
+    <!-- 02 LEAD-IN: MODULES -->
+    <section class="slide" id="s-leadin">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> MODULES ]</div><div class="num">02</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Don&rsquo;t write it<br>if it exists.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:24px">Need a square root? A random number? Today&rsquo;s date? Someone already wrote that — and it ships <span class="hl">inside Python</span>. A <span class="hl">module</span> is a bundle of ready-made code you pull in with <span class="mono" style="font-family:var(--mono)">import</span>.</p>
+        <p class="lead r mut" style="--d:.18s; margin-top:16px">Python&rsquo;s &ldquo;standard library&rdquo; is hundreds of these — <span class="hl">batteries included</span>. And any <span class="mono" style="font-family:var(--mono)">.py</span> file you write is a module too.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>import · reuse · batteries included</span></div>
+    </section>
+
+    <!-- 03 IMPORT THREE WAYS (step demo) -->
+    <section class="slide" id="s-import" data-steps="3">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> THREE WAYS ]</div><div class="num">03</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Three ways to import.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:6px; font-size:20px; color:var(--mute)">Each one pulls code out of the <span class="hl">standard library</span> into your program. They differ only in <span class="hl">what name</span> you use afterwards. Step through them:</p>
+        <div class="demo r" style="--d:.16s; align-items:stretch">
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start"><span class="cl cl-i1"><span class="kw">import</span> math</span><span class="cl cl-i2"><span class="kw">from</span> random <span class="kw">import</span> randint</span><span class="cl cl-i3"><span class="kw">import</span> datetime <span class="kw">as</span> dt</span></div>
+          <div class="impviz">
+            <div class="impsec implib">
+              <div class="sl">Standard library</div>
+              <div class="modrow">
+                <div class="modbox m-math">math<span class="mi">sqrt · pi</span></div>
+                <div class="modbox m-random">random<span class="mi">randint</span></div>
+                <div class="modbox m-datetime">datetime<span class="mi">date</span></div>
+              </div>
+            </div>
+            <div class="impsec impprog">
+              <div class="sl">Your program</div>
+              <div class="toks">
+                <div class="tok t-math">math.sqrt(9)<span class="com">whole module — use a dot</span></div>
+                <div class="tok t-randint">randint(1, 6)<span class="com">one name — no dot</span></div>
+                <div class="tok t-dt">dt.date.today()<span class="com">module under a nickname</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.3s; margin-top:18px">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.36s; margin-top:16px">A module is just a name you look things up in — like a dictionary, but the dot <span class="mono">.</span> does the lookup. <span class="mono">from … import</span> copies one name out so you can drop the dot.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>import · from import · import as</span></div>
+    </section>
+
+    <!-- 04 STANDARD LIBRARY TOUR -->
+    <section class="slide" id="s-stdlib">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> BATTERIES INCLUDED ]</div><div class="num">04</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Four you&rsquo;ll reach for.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:10px; font-size:21px; color:var(--mute)">A tiny corner of the standard library — enough to feel the idea.</p>
+        <div class="grid">
+          <div class="cell r" style="--d:.14s"><div class="ci">math</div><div class="ct">Numbers</div><div class="cd">sqrt · pi · floor · ceil. The maths you don&rsquo;t want to redo.</div></div>
+          <div class="cell r" style="--d:.2s"><div class="ci">random</div><div class="ct">Chance</div><div class="cd">randint · choice · shuffle. Dice, picks, shuffles.</div></div>
+          <div class="cell r" style="--d:.26s"><div class="ci">datetime</div><div class="ct">Time</div><div class="cd">date.today(). What day is it right now?</div></div>
+          <div class="cell r" style="--d:.32s"><div class="ci">json</div><div class="ct">Save data</div><div class="cd">dump · load. Store a whole dictionary in a file.</div></div>
+          <div class="cell r" style="--d:.38s"><div class="ci">os</div><div class="ct">Your computer</div><div class="cd">paths, folders, files. (A taste — later.)</div></div>
+          <div class="cell r" style="--d:.44s"><div class="ci">…hundreds more</div><div class="ct">Look it up</div><div class="cd">docs.python.org has the whole list. You import what you need.</div></div>
+        </div>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>math · random · datetime · json</span></div>
+    </section>
+
+    <!-- 05 EXAMPLE: RANDOM DICE (animated) -->
+    <section class="slide" id="s-dice" data-steps="3">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> EXAMPLE ]</div><div class="num">05</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Example: roll a die.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:6px; font-size:20px; color:var(--mute)">Three lines, one import — and you have a working dice roll. Step through it:</p>
+        <div class="demo r" style="--d:.16s; align-items:center">
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start"><span class="cl cl-d1"><span class="kw">from</span> random <span class="kw">import</span> randint</span><span class="cl"> </span><span class="cl cl-d2">roll = randint(1, 6)</span><span class="cl cl-d3"><span class="kw">print</span>(f<span class="str">"You rolled a {roll}"</span>)</span></div>
+          <div class="dicewrap">
+            <div class="die"><span class="q">?</span><span class="pip p-tl"></span><span class="pip p-tr"></span><span class="pip p-bl"></span><span class="pip p-br"></span></div>
+            <div class="term" style="width:100%">
+              <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal — dice.py</span></div>
+              <div class="tbody"><span class="cmd"><span class="pr">$</span>python dice.py</span><span class="o ok reveal">You rolled a 4</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.34s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.4s; margin-top:12px"><span class="mono">randint(1, 6)</span> gives a whole number from 1 to 6 — both ends included. Run it again and you get a different roll. That&rsquo;s the <span class="mono">random</span> module doing the hard part.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>from random import randint</span></div>
+    </section>
+
+    <!-- 05 YOUR OWN MODULE (animated import flow) -->
+    <section class="slide" id="s-ownmod" data-steps="3">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> YOUR OWN ]</div><div class="num">06</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Your file is a module.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:6px; font-size:20px; color:var(--mute)">Put reusable functions in one file; <span class="hl">import them</span> from another (same folder). Step through it:</p>
+        <div class="ownrow r" style="--d:.16s">
+          <div class="fcard f-mod">
+            <div class="fh">my_calc.py</div>
+            <div class="fc"><span class="ln"><span class="kw">PI</span> = 3.14159</span><span class="ln ln-fn"><span class="kw">def</span> circle_area(r):</span><span class="ln ln-fn">    <span class="kw">return</span> PI * r * r</span></div>
+          </div>
+          <div class="ownarrow"><span class="a2">&rarr;</span><span>import</span></div>
+          <div class="fcard">
+            <div class="fh">use_it.py</div>
+            <div class="fc"><span class="ln ln-imp"><span class="kw">import</span> my_calc</span><span class="ln"> </span><span class="ln ln-call"><span class="kw">print</span>(my_calc.circle_area(5))</span></div>
+          </div>
+        </div>
+        <div class="term ownterm r" style="--d:.22s">
+          <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal — use_it.py</span></div>
+          <div class="tbody"><span class="cmd"><span class="pr">$</span>python use_it.py</span><span class="o reveal">78.53975</span></div>
+        </div>
+        <div class="stepper r" style="--d:.3s; margin-top:16px">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.36s; margin-top:12px">The file name <span class="mono">my_calc.py</span> becomes the module name <span class="mono">my_calc</span> — everything inside is reachable with a dot, just like the standard library.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>import my_calc · my_calc.circle_area(5)</span></div>
+    </section>
+
+    <!-- 06 __name__ GUARD (with vs without, animated) -->
+    <section class="slide" id="s-guard" data-steps="3">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> THE GUARD ]</div><div class="num">07</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Should the demo run on import?</h1>
+        <p class="lead r" style="--d:.06s; margin-top:4px; font-size:19px; color:var(--mute)">A module often has a little demo at the bottom. When <span class="hl">another file imports it</span>, watch what happens with and without the guard:</p>
+        <div class="gctx r" style="--d:.14s"><span class="gk">another file runs</span><span class="kw" style="font-family:var(--mono)">import my_calc</span><span class="gk" style="margin-left:auto">so __name__ =</span><span class="nm">"my_calc"</span></div>
+        <div class="grow r" style="--d:.2s">
+          <div class="gcard g-no">
+            <div class="gh">&#10007; Without the guard</div>
+            <div class="gc"><span class="ln"><span class="kw">def</span> circle_area(r): ...</span><span class="ln ln-print"><span class="kw">print</span>(circle_area(2))</span></div>
+            <div class="term mini">
+              <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal</span></div>
+              <div class="tbody"><span class="cmd"><span class="pr">$</span>python app.py</span><span class="o bad reveal leak">12.56636 &nbsp;&larr; the demo ran on import!</span></div>
+            </div>
+          </div>
+          <div class="gcard g-yes">
+            <div class="gh">&#10003; With the guard</div>
+            <div class="gc"><span class="ln"><span class="kw">def</span> circle_area(r): ...</span><span class="ln ln-guard"><span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:</span><span class="ln">    <span class="kw">print</span>(circle_area(2))</span></div>
+            <div class="term mini">
+              <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal</span></div>
+              <div class="tbody"><span class="cmd"><span class="pr">$</span>python app.py</span><span class="o ok reveal quiet">(nothing &mdash; "my_calc" &ne; "__main__", skipped)</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.32s; margin-top:14px">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.4s; margin-top:10px">Run the file <span class="hl">directly</span> with <span class="mono">python my_calc.py</span> and <span class="mono">__name__</span> becomes <span class="mono">"__main__"</span> — so the guarded demo <span class="hl">does</span> run, exactly when you want it to.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>if __name__ == "__main__"</span></div>
+    </section>
+
+    <!-- 07 JSON -->
+    <section class="slide" id="s-json">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SAVE A DICT ]</div><div class="num">08</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Save a whole dictionary.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:12px">Last week you wrote files line by line. <span class="mono" style="font-family:var(--mono)">json</span> saves an <span class="hl">entire dictionary</span> at once — and loads it back as a real dict.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:14px"><span class="kw">import</span> json
+profile = {<span class="str">"name"</span>: <span class="str">"nino"</span>, <span class="str">"age"</span>: 21}
+
+<span class="kw">with</span> <span class="kw">open</span>(<span class="str">"profile.json"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:
+    json.dump(profile, f)          <span class="com"># dict  → file</span>
+
+<span class="kw">with</span> <span class="kw">open</span>(<span class="str">"profile.json"</span>) <span class="kw">as</span> f:
+    data = json.load(f)            <span class="com"># file → dict</span>
+<span class="kw">print</span>(data[<span class="str">"name"</span>])                  <span class="com"># nino</span></div>
+        <p class="note r" style="--d:.34s; margin-top:14px"><span class="mono">json.dump</span> writes, <span class="mono">json.load</span> reads. The thing that comes back is an ordinary dictionary — index it just like always.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>json.dump · json.load</span></div>
+    </section>
+
+    <!-- 08 DIVIDER: CLASSES -->
+    <section class="slide" id="s-part2">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PART 2 <span class="b">·</span> CLASSES ]</div>
+        <div class="py r" style="--d:.08s">CLASSES</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Your own data type — data and behaviour, together.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; rex = Dog("Rex", 3)</span>
+        <span>Part 2 · Classes and objects</span>
+      </div>
+    </section>
+
+    <!-- 09 DICT VS CLASS -->
+    <section class="slide" id="s-why">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> WHY ]</div><div class="num">10</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">A dict, leveled up.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:14px">A dictionary <span class="hl">groups data</span>. A class groups data <span class="hl">and the functions that work on it</span> — and lets you stamp out many copies from one blueprint.</p>
+        <div class="cols2 r" style="--d:.2s">
+          <div class="c">
+            <div class="lbl">Dictionary</div>
+            <div class="colcode"><span class="kw">dog</span> = {
+  <span class="str">"name"</span>: <span class="str">"Rex"</span>,
+  <span class="str">"age"</span>: 3,
+}
+<span class="com"># data only</span></div>
+          </div>
+          <div class="c">
+            <div class="lbl">Class → object</div>
+            <div class="colcode"><span class="kw">rex</span> = Dog(<span class="str">"Rex"</span>, 3)
+rex.bark()
+<span class="com"># data + behaviour</span>
+<span class="com"># a reusable blueprint</span></div>
+          </div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px"><span class="hl">class</span> = the blueprint (a Dog in general). <span class="hl">object</span> = one thing built from it (this specific dog).</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>blueprint vs object</span></div>
+    </section>
+
+    <!-- 10 ANATOMY -->
+    <section class="slide" id="s-anatomy">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> ANATOMY ]</div><div class="num">11</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Inside a class.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:10px; font-size:21px; color:var(--mute)">Three parts: the blueprint, the setup, and the behaviour.</p>
+        <div class="code sm r" style="--d:.18s; margin-top:12px"><span class="kw">class</span> Dog:                          <span class="com"># the blueprint</span>
+    <span class="kw">def</span> __init__(self, name, age):    <span class="com"># runs when a Dog is made</span>
+        self.name = name              <span class="com"># store data on the object</span>
+        self.age = age
+
+    <span class="kw">def</span> bark(self):                   <span class="com"># a method (behaviour)</span>
+        <span class="kw">return</span> f<span class="str">"{self.name} says woof!"</span></div>
+        <p class="note r" style="--d:.3s; margin-top:14px"><span class="mono">__init__</span> is the <span class="hl">setup</span> — it builds the object. Lines like <span class="mono">self.name = name</span> are <span class="hl">attributes</span> (data). <span class="mono">bark</span> is a <span class="hl">method</span> (a function that belongs to the class).</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>class · __init__ · method</span></div>
+    </section>
+
+    <!-- 11 BUILD A DOG (animated assembly) -->
+    <section class="slide" id="s-build" data-steps="5" style="--dog:#e0a14a">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> BUILD IT ]</div><div class="num">12</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Build a dog, field by field.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:6px; font-size:20px; color:var(--mute)">Each <span class="mono" style="font-family:var(--mono)">self.…</span> in <span class="mono" style="font-family:var(--mono)">__init__</span> adds one <span class="hl">attribute</span> — watch the dog come together. Step through it:</p>
+        <div class="demo r" style="--d:.16s; align-items:center">
+          <div style="flex:1.05">
+            <div class="code sm steps"><span class="cl cl-c0"><span class="kw">class</span> Dog:</span><span class="cl cl-d0">    <span class="kw">def</span> __init__(self):</span><span class="cl cl-color">        self.color = <span class="str">"golden"</span></span><span class="cl cl-legs">        self.legs&nbsp;&nbsp;= 4</span><span class="cl cl-ears">        self.ears&nbsp;&nbsp;= 2</span><span class="cl cl-tail">        self.tail&nbsp;&nbsp;= <span class="kw">True</span></span></div>
+            <div class="attrlist">
+              <div class="arow a-color"><span class="ak">self.color</span><span class="swatch"></span><span class="av">"golden"</span></div>
+              <div class="arow a-legs"><span class="ak">self.legs</span><span class="av">4</span></div>
+              <div class="arow a-ears"><span class="ak">self.ears</span><span class="av">2</span></div>
+              <div class="arow a-tail"><span class="ak">self.tail</span><span class="av">True</span></div>
+            </div>
+          </div>
+          <div class="dogwrap">
+            <svg class="dogsvg" viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg">
+              <g class="dog-tail"><path class="fillable" d="M78 150 q -40 4 -50 -36 q 20 -6 34 8 q 4 24 22 16 z"/></g>
+              <g class="dog-legs">
+                <rect class="leg fillable" x="92"  y="198" width="18" height="64" rx="7"/>
+                <rect class="leg fillable" x="124" y="198" width="18" height="64" rx="7"/>
+                <rect class="leg fillable" x="198" y="198" width="18" height="64" rx="7"/>
+                <rect class="leg fillable" x="230" y="198" width="18" height="64" rx="7"/>
+              </g>
+              <g class="dog-base">
+                <ellipse class="fillable" cx="160" cy="168" rx="92" ry="52"/>
+                <circle  class="fillable" cx="268" cy="120" r="48"/>
+                <ellipse class="fillable" cx="316" cy="134" rx="28" ry="20"/>
+                <circle  class="ink" cx="338" cy="130" r="7"/>
+                <circle  class="ink" cx="276" cy="108" r="6"/>
+              </g>
+              <g class="dog-ears"><path class="fillable" d="M236 84 q -28 -10 -34 20 q 0 18 22 16 q 8 -18 12 -36 z"/></g>
+            </svg>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.34s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">5</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.4s; margin-top:10px">An object is just a bag of <span class="hl">attributes</span> that <span class="mono">__init__</span> fills in. Colour, legs, ears, a tail — and you&rsquo;ve described one dog completely.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>self.color · self.legs · self.tail</span></div>
+    </section>
+
+    <!-- 12 BLUEPRINT → INSTANCES (animated) -->
+    <section class="slide" id="s-blueprint" data-steps="3">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> BLUEPRINT vs OBJECT ]</div><div class="num">13</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">One blueprint. Many real dogs.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:6px; font-size:20px; color:var(--mute)">The <span class="hl">class</span> is the plan — a drawing, not a dog. Each <span class="mono" style="font-family:var(--mono)">Dog(...)</span> <span class="hl">stamps out</span> a real object from it. Step through it:</p>
+        <div class="code sm steps r" style="--d:.14s; margin-top:10px"><span class="cl cl-r">rex&nbsp;&nbsp;&nbsp;= Dog(<span class="str">"Rex"</span>, <span class="str">"golden"</span>)</span><span class="cl cl-b">bella = Dog(<span class="str">"Bella"</span>, <span class="str">"grey"</span>)</span><span class="cl cl-m">max&nbsp;&nbsp;&nbsp;= Dog(<span class="str">"Max"</span>, <span class="str">"brown"</span>)</span></div>
+        <div class="bpwrap r" style="--d:.2s">
+          <div class="bpcard">
+            <span class="bplabel">class Dog</span><span class="bptag">BLUEPRINT</span>
+            <svg class="dogsvg" viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg" style="margin-top:14px">
+              <g class="dog-tail"><path class="fillable" d="M78 150 q -40 4 -50 -36 q 20 -6 34 8 q 4 24 22 16 z"/></g>
+              <g class="dog-legs"><rect class="leg fillable" x="92" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="124" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="198" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="230" y="198" width="18" height="64" rx="7"/></g>
+              <g class="dog-base"><ellipse class="fillable" cx="160" cy="168" rx="92" ry="52"/><circle class="fillable" cx="268" cy="120" r="48"/><ellipse class="fillable" cx="316" cy="134" rx="28" ry="20"/><circle class="ink" cx="338" cy="130" r="7"/><circle class="ink" cx="276" cy="108" r="6"/></g>
+              <g class="dog-ears"><path class="fillable" d="M236 84 q -28 -10 -34 20 q 0 18 22 16 q 8 -18 12 -36 z"/></g>
+            </svg>
+          </div>
+          <div class="bparrow"><span class="ar">&rarr;</span><span class="al">Dog(...)</span></div>
+          <div class="insts">
+            <div class="inst i0" style="--dog:#e0a14a">
+              <svg class="dogsvg mini full" viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg" style="max-width:190px">
+                <g class="dog-tail"><path class="fillable" d="M78 150 q -40 4 -50 -36 q 20 -6 34 8 q 4 24 22 16 z"/></g>
+                <g class="dog-legs"><rect class="leg fillable" x="92" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="124" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="198" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="230" y="198" width="18" height="64" rx="7"/></g>
+                <g class="dog-base"><ellipse class="fillable" cx="160" cy="168" rx="92" ry="52"/><circle class="fillable" cx="268" cy="120" r="48"/><ellipse class="fillable" cx="316" cy="134" rx="28" ry="20"/><circle class="ink" cx="338" cy="130" r="7"/><circle class="ink" cx="276" cy="108" r="6"/></g>
+                <g class="dog-ears"><path class="fillable" d="M236 84 q -28 -10 -34 20 q 0 18 22 16 q 8 -18 12 -36 z"/></g>
+              </svg>
+              <div class="dn"><span class="sw"></span>rex</div>
+            </div>
+            <div class="inst i1" style="--dog:#9aa0a6">
+              <svg class="dogsvg mini full" viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg" style="max-width:190px">
+                <g class="dog-tail"><path class="fillable" d="M78 150 q -40 4 -50 -36 q 20 -6 34 8 q 4 24 22 16 z"/></g>
+                <g class="dog-legs"><rect class="leg fillable" x="92" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="124" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="198" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="230" y="198" width="18" height="64" rx="7"/></g>
+                <g class="dog-base"><ellipse class="fillable" cx="160" cy="168" rx="92" ry="52"/><circle class="fillable" cx="268" cy="120" r="48"/><ellipse class="fillable" cx="316" cy="134" rx="28" ry="20"/><circle class="ink" cx="338" cy="130" r="7"/><circle class="ink" cx="276" cy="108" r="6"/></g>
+                <g class="dog-ears"><path class="fillable" d="M236 84 q -28 -10 -34 20 q 0 18 22 16 q 8 -18 12 -36 z"/></g>
+              </svg>
+              <div class="dn"><span class="sw"></span>bella</div>
+            </div>
+            <div class="inst i2" style="--dog:#8a5a2b">
+              <svg class="dogsvg mini full" viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg" style="max-width:190px">
+                <g class="dog-tail"><path class="fillable" d="M78 150 q -40 4 -50 -36 q 20 -6 34 8 q 4 24 22 16 z"/></g>
+                <g class="dog-legs"><rect class="leg fillable" x="92" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="124" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="198" y="198" width="18" height="64" rx="7"/><rect class="leg fillable" x="230" y="198" width="18" height="64" rx="7"/></g>
+                <g class="dog-base"><ellipse class="fillable" cx="160" cy="168" rx="92" ry="52"/><circle class="fillable" cx="268" cy="120" r="48"/><ellipse class="fillable" cx="316" cy="134" rx="28" ry="20"/><circle class="ink" cx="338" cy="130" r="7"/><circle class="ink" cx="276" cy="108" r="6"/></g>
+                <g class="dog-ears"><path class="fillable" d="M236 84 q -28 -10 -34 20 q 0 18 22 16 q 8 -18 12 -36 z"/></g>
+              </svg>
+              <div class="dn"><span class="sw"></span>max</div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.34s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.4s; margin-top:8px">You write the <span class="hl">class</span> once. Every <span class="mono">Dog(...)</span> builds a separate <span class="hl">object (instance)</span> with its own data — Rex being golden has nothing to do with Max being brown.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>class = blueprint · object = instance</span></div>
+    </section>
+
+    <!-- 12 SELF -->
+    <section class="slide" id="s-self">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> WHAT IS SELF ]</div><div class="num">14</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">&ldquo;self&rdquo; is <span style="font-family:var(--mono); text-transform:none">this</span> one.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px"><span class="mono" style="font-family:var(--mono)">self</span> is the <span class="hl">particular object</span> a method was called on. When you write <span class="mono" style="font-family:var(--mono)">rex.bark()</span>, Python quietly passes <span class="mono" style="font-family:var(--mono)">rex</span> in as <span class="mono" style="font-family:var(--mono)">self</span>.</p>
+        <div class="code sm r" style="--d:.2s; margin-top:16px">rex.bark()          <span class="com"># you write this</span>
+<span class="com"># Python runs:  Dog.bark(rex)</span>
+<span class="com"># so inside bark, self IS rex</span></div>
+        <p class="note r" style="--d:.32s; margin-top:18px">That&rsquo;s why every method&rsquo;s first parameter is <span class="mono">self</span>, and why we say <span class="mono">self.name</span> — &ldquo;<span class="hl">this</span> object&rsquo;s name.&rdquo; You never pass it by hand; the dot does it for you.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>rex.bark() → Dog.bark(rex)</span></div>
+    </section>
+
+    <!-- 14 STATE: BANK ACCOUNT (animated meter) -->
+    <section class="slide" id="s-bank" data-steps="4">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> DATA + RULES ]</div><div class="num">15</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">An object that guards itself.</h1>
+        <p class="lead r" style="--d:.06s; margin-top:4px; font-size:19px; color:var(--mute)">The balance lives <span class="hl">inside</span> the account. Methods change it — and <span class="mono" style="font-family:var(--mono)">withdraw</span> can say no. Run the account:</p>
+        <div class="demo r" style="--d:.14s; align-items:flex-start">
+          <div style="flex:1.02">
+            <div class="code sm" style="font-size:18px; line-height:1.5; padding:18px 24px"><span class="kw">class</span> BankAccount:
+    <span class="kw">def</span> __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    <span class="kw">def</span> deposit(self, amount):
+        self.balance += amount
+
+    <span class="kw">def</span> withdraw(self, amount):
+        <span class="kw">if</span> amount &gt; self.balance:
+            <span class="kw">print</span>(<span class="str">"Not enough money!"</span>)
+        <span class="kw">else</span>:
+            self.balance -= amount</div>
+          </div>
+          <div class="bankwrap">
+            <div class="bankcard">
+              <div class="bh"><span class="who">nino&rsquo;s account</span><span class="tag2">self.balance</span></div>
+              <div class="mval"><span class="b0">&mdash;</span><span class="b1"><span class="cur">$</span>100</span><span class="b2"><span class="cur">$</span>150</span><span class="b3"><span class="cur">$</span>120</span><span class="b4"><span class="cur">$</span>120</span></div>
+              <div class="meter"><div class="mfill"></div></div>
+              <div class="mscale"><span>0</span><span>200</span></div>
+              <div class="refuse">&#10007; Not enough money!</div>
+            </div>
+            <div class="code sm steps"><span class="cl cl-u1">acc = BankAccount(<span class="str">"nino"</span>, 100)</span><span class="cl cl-u2">acc.deposit(50)</span><span class="cl cl-u3">acc.withdraw(30)</span><span class="cl cl-u4">acc.withdraw(999)</span></div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.34s; margin-top:14px">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">4</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.4s; margin-top:10px">Deposits raise the balance, withdrawals lower it — but the last withdraw is <span class="hl">refused</span> because the rule lives right next to the data. That&rsquo;s the whole point of a class.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>deposit · withdraw · guard the data</span></div>
+    </section>
+
+    <!-- 16 EXAMPLE: SHOPPING CART (animated) -->
+    <section class="slide" id="s-cart" data-steps="4">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> EXAMPLE ]</div><div class="num">16</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Example: a shopping cart.</h1>
+        <p class="lead r" style="--d:.06s; margin-top:4px; font-size:19px; color:var(--mute)">An object can hold a <span class="hl">list</span> as its data. Add items, then ask it for the total. Run it:</p>
+        <div class="demo r" style="--d:.14s; align-items:flex-start">
+          <div style="flex:1.02">
+            <div class="code sm" style="font-size:18px; line-height:1.55; padding:18px 24px"><span class="kw">class</span> Cart:
+    <span class="kw">def</span> __init__(self):
+        self.items = []
+
+    <span class="kw">def</span> add(self, name, price):
+        self.items.append((name, price))
+
+    <span class="kw">def</span> total(self):
+        <span class="kw">return</span> <span class="kw">sum</span>(p <span class="kw">for</span> n, p <span class="kw">in</span> self.items)</div>
+          </div>
+          <div class="cartwrap">
+            <div class="cartcard">
+              <div class="ch">cart.items</div>
+              <div class="cartlist">
+                <div class="cartempty">(empty — nothing added yet)</div>
+                <div class="citem ci0"><span>milk</span><span class="cp">2</span></div>
+                <div class="citem ci1"><span>bread</span><span class="cp">3</span></div>
+              </div>
+            </div>
+            <div class="code sm steps"><span class="cl cl-x1">cart = Cart()</span><span class="cl cl-x2">cart.add(<span class="str">"milk"</span>, 2)</span><span class="cl cl-x3">cart.add(<span class="str">"bread"</span>, 3)</span><span class="cl cl-x4"><span class="kw">print</span>(cart.total())</span></div>
+            <div class="term">
+              <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal</span></div>
+              <div class="tbody"><span class="cmd"><span class="pr">$</span>python shop.py</span><span class="o ok reveal">5</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.34s; margin-top:12px">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">4</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.4s; margin-top:6px">The cart <span class="hl">remembers</span> its items in a list; <span class="mono">total()</span> adds the prices on demand — data and logic, bundled.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>self.items = [] · cart.add() · cart.total()</span></div>
+    </section>
+
+    <!-- 14 RECAP -->
+    <section class="slide" id="s-recap">
+      <div class="head"><div class="kick">[ RECAP <span class="b">·</span> WORKSHOP 08 ]</div><div class="num">17</div></div>
+      <div class="body">
+        <ul class="recap">
+          <li class="r" style="--d:0s"><span class="rn">01</span><span class="rt"><span class="hl">Modules</span> bring in ready-made code: <span class="mono" style="font-family:var(--mono)">import math</span>, <span class="mono" style="font-family:var(--mono)">from random import randint</span>, <span class="mono" style="font-family:var(--mono)">import datetime as dt</span>.</span></li>
+          <li class="r" style="--d:.08s"><span class="rn">02</span><span class="rt">The <span class="hl">standard library</span> is huge — <span class="mono" style="font-family:var(--mono)">math</span>, <span class="mono" style="font-family:var(--mono)">random</span>, <span class="mono" style="font-family:var(--mono)">datetime</span>, <span class="mono" style="font-family:var(--mono)">json</span>. <span class="mono" style="font-family:var(--mono)">json.dump</span> / <span class="mono" style="font-family:var(--mono)">json.load</span> save and load a whole dict.</span></li>
+          <li class="r" style="--d:.16s"><span class="rn">03</span><span class="rt">Any <span class="mono" style="font-family:var(--mono)">.py</span> file is <span class="hl">your own module</span> — <span class="mono" style="font-family:var(--mono)">import</span> it elsewhere; guard demos with <span class="mono" style="font-family:var(--mono)">if __name__ == "__main__"</span>.</span></li>
+          <li class="r" style="--d:.24s"><span class="rn">04</span><span class="rt">A <span class="hl">class</span> is a blueprint; an <span class="hl">object</span> is built from it. <span class="mono" style="font-family:var(--mono)">__init__</span> stores <span class="mono" style="font-family:var(--mono)">self.</span> attributes; <span class="hl">methods</span> are functions that take <span class="mono" style="font-family:var(--mono)">self</span>.</span></li>
+        </ul>
+        <p class="teaser r" style="--d:.4s"><span class="hl">You can now reuse code from anywhere and design your own data types.</span> This is how real programs are organised.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>modules · stdlib · classes</span></div>
+    </section>
+
+    <!-- 15 HOMEWORK -->
+    <section class="slide" id="s-hw">
+      <div class="head"><div class="kick">[ HOMEWORK <span class="b">·</span> WORKSHOP 08 ]</div><div class="num">18</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Your turn.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Eight exercises: borrow from <span class="mono" style="font-family:var(--mono)">math</span> and <span class="mono" style="font-family:var(--mono)">random</span>, write your own module, save a profile with <span class="mono" style="font-family:var(--mono)">json</span>, and build your first classes — <span class="mono" style="font-family:var(--mono)">Student</span>, <span class="mono" style="font-family:var(--mono)">Counter</span>, <span class="mono" style="font-family:var(--mono)">Wallet</span>.</p>
+        <p class="lead r mut" style="--d:.18s; margin-top:14px">Put it in a <span class="mono" style="font-family:var(--mono)">workshop_8_homework/</span> folder, push to the same repo, and re-send the link. <span class="hl">Due before Workshop 9.</span></p>
+      </div>
+      <div class="foot"><span>Python · Workshop 08</span><span>docs/workshop_8_homework.md</span></div>
+    </section>
+
+    <!-- 16 END -->
+    <section class="slide" id="s-end">
+      <div class="body" style="justify-content:center">
+        <div class="kick r" style="--d:0s">[ END <span class="b">·</span> WORKSHOP 08 ]</div>
+        <div class="end-q r" style="--d:.08s">QUESTIONS?</div>
+        <div class="rule r" style="--d:.16s"></div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; class SeeYou: pass</span>
+        <span>Python · Workshop 08</span>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- overlay nav UI -->
+<div class="ui">
+  <span class="count" id="count">01 / 16</span>
+  <div class="prog-track"><div class="prog" id="prog"></div></div>
+  <div class="btns">
+    <button id="prev" aria-label="Previous">&lsaquo;</button>
+    <button id="next" aria-label="Next">&rsaquo;</button>
+  </div>
+</div>
+<div class="hint" id="hint">← → navigate · ↓ step through demos</div>
+
+<script>
+(function(){
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  slides.forEach(function(s){
+    var lb=document.createElement('div'); lb.className='brk l';
+    var rb=document.createElement('div'); rb.className='brk r';
+    s.appendChild(lb); s.appendChild(rb);
+  });
+  document.querySelectorAll('.stepper').forEach(function(st){
+    var b=document.createElement('button');
+    b.className='sbtn auto on';
+    b.setAttribute('data-act','auto');
+    b.textContent='Auto';
+    var go=st.querySelector('.go');
+    if(go) go.insertAdjacentElement('afterend', b); else st.appendChild(b);
+  });
+  var count = document.getElementById('count');
+  var prog  = document.getElementById('prog');
+  var hint  = document.getElementById('hint');
+  var cur = 0, timers = [];
+
+  function fit(){
+    var s = Math.min(window.innerWidth/1440, window.innerHeight/900);
+    stage.style.transform = 'translate(-50%,-50%) scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+  function resetAnims(){ clearTimers(); }
+  function runAnims(i){}
+
+  var STEP_CAPS = {
+    's-import':['import math  —  use math.sqrt(9)','from random import randint  —  use randint(1, 6)','import datetime as dt  —  use dt.date.today()'],
+    's-ownmod':['import my_calc  —  the whole module loads','my_calc.circle_area(5)  —  reach in with a dot','→ prints 78.53975'],
+    's-guard':['another file does  import my_calc  →  __name__ is "my_calc"','without the guard: the bottom print RUNS on import (oops)','with the guard: "my_calc" ≠ "__main__"  →  print is skipped'],
+    's-dice':['from random import randint','roll = randint(1, 6)  →  roll the die','print(...)  →  "You rolled a 4"'],
+    's-cart':['cart = Cart()  →  empty list of items','cart.add("milk", 2)  →  added to the cart','cart.add("bread", 3)  →  added too','print(cart.total())  →  2 + 3 = 5'],
+    's-build':['class Dog: — the empty blueprint','self.color = "golden"  —  paint it','self.legs = 4  —  stand it up','self.ears = 2  —  give it ears','self.tail = True  —  wag! the dog is complete'],
+    's-blueprint':['rex = Dog("Rex", "golden")  —  stamped from the blueprint','bella = Dog("Bella", "grey")  —  a second, independent dog','max = Dog("Max", "brown")  —  one class, three real dogs'],
+    's-bank':['acc = BankAccount("nino", 100)  —  opened with $100','acc.deposit(50)  —  balance rises to $150','acc.withdraw(30)  —  balance drops to $120','acc.withdraw(999)  —  refused! balance stays $120']
+  };
+  function setStep(slide, k){
+    var max = parseInt(slide.getAttribute('data-steps'),10) || 0;
+    k = Math.max(0, Math.min(max, k));
+    slide.setAttribute('data-step', k);
+    var curEl = slide.querySelector('.scur'); if(curEl) curEl.textContent = k;
+    var caps = STEP_CAPS[slide.id] || [];
+    var cap = slide.querySelector('.scap'); if(cap) cap.textContent = k>0 ? (caps[k-1]||'') : '';
+    var pv = slide.querySelector('[data-act="prev"]');  if(pv) pv.disabled = (k===0);
+    var rs = slide.querySelector('[data-act="reset"]'); if(rs) rs.disabled = (k===0);
+    var nx = slide.querySelector('[data-act="next"]');  if(nx) nx.disabled = (k===max);
+  }
+  function stepSlide(slide, d){ setStep(slide, (parseInt(slide.getAttribute('data-step'),10)||0) + d); }
+
+  var auto = true, autoTimer = null;
+  function stopAuto(){ if(autoTimer){ clearTimeout(autoTimer); autoTimer = null; } }
+  function startAuto(slide){
+    stopAuto();
+    var max = parseInt(slide.getAttribute('data-steps'),10) || 0;
+    function tick(){
+      var k = parseInt(slide.getAttribute('data-step'),10) || 0;
+      if(k>=max){ setStep(slide, 0); autoTimer = setTimeout(tick, 1300); }
+      else { setStep(slide, k+1); autoTimer = setTimeout(tick, (k+1>=max) ? 1900 : 1300); }
+    }
+    autoTimer = setTimeout(tick, 1100);
+  }
+  function syncAutoBtns(){
+    document.querySelectorAll('.sbtn.auto').forEach(function(b){ b.classList.toggle('on', auto); });
+  }
+  function setManual(){ if(auto){ auto = false; stopAuto(); syncAutoBtns(); } }
+
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.sbtn') : null; if(!b) return;
+    var slide = b.closest('.slide'); if(!slide) return;
+    var act = b.getAttribute('data-act');
+    if(act==='auto'){
+      auto = !auto; syncAutoBtns();
+      if(auto) startAuto(slide); else stopAuto();
+    } else {
+      setManual();
+      if(act==='next') stepSlide(slide, 1);
+      else if(act==='prev') stepSlide(slide, -1);
+      else if(act==='reset') setStep(slide, 0);
+    }
+  });
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[cur].classList.remove('active');
+    resetAnims();
+    cur = i;
+    var s = slides[cur];
+    void s.offsetWidth;
+    s.classList.add('active');
+    stopAuto();
+    syncAutoBtns();
+    if(s.hasAttribute('data-steps')){
+      setStep(s, 0);
+      if(auto) startAuto(s);
+    }
+    count.textContent = String(i+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+    prog.style.width = (i/(slides.length-1)*100) + '%';
+    runAnims(i);
+  }
+  function nextS(){ goTo(cur+1); }
+  function prevS(){ goTo(cur-1); }
+
+  document.getElementById('next').addEventListener('click', nextS);
+  document.getElementById('prev').addEventListener('click', prevS);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); nextS(); }
+    else if(e.key===' '){ e.preventDefault(); nextS(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prevS(); }
+    else if(e.key==='ArrowDown'){ var s=slides[cur]; if(s.hasAttribute('data-steps')){ e.preventDefault(); setManual(); stepSlide(s,1); } }
+    else if(e.key==='ArrowUp'){ var s=slides[cur]; if(s.hasAttribute('data-steps')){ e.preventDefault(); setManual(); stepSlide(s,-1); } }
+    else if(e.key==='Home'){ goTo(0); }
+    else if(e.key==='End'){ goTo(slides.length-1); }
+  });
+  var tx=0;
+  document.addEventListener('touchstart', function(e){ tx=e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx)>50){ dx<0 ? nextS() : prevS(); }
+  }, {passive:true});
+
+  setTimeout(function(){ hint.style.opacity='0'; }, 4000);
+  goTo(0);
+})();
+</script>

@@ -6,8 +6,10 @@ e.g. a point (x, y) or a person's (name, age).
 
 # create a tuple with parentheses
 point = (3, 7)
+
 print(point)
 print(f"{point = }")
+point = (4, 9)
 
 # indexing works exactly like a list
 print(point[0])
