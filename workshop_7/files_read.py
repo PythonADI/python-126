@@ -21,8 +21,10 @@ files_write.py first so that shopping.txt exists.
 # print("=" * 20)
 
 # .readlines() gives you a list of lines — one string per line
-with open("shopping.txt", "r") as f:
-    lines = f.readlines()
-print(lines)
-print(f"There are {len(lines)} items on the list.")
+with open("shopping.txt", "r+") as f:
+    f.seek(0, 0)
+    f.write("")
+
+# print(lines)
+# print(f"There are {len(lines)} items on the list.")
 

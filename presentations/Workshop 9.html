@@ -1,0 +1,768 @@
+
+<!-- Python Workshop 09 — OOP Part 2 · Special methods · Inheritance. Self-contained. Use ← → / Space to navigate, ↓ to step through demos. -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python · Workshop 09 — OOP Part 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#0a0a0a;
+    --mute:#7a7a7a;
+    --syn-kw:#0a53be;     /* keywords & builtins */
+    --syn-str:#197a3d;    /* strings            */
+    --syn-com:#9a9a9a;    /* comments           */
+    --hl:rgba(10,10,10,.09);  /* active code line  */
+    --line:#e3e3e3;
+    --line2:#111;
+    --paper:#ffffff;
+    --display:'Coolvetica Compressed','Coolvetica',Anton,'Arial Narrow',sans-serif;
+    --body:'Inter','Noto Sans Georgian',system-ui,-apple-system,sans-serif;
+    --mono:'SF Mono',SFMono-Regular,Menlo,Consolas,'Liberation Mono','Noto Sans Georgian',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{height:100%}
+  body{background:var(--paper); color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased; overflow:hidden}
+
+  .viewport{position:fixed; inset:0; overflow:hidden; background:var(--paper)}
+  .stage{position:absolute; top:50%; left:50%; width:1440px; height:900px; transform-origin:center center}
+
+  .slide{position:absolute; inset:0; opacity:0; pointer-events:none; padding:90px 100px; display:flex; flex-direction:column}
+  .slide.active{opacity:1; pointer-events:auto}
+
+  .head{display:flex; justify-content:space-between; align-items:flex-start}
+  .kick{font-size:15px; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--ink)}
+  .kick .b{color:var(--mute)}
+  .num{font-family:var(--display); font-size:30px; letter-spacing:.04em; color:var(--mute); line-height:1}
+
+  .foot{position:absolute; left:100px; right:100px; bottom:54px; border-top:1px solid var(--line); padding-top:16px;
+        display:flex; justify-content:space-between; font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute)}
+
+  .body{flex:1; display:flex; flex-direction:column; justify-content:center}
+
+  h1{font-family:var(--display); font-weight:400; text-transform:uppercase; line-height:.92; letter-spacing:.005em}
+  .h-xl{font-size:108px}
+  .h-lg{font-size:84px}
+  .h-md{font-size:64px}
+  .lead{font-size:27px; line-height:1.5; color:#222; max-width:62ch}
+  .lead .hl{color:var(--ink); font-weight:600}
+  .mut{color:var(--mute)}
+  .tag{display:inline-block; font-weight:600; letter-spacing:.04em}
+
+  @keyframes rise{from{opacity:0; transform:translateY(22px)} to{opacity:1; transform:none}}
+  .slide .r{opacity:0}
+  .slide.active .r{animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards; animation-delay:var(--d,0s)}
+
+  .brk{position:absolute; width:34px; top:50%; transform:translateY(-50%); pointer-events:none; z-index:2}
+  .brk.l{left:42px; border-left:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .brk.r{right:42px; border-right:2.5px solid var(--ink); border-top:2.5px solid var(--ink); border-bottom:2.5px solid var(--ink)}
+  .slide .brk{height:0; opacity:0}
+  .slide.active .brk{animation:brkopen .55s cubic-bezier(.16,.84,.3,1) forwards}
+  @keyframes brkopen{from{height:0; opacity:0} to{height:780px; opacity:1}}
+
+  .title-wrap{display:flex; flex-direction:column; justify-content:center; height:100%}
+  .title-wrap .kick{margin-bottom:40px}
+  .py{font-family:var(--display); font-size:300px; line-height:.9; letter-spacing:.02em}
+  .py.fit{font-size:190px}
+  .rule{height:2px; background:var(--ink); margin:30px 0}
+  .subline{font-size:30px; color:#222; font-weight:500}
+  .subline .b{color:var(--mute)}
+  .motif{font-family:var(--mono); font-size:22px; color:var(--mute)}
+
+  .cols2{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:36px; border:1.5px solid var(--ink)}
+  .cols2 .c{padding:28px 32px}
+  .cols2 .c:first-child{border-right:1.5px solid var(--ink)}
+  .cols2 .lbl{font-size:14px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); margin-bottom:16px}
+  .cols2 ul{list-style:none}
+  .cols2 li{font-size:20px; line-height:1.5; padding:8px 0; color:#222}
+  .cols2 li::before{content:"\2014"; color:var(--mute); margin-right:10px}
+  .colcode{font-family:var(--mono); font-size:21px; line-height:1.7; white-space:pre}
+  .colcode .kw{font-weight:700; color:var(--syn-kw)}
+  .colcode .str{color:var(--syn-str)}
+  .colcode .com{color:var(--syn-com)}
+
+  .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:34px}
+  .cell{border:1.5px solid var(--ink); padding:22px 26px; min-height:130px}
+  .cell .ci{font-family:var(--mono); font-size:22px; line-height:1; color:var(--syn-kw); font-weight:700}
+  .cell .ct{font-size:21px; font-weight:600; margin-top:12px}
+  .cell .cd{font-size:16px; color:var(--mute); margin-top:8px; line-height:1.5}
+  .cell .cd .mono{font-family:var(--mono); font-size:15px}
+
+  .code{font-family:var(--mono); border:1.5px solid var(--ink); padding:32px 38px; font-size:27px; line-height:1.8; white-space:pre; overflow-x:auto}
+  .code.sm{font-size:23px; line-height:1.62; padding:26px 32px}
+  .code .kw{font-weight:700; color:var(--syn-kw)}
+  .code .com{color:var(--syn-com)}
+  .code .str{color:var(--syn-str)}
+
+  .code.steps{padding-left:0; padding-right:0; white-space:normal}
+  .code.steps .cl{display:block; white-space:pre; padding:2px 30px; border-left:3px solid transparent; background:transparent; transition:background .25s, border-color .25s}
+  .cl.on{background:var(--hl); border-left-color:var(--ink)}
+
+  .stepper{display:flex; align-items:center; gap:12px; margin-top:22px; flex-wrap:wrap}
+  .sbtn{font-family:var(--body); font-size:16px; font-weight:600; padding:9px 17px; border:1.5px solid var(--ink); background:#fff; color:var(--ink); cursor:pointer; letter-spacing:.02em; line-height:1}
+  .sbtn:hover{background:var(--ink); color:#fff}
+  .sbtn.go{background:var(--ink); color:#fff}
+  .sbtn.go:hover{background:#333}
+  .sbtn:disabled{opacity:.28; cursor:default; background:#fff; color:var(--ink)}
+  .sbtn.auto::before{content:"\25B6"; font-size:12px; margin-right:7px}
+  .sbtn.auto.on{background:var(--ink); color:#fff}
+  .sbtn.auto.on::before{content:"\23F8"}
+  .sbtn.auto.on:hover{background:#333}
+  .sstat{font-family:var(--mono); font-size:15px; color:var(--mute); margin-left:2px}
+  .sstat b{color:var(--ink); font-weight:600}
+  .scap{font-size:16px; color:#222; margin-left:8px; min-height:1.2em}
+  .scap b{font-weight:600}
+  .note{font-size:21px; color:#222; margin-top:22px; line-height:1.55; max-width:88ch}
+  .note .hl{font-weight:600}
+  .note .mono{font-family:var(--mono); font-size:19px}
+
+  .recap{list-style:none; margin-top:22px}
+  .recap li{font-size:23px; line-height:1.4; padding:15px 0; border-bottom:1px solid var(--line); display:flex; gap:20px}
+  .recap li:first-child{border-top:1px solid var(--line)}
+  .recap .rn{font-family:var(--display); font-size:26px; color:var(--mute); min-width:44px}
+  .recap .rt .hl{font-weight:600}
+  .recap .mono{font-family:var(--mono); font-size:19px}
+  .teaser{margin-top:26px; font-size:23px}
+  .teaser .hl{font-weight:600}
+
+  .end-q{font-family:var(--display); font-size:200px; line-height:.9}
+  #s-end .kick{margin-bottom:30px}
+
+  /* demo layout (code beside a visual) */
+  .demo{display:flex; gap:26px; margin-top:20px; align-items:stretch}
+  .demo .code{flex:1.05; margin:0; align-self:flex-start}
+
+  /* unified terminal output surface */
+  .term{background:#141416; border:1.5px solid var(--ink); overflow:hidden; font-family:var(--mono); display:flex; flex-direction:column}
+  .term .tbar{display:flex; align-items:center; gap:7px; padding:8px 12px; background:#2a2a2c}
+  .term .tdot{width:11px; height:11px; border-radius:50%; background:#555}
+  .term .tdot.cr{background:#ff5f57} .term .tdot.cy{background:#febc2e} .term .tdot.cg{background:#28c840}
+  .term .ttl{margin-left:8px; font-family:var(--body); font-size:12px; letter-spacing:.05em; color:#9a9a9a}
+  .term .tbody{padding:13px 16px; font-size:18px; line-height:1.7; color:#e8e8e8}
+  .term .cmd{display:block; color:#9a9a9a}
+  .term .cmd .pr{color:#28c840; margin-right:8px}
+  .term .o{display:block; color:#fff; margin-top:4px}
+  .term .o.ok{color:#7ee0a0}
+  .term .o.bad{color:#ff8a80}
+  .term .o.dim{color:#8a8a8a}
+  .term .o.reveal{opacity:0; transition:opacity .4s ease}
+
+  /* ===== s-strrepr : __str__ vs __repr__ ===== */
+  #s-strrepr[data-step="1"] .cl-str,
+  #s-strrepr[data-step="1"] .cl-p1,
+  #s-strrepr[data-step="2"] .cl-repr,
+  #s-strrepr[data-step="2"] .cl-p2,
+  #s-strrepr[data-step="3"] .cl-repr,
+  #s-strrepr[data-step="3"] .cl-p3{background:var(--hl); border-left-color:var(--ink)}
+  #s-strrepr[data-step="1"] .o1,#s-strrepr[data-step="2"] .o1,#s-strrepr[data-step="3"] .o1,
+  #s-strrepr[data-step="2"] .o2,#s-strrepr[data-step="3"] .o2,
+  #s-strrepr[data-step="3"] .o3{opacity:1}
+
+  /* ===== s-eq : __eq__ ===== */
+  #s-eq[data-step="1"] .cl-e1,
+  #s-eq[data-step="2"] .cl-e2,
+  #s-eq[data-step="3"] .cl-e3{background:var(--hl); border-left-color:var(--ink)}
+  #s-eq[data-step="1"] .o1,#s-eq[data-step="2"] .o1,#s-eq[data-step="3"] .o1,
+  #s-eq[data-step="2"] .o2,#s-eq[data-step="3"] .o2,
+  #s-eq[data-step="3"] .o3{opacity:1}
+  .chiprow{display:flex; gap:16px; justify-content:center; margin-bottom:14px}
+  .chip{font-family:var(--mono); font-size:20px; border:1.5px solid var(--ink); padding:12px 18px; background:#fff; text-align:center}
+  .chip .cn{color:var(--mute); font-size:12px; font-family:var(--body); letter-spacing:.12em; display:block; margin-bottom:4px; text-transform:uppercase}
+  .eqcol{flex:.92; display:flex; flex-direction:column; justify-content:center}
+
+  /* ===== s-classattr : shared counter ===== */
+  #s-classattr[data-step="1"] .cl-a1,
+  #s-classattr[data-step="2"] .cl-a2,
+  #s-classattr[data-step="3"] .cl-a3{background:var(--hl); border-left-color:var(--ink)}
+  .countwrap{flex:.9; display:flex; flex-direction:column; align-items:center; gap:18px; justify-content:center}
+  .countbadge{border:1.5px solid var(--ink); padding:16px 34px; text-align:center; min-width:230px}
+  .countbadge .cl2{font-family:var(--mono); font-size:15px; color:var(--mute); letter-spacing:.05em}
+  .countbadge .cv{font-family:var(--display); font-size:104px; line-height:1}
+  .countbadge .cv span{display:none}
+  #s-classattr[data-step="0"] .k0,
+  #s-classattr[data-step="1"] .k1,
+  #s-classattr[data-step="2"] .k2,
+  #s-classattr[data-step="3"] .k2{display:inline}
+  .instrow{display:flex; gap:16px; justify-content:center; min-height:56px}
+  .icard{font-family:var(--mono); font-size:18px; border:1.5px solid var(--ink); padding:10px 18px; opacity:0; transform:translateY(-12px); transition:opacity .4s, transform .4s}
+  .icard .isw{display:inline-block; width:11px; height:11px; border-radius:50%; background:var(--ink); margin-right:9px; vertical-align:1px}
+  #s-classattr[data-step="1"] .ic0,#s-classattr[data-step="2"] .ic0,#s-classattr[data-step="3"] .ic0{opacity:1; transform:none}
+  #s-classattr[data-step="2"] .ic1,#s-classattr[data-step="3"] .ic1{opacity:1; transform:none}
+
+  /* ===== s-inherit : method dispatch ===== */
+  #s-inherit[data-step="1"] .cl-h1,
+  #s-inherit[data-step="2"] .cl-h2,
+  #s-inherit[data-step="3"] .cl-h3{background:var(--hl); border-left-color:var(--ink)}
+  #s-inherit[data-step="1"] .o1,#s-inherit[data-step="2"] .o1,#s-inherit[data-step="3"] .o1,
+  #s-inherit[data-step="2"] .o2,#s-inherit[data-step="3"] .o2,
+  #s-inherit[data-step="3"] .o3{opacity:1}
+  .treewrap{flex:.95; display:flex; flex-direction:column; align-items:center; gap:12px; justify-content:center}
+  .parentbox{border:1.5px solid var(--ink); padding:12px 22px; font-family:var(--mono); font-size:18px; text-align:center; transition:background .35s}
+  .parentbox .pm{color:var(--mute); font-size:14px}
+  .treestem{width:2px; height:22px; background:var(--ink)}
+  .childrow{display:flex; gap:16px}
+  .childbox{border:1.5px solid var(--ink); padding:11px 15px; font-family:var(--mono); font-size:16px; text-align:center; background:#fff; transition:background .3s, color .3s}
+  .childbox .cm{display:block; font-size:12px; color:var(--mute); margin-top:5px; font-family:var(--body); letter-spacing:.02em}
+  #s-inherit[data-step="1"] .ch-dog,#s-inherit[data-step="2"] .ch-cat,#s-inherit[data-step="3"] .ch-cow{background:var(--ink); color:#fff}
+  #s-inherit[data-step="1"] .ch-dog .cm,#s-inherit[data-step="2"] .ch-cat .cm,#s-inherit[data-step="3"] .ch-cow .cm{color:#cfcfcf}
+  #s-inherit[data-step="3"] .parentbox{background:var(--hl)}
+
+  /* ===== s-super : two-stage object fill ===== */
+  #s-super[data-step="1"] .cl-su1,
+  #s-super[data-step="2"] .cl-su2,
+  #s-super[data-step="3"] .cl-su3{background:var(--hl); border-left-color:var(--ink)}
+  .objcard{flex:.9; border:1.5px solid var(--ink); align-self:center}
+  .objcard .oh{font-family:var(--mono); font-size:15px; background:#f0f0f0; border-bottom:1.5px solid var(--ink); padding:10px 16px}
+  .orow{display:flex; justify-content:space-between; align-items:center; gap:22px; font-family:var(--mono); font-size:20px; padding:14px 18px; border-bottom:1px solid var(--line); opacity:.18; transition:opacity .45s}
+  .orow:last-child{border-bottom:0}
+  .orow .osrc{font-family:var(--body); font-size:12px; color:var(--mute); letter-spacing:.06em; text-transform:uppercase}
+  #s-super[data-step="1"] .or-name,#s-super[data-step="1"] .or-salary,
+  #s-super[data-step="2"] .or-name,#s-super[data-step="2"] .or-salary,#s-super[data-step="2"] .or-team,
+  #s-super[data-step="3"] .or-name,#s-super[data-step="3"] .or-salary,#s-super[data-step="3"] .or-team{opacity:1}
+  #s-super[data-step="3"] .o1{opacity:1}
+
+  /* ===== s-property : computed area ===== */
+  #s-property[data-step="1"] .cl-pr1,
+  #s-property[data-step="2"] .cl-pr2,
+  #s-property[data-step="3"] .cl-pr3{background:var(--hl); border-left-color:var(--ink)}
+  .circwrap{flex:.9; display:flex; flex-direction:column; align-items:center; gap:16px; justify-content:center}
+  .circsvg{width:240px; height:240px}
+  .circsvg .cfill{fill:rgba(10,10,10,.06); stroke:var(--ink); stroke-width:2.5; r:60px; transition:r .6s cubic-bezier(.3,.8,.3,1)}
+  #s-property[data-step="1"] .cfill,#s-property[data-step="2"] .cfill{r:78px}
+  #s-property[data-step="3"] .cfill{r:115px}
+  .circmeta{font-family:var(--mono); font-size:22px; text-align:center; line-height:1.8}
+  .circmeta b{font-weight:600}
+  .circmeta .rv span,.circmeta .av span{display:none}
+  #s-property[data-step="0"] .rv0,#s-property[data-step="1"] .rv0,#s-property[data-step="2"] .rv0{display:inline}
+  #s-property[data-step="3"] .rv3{display:inline}
+  #s-property[data-step="0"] .av0{display:inline}
+  #s-property[data-step="1"] .av1,#s-property[data-step="2"] .av1{display:inline}
+  #s-property[data-step="3"] .av2{display:inline}
+
+  /* ===== s-shapes : capstone hierarchy ===== */
+  #s-shapes[data-step="1"] .cl-sh1,
+  #s-shapes[data-step="2"] .cl-sh2,
+  #s-shapes[data-step="3"] .cl-sh3{background:var(--hl); border-left-color:var(--ink)}
+  #s-shapes[data-step="1"] .o1,#s-shapes[data-step="2"] .o1,#s-shapes[data-step="3"] .o1,
+  #s-shapes[data-step="2"] .o2,#s-shapes[data-step="3"] .o2,
+  #s-shapes[data-step="3"] .o3{opacity:1}
+  .shaperow{flex:.95; display:flex; gap:26px; align-items:center; justify-content:center; flex-wrap:wrap}
+  .shapecard{display:flex; flex-direction:column; align-items:center; gap:10px; opacity:0; transform:scale(.6); transition:opacity .45s, transform .45s}
+  .shapecard .sl2{font-family:var(--mono); font-size:16px}
+  .shapesvg{width:150px; height:150px}
+  .shapesvg .sfill{fill:rgba(10,10,10,.06); stroke:var(--ink); stroke-width:2.5}
+  #s-shapes[data-step="1"] .sc0,#s-shapes[data-step="2"] .sc0,#s-shapes[data-step="3"] .sc0{opacity:1; transform:none}
+  #s-shapes[data-step="2"] .sc1,#s-shapes[data-step="3"] .sc1{opacity:1; transform:none}
+  #s-shapes[data-step="3"] .sc0 .shapesvg .sfill{fill:rgba(31,138,76,.16); stroke:#1f8a4c}
+  #s-shapes[data-step="3"] .sc0 .sl2{color:#1f8a4c; font-weight:600}
+
+  .ui{position:fixed; left:0; right:0; bottom:0; height:46px; display:flex; align-items:center; gap:18px; padding:0 20px; z-index:50; pointer-events:none}
+  .ui .prog-track{flex:1; height:2px; background:var(--line)}
+  .ui .prog{height:2px; background:var(--ink); width:0; transition:width .4s ease}
+  .ui .count{font-family:var(--mono); font-size:13px; color:var(--mute); letter-spacing:.1em}
+  .ui .btns{display:flex; gap:8px; pointer-events:auto}
+  .ui button{font-family:var(--body); font-size:16px; width:34px; height:30px; border:1px solid var(--ink); background:#fff; cursor:pointer; line-height:1}
+  .ui button:hover{background:var(--ink); color:#fff}
+  .hint{position:fixed; bottom:60px; right:24px; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute); z-index:50; transition:opacity .6s; pointer-events:none}
+</style>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- 01 COVER -->
+    <section class="slide" id="s-title">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PYTHON <span class="b">·</span> WORKSHOP 09 ]</div>
+        <div class="py fit r" style="--d:.08s">OOP · PART TWO</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">Objects that print <span class="b">·</span> compare <span class="b">·</span> share <span class="b">·</span> inherit</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; class Dog(Animal): ...</span>
+        <span>Workshop 09 / 15</span>
+      </div>
+    </section>
+
+    <!-- 02 LEAD-IN: THE PROBLEM -->
+    <section class="slide" id="s-leadin">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SPECIAL METHODS ]</div><div class="num">02</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Your objects<br>can do more.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:22px">Last week you built classes. But <span class="hl">print one</span> and Python shows this:</p>
+        <div class="term r" style="--d:.18s; margin-top:16px; max-width:760px">
+          <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal — dogs.py</span></div>
+          <div class="tbody"><span class="cmd"><span class="pr">$</span>python dogs.py</span><span class="o bad">&lt;__main__.Dog object at 0x104f2b9d0&gt;</span></div>
+        </div>
+        <p class="lead r mut" style="--d:.26s; margin-top:16px">Useless. This week: <span class="hl">special methods</span> teach your objects how to print, compare, and share data — then <span class="hl">inheritance</span> lets one class build on another.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>__str__ · __eq__ · inheritance · @property</span></div>
+    </section>
+
+    <!-- 03 __str__ / __repr__ (step demo) -->
+    <section class="slide" id="s-strrepr" data-steps="3">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> PRINT NICELY ]</div><div class="num">03</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">__str__ and __repr__.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">Two methods that return a string. <span class="mono" style="font-family:var(--mono)">__str__</span> is for people; <span class="mono" style="font-family:var(--mono)">__repr__</span> is for programmers. Step through it:</p>
+        <div class="demo r" style="--d:.16s; align-items:stretch">
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start; font-size:20px; line-height:1.6"><span class="cl cl-str"><span class="kw">def</span> __str__(self):</span><span class="cl cl-str">    <span class="kw">return</span> f<span class="str">"{self.name}, aged {self.age}"</span></span><span class="cl cl-repr"><span class="kw">def</span> __repr__(self):</span><span class="cl cl-repr">    <span class="kw">return</span> f<span class="str">"Dog('{self.name}', {self.age})"</span></span><span class="cl"> </span><span class="cl cl-p1"><span class="kw">print</span>(rex)</span><span class="cl cl-p2"><span class="kw">print</span>(<span class="kw">repr</span>(rex))</span><span class="cl cl-p3"><span class="kw">print</span>([rex, bella])</span></div>
+          <div class="term" style="flex:.85; align-self:flex-start">
+            <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal</span></div>
+            <div class="tbody"><span class="cmd"><span class="pr">$</span>python dogs.py</span><span class="o ok reveal o1">Rex, aged 3</span><span class="o reveal o2">Dog('Rex', 3)</span><span class="o reveal o3">[Dog('Rex', 3), Dog('Bella', 5)]</span></div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.32s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:14px"><span class="mono">print()</span> reaches for <span class="mono">__str__</span>; the REPL and lists reach for <span class="mono">__repr__</span>. Notice a <span class="hl">list</span> shows each item with its <span class="mono">__repr__</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>__str__ for people · __repr__ for programmers</span></div>
+    </section>
+
+    <!-- 04 THE DUNDER FAMILY -->
+    <section class="slide" id="s-dunder">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> DUNDER METHODS ]</div><div class="num">04</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">The &ldquo;dunder&rdquo; family.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:10px; font-size:21px; color:var(--mute)">Names wrapped in <span class="hl">d</span>ouble <span class="hl">under</span>scores. Python calls them for you at the right moment — you never call them by name.</p>
+        <div class="grid">
+          <div class="cell r" style="--d:.14s"><div class="ci">__init__</div><div class="ct">Build it</div><div class="cd">Runs when you make the object. <span class="mono">Dog("Rex", 3)</span>. You met this last week.</div></div>
+          <div class="cell r" style="--d:.2s"><div class="ci">__str__</div><div class="ct">Print it</div><div class="cd">The friendly text for <span class="mono">print(obj)</span> and <span class="mono">str(obj)</span>.</div></div>
+          <div class="cell r" style="--d:.26s"><div class="ci">__repr__</div><div class="ct">Debug it</div><div class="cd">The exact text for the REPL and inside <span class="mono">[lists]</span>.</div></div>
+          <div class="cell r" style="--d:.32s"><div class="ci">__eq__</div><div class="ct">Compare it</div><div class="cd">Decide when <span class="mono">a == b</span> is <span class="mono">True</span> for your type.</div></div>
+        </div>
+        <p class="note r" style="--d:.4s; margin-top:20px">There are many more (<span class="mono">__len__</span>, <span class="mono">__lt__</span>, …) — but these four carry you a long way. Each one <span class="hl">returns</span> its answer.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>double-underscore = "dunder"</span></div>
+    </section>
+
+    <!-- 05 __eq__ (step demo) -->
+    <section class="slide" id="s-eq" data-steps="3">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> COMPARE ]</div><div class="num">05</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">When are two objects equal?</h1>
+        <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">By default, only if they are the <span class="hl">same object</span>. <span class="mono" style="font-family:var(--mono)">__eq__</span> lets you compare the <span class="hl">data</span> instead. Step through it:</p>
+        <div class="demo r" style="--d:.16s; align-items:stretch">
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start; font-size:19px; line-height:1.6"><span class="cl"><span class="kw">def</span> __eq__(self, other):</span><span class="cl">    <span class="kw">return</span> self.x == other.x <span class="kw">and</span> self.y == other.y</span><span class="cl"> </span><span class="cl">a, b, c = Point(3,7), Point(3,7), Point(9,0)</span><span class="cl cl-e1"><span class="kw">print</span>(a == b)</span><span class="cl cl-e2"><span class="kw">print</span>(a == c)</span><span class="cl cl-e3"><span class="kw">print</span>(a <span class="kw">is</span> b)</span></div>
+          <div class="eqcol">
+            <div class="chiprow">
+              <div class="chip"><span class="cn">a</span>(3, 7)</div>
+              <div class="chip"><span class="cn">b</span>(3, 7)</div>
+              <div class="chip"><span class="cn">c</span>(9, 0)</div>
+            </div>
+            <div class="term">
+              <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal</span></div>
+              <div class="tbody"><span class="cmd"><span class="pr">$</span>python points.py</span><span class="o ok reveal o1">True&nbsp;&nbsp;<span class="o dim" style="display:inline">&larr; same data</span></span><span class="o bad reveal o2">False&nbsp;&nbsp;<span class="o dim" style="display:inline">&larr; 3 ≠ 9</span></span><span class="o bad reveal o3">False&nbsp;&nbsp;<span class="o dim" style="display:inline">&larr; different objects</span></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.32s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:14px"><span class="mono">==</span> now asks &ldquo;same <span class="hl">data</span>?&rdquo; (your <span class="mono">__eq__</span>). <span class="mono">is</span> still asks &ldquo;the <span class="hl">exact same object</span> in memory?&rdquo; — a different question.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>== compares data · is compares identity</span></div>
+    </section>
+
+    <!-- 06 CLASS vs INSTANCE (step demo) -->
+    <section class="slide" id="s-classattr" data-steps="3">
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SHARED DATA ]</div><div class="num">06</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">A value shared by all.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">Written in the class body (not on <span class="mono" style="font-family:var(--mono)">self</span>), a <span class="hl">class attribute</span> is shared by every object. Great for counting them. Step through it:</p>
+        <div class="demo r" style="--d:.16s; align-items:center">
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start"><span class="cl"><span class="kw">class</span> Dog:</span><span class="cl">    count = 0&nbsp;&nbsp;&nbsp;&nbsp;<span class="com"># shared by all dogs</span></span><span class="cl">    <span class="kw">def</span> __init__(self, name):</span><span class="cl">        self.name = name</span><span class="cl">        Dog.count += 1</span><span class="cl"> </span><span class="cl cl-a1">rex&nbsp;&nbsp;= Dog(<span class="str">"Rex"</span>)</span><span class="cl cl-a2">bella = Dog(<span class="str">"Bella"</span>)</span><span class="cl cl-a3"><span class="kw">print</span>(Dog.count)</span></div>
+          <div class="countwrap">
+            <div class="countbadge">
+              <div class="cl2">Dog.count</div>
+              <div class="cv"><span class="k0">0</span><span class="k1">1</span><span class="k2">2</span></div>
+            </div>
+            <div class="instrow">
+              <div class="icard ic0"><span class="isw"></span>rex</div>
+              <div class="icard ic1"><span class="isw"></span>bella</div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.32s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:12px">Each <span class="mono">self.name</span> is that dog&rsquo;s own. But <span class="mono">Dog.count</span> lives on the <span class="hl">class</span> — every new dog bumps the <span class="hl">one</span> shared number.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>class attribute = shared · instance attribute = per-object</span></div>
+    </section>
+
+    <!-- 07 DIVIDER: INHERITANCE -->
+    <section class="slide" id="s-part2">
+      <div class="title-wrap">
+        <div class="kick r" style="--d:0s">[ PART 2 <span class="b">·</span> INHERITANCE ]</div>
+        <div class="py fit r" style="--d:.08s">INHERITANCE</div>
+        <div class="rule r" style="--d:.16s"></div>
+        <div class="subline r" style="--d:.22s">One class built on another — reuse, don&rsquo;t repeat.</div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; class Dog(Animal): ...</span>
+        <span>Part 2 · Inheritance &amp; @property</span>
+      </div>
+    </section>
+
+    <!-- 08 WHY INHERIT -->
+    <section class="slide" id="s-why2">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> WHY ]</div><div class="num">08</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Don&rsquo;t repeat yourself.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:14px">Dogs, cats and cows all have a <span class="hl">name</span>. Copy that into three classes? No — write it <span class="hl">once</span> in a parent and let the others <span class="hl">inherit</span> it.</p>
+        <div class="cols2 r" style="--d:.2s">
+          <div class="c">
+            <div class="lbl">Repeated</div>
+            <div class="colcode"><span class="kw">class</span> Dog:
+    <span class="kw">def</span> __init__(self, name):
+        self.name = name
+<span class="kw">class</span> Cat:
+    <span class="kw">def</span> __init__(self, name):
+        self.name = name
+<span class="com"># ...again, and again</span></div>
+          </div>
+          <div class="c">
+            <div class="lbl">Inherited</div>
+            <div class="colcode"><span class="kw">class</span> Animal:
+    <span class="kw">def</span> __init__(self, name):
+        self.name = name
+
+<span class="kw">class</span> Dog(Animal): ...
+<span class="kw">class</span> Cat(Animal): ...</div>
+          </div>
+        </div>
+        <p class="note r" style="--d:.34s; margin-top:18px"><span class="mono">class Dog(Animal)</span> means &ldquo;a Dog <span class="hl">is an</span> Animal&rdquo; — it gets everything Animal has, for free.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>a Dog is an Animal</span></div>
+    </section>
+
+    <!-- 09 INHERITANCE DISPATCH (step demo) -->
+    <section class="slide" id="s-inherit" data-steps="3">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> OVERRIDE ]</div><div class="num">09</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Which speak() runs?</h1>
+        <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">A subclass can <span class="hl">override</span> a method. If it doesn&rsquo;t, it falls back to the parent&rsquo;s. Step through the loop:</p>
+        <div class="demo r" style="--d:.16s; align-items:stretch">
+          <div class="code sm steps" style="flex:1.02; align-self:flex-start; font-size:18px; line-height:1.5"><span class="cl"><span class="kw">class</span> Animal:</span><span class="cl">    <span class="kw">def</span> speak(self): <span class="kw">return</span> f<span class="str">"{self.name} makes a sound"</span></span><span class="cl"><span class="kw">class</span> Dog(Animal):</span><span class="cl">    <span class="kw">def</span> speak(self): <span class="kw">return</span> f<span class="str">"{self.name} says woof"</span></span><span class="cl"><span class="kw">class</span> Cat(Animal):</span><span class="cl">    <span class="kw">def</span> speak(self): <span class="kw">return</span> f<span class="str">"{self.name} says meow"</span></span><span class="cl"><span class="kw">class</span> Cow(Animal): <span class="kw">pass</span></span><span class="cl"> </span><span class="cl cl-h1"><span class="kw">print</span>(Dog(<span class="str">"Rex"</span>).speak())</span><span class="cl cl-h2"><span class="kw">print</span>(Cat(<span class="str">"Felix"</span>).speak())</span><span class="cl cl-h3"><span class="kw">print</span>(Cow(<span class="str">"Daisy"</span>).speak())</span></div>
+          <div class="eqcol">
+            <div class="treewrap">
+              <div class="parentbox">Animal<span class="pm"> · speak() → "makes a sound"</span></div>
+              <div class="treestem"></div>
+              <div class="childrow">
+                <div class="childbox ch-dog">Dog<span class="cm">own speak()</span></div>
+                <div class="childbox ch-cat">Cat<span class="cm">own speak()</span></div>
+                <div class="childbox ch-cow">Cow<span class="cm">inherits ↑</span></div>
+              </div>
+            </div>
+            <div class="term" style="margin-top:14px">
+              <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal</span></div>
+              <div class="tbody"><span class="cmd"><span class="pr">$</span>python zoo.py</span><span class="o ok reveal o1">Rex says woof</span><span class="o ok reveal o2">Felix says meow</span><span class="o ok reveal o3">Daisy makes a sound</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.32s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:10px; font-size:19px">Dog and Cat override <span class="mono">speak</span>; Cow has none, so Python walks <span class="hl">up</span> to Animal for its version. That fallback <span class="hl">is</span> inheritance.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>override · or fall back to the parent</span></div>
+    </section>
+
+    <!-- 10 super().__init__ (step demo) -->
+    <section class="slide" id="s-super" data-steps="3">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> SUPER ]</div><div class="num">10</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Let the parent set up first.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">A subclass&rsquo;s <span class="mono" style="font-family:var(--mono)">__init__</span> calls <span class="mono" style="font-family:var(--mono)">super().__init__(...)</span> to reuse the parent&rsquo;s setup, then adds its own. Watch the object fill in:</p>
+        <div class="demo r" style="--d:.16s; align-items:stretch">
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start"><span class="cl"><span class="kw">class</span> Manager(Employee):</span><span class="cl">    <span class="kw">def</span> __init__(self, name, salary, team):</span><span class="cl cl-su1">        super().__init__(name, salary)</span><span class="cl cl-su2">        self.team = team</span><span class="cl"> </span><span class="cl cl-su3">mgr = Manager(<span class="str">"giorgi"</span>, 3500, <span class="str">"Backend"</span>)</span></div>
+          <div class="objcard">
+            <div class="oh">mgr &nbsp;— a Manager object</div>
+            <div class="orow or-name"><span>self.name = <span style="color:var(--syn-str)">"giorgi"</span></span><span class="osrc">from Employee</span></div>
+            <div class="orow or-salary"><span>self.salary = 3500</span><span class="osrc">from Employee</span></div>
+            <div class="orow or-team"><span>self.team = <span style="color:var(--syn-str)">"Backend"</span></span><span class="osrc">from Manager</span></div>
+          </div>
+        </div>
+        <div class="term r" style="--d:.24s; margin-top:8px; max-width:640px">
+          <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal — mgr.describe()</span></div>
+          <div class="tbody"><span class="cmd"><span class="pr">$</span>python staff.py</span><span class="o ok reveal o1">giorgi earns 3500 and leads Backend</span></div>
+        </div>
+        <div class="stepper r" style="--d:.32s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:6px"><span class="mono">super()</span> means &ldquo;the parent&rdquo;. It runs <span class="mono">Employee.__init__</span> to set <span class="mono">name</span> and <span class="mono">salary</span> — then the Manager adds <span class="mono">team</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>super().__init__(...) then add your own</span></div>
+    </section>
+
+    <!-- 11 @property (step demo) -->
+    <section class="slide" id="s-property" data-steps="3">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> COMPUTED ]</div><div class="num">11</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">A method you use like data.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">Some values are <span class="hl">computed</span>, not stored. <span class="mono" style="font-family:var(--mono)">@property</span> lets you read <span class="mono" style="font-family:var(--mono)">c.area</span> with no parentheses. Step through it:</p>
+        <div class="demo r" style="--d:.16s; align-items:center">
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start; font-size:20px; line-height:1.55"><span class="cl"><span class="kw">class</span> Circle:</span><span class="cl">    <span class="kw">def</span> __init__(self, radius):</span><span class="cl">        self.radius = radius</span><span class="cl">    @property</span><span class="cl">    <span class="kw">def</span> area(self):</span><span class="cl">        <span class="kw">return</span> math.pi * self.radius * self.radius</span><span class="cl"> </span><span class="cl cl-pr1">c = Circle(5)</span><span class="cl cl-pr2"><span class="kw">print</span>(c.area)&nbsp;&nbsp;<span class="com"># no () — like an attribute</span></span><span class="cl cl-pr3">c.radius = 10&nbsp;&nbsp;<span class="com"># recomputes</span></span></div>
+          <div class="circwrap">
+            <svg class="circsvg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg"><circle class="cfill" cx="120" cy="120" r="60"/></svg>
+            <div class="circmeta">
+              <div>radius = <b class="rv"><span class="rv0">5</span><span class="rv3">10</span></b></div>
+              <div>c.area = <b class="av"><span class="av0">?</span><span class="av1">78.54</span><span class="av2">314.16</span></b></div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.32s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:6px">No stored <span class="mono">area</span> to keep in sync — it&rsquo;s worked out <span class="hl">fresh</span> each time you ask. Change the radius, and the area follows on its own.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>@property · read c.area, not c.area()</span></div>
+    </section>
+
+    <!-- 12 CAPSTONE: SHAPES (step demo) -->
+    <section class="slide" id="s-shapes" data-steps="3">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> ALL TOGETHER ]</div><div class="num">12</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Everything, in one hierarchy.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">Inheritance + <span class="mono" style="font-family:var(--mono)">super()</span> + <span class="mono" style="font-family:var(--mono)">@property</span> + <span class="mono" style="font-family:var(--mono)">__str__</span> — the shape of real code. Step through it:</p>
+        <div class="demo r" style="--d:.16s; align-items:center">
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start"><span class="cl"><span class="kw">class</span> Shape:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com"># name + __str__ + area</span></span><span class="cl"><span class="kw">class</span> Circle(Shape):&nbsp;&nbsp;&nbsp;<span class="com"># area = πr²</span></span><span class="cl"><span class="kw">class</span> Rectangle(Shape): <span class="com"># area = w·h</span></span><span class="cl"> </span><span class="cl cl-sh1"><span class="kw">print</span>(Circle(5))</span><span class="cl cl-sh2"><span class="kw">print</span>(Rectangle(3, 4))</span><span class="cl cl-sh3"><span class="kw">print</span>(<span class="str">"Biggest:"</span>, biggest)</span></div>
+          <div class="eqcol">
+            <div class="shaperow">
+              <div class="shapecard sc0">
+                <svg class="shapesvg" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg"><circle class="sfill" cx="75" cy="75" r="60"/></svg>
+                <div class="sl2">Circle · 78.54</div>
+              </div>
+              <div class="shapecard sc1">
+                <svg class="shapesvg" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg"><rect class="sfill" x="30" y="45" width="90" height="60"/></svg>
+                <div class="sl2">Rectangle · 12.00</div>
+              </div>
+            </div>
+            <div class="term" style="margin-top:14px">
+              <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Terminal</span></div>
+              <div class="tbody"><span class="cmd"><span class="pr">$</span>python shapes.py</span><span class="o ok reveal o1">Circle with area 78.54</span><span class="o ok reveal o2">Rectangle with area 12.00</span><span class="o reveal o3">Biggest: Circle with area 78.54</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="stepper r" style="--d:.32s">
+          <button class="sbtn" data-act="reset">&#8634; Reset</button>
+          <button class="sbtn" data-act="prev">&#9666; Back</button>
+          <button class="sbtn go" data-act="next">Step &#9656;</button>
+          <span class="sstat"><b class="scur">0</b> / <span class="smax">3</span></span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:12px">One <span class="mono">Shape</span> parent; each subclass fills in its own <span class="mono">area</span>. Because they all share a <span class="mono">__str__</span> and an <span class="mono">.area</span>, you can loop over a <span class="hl">mixed list</span> and treat them alike.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>Shape → Circle · Rectangle</span></div>
+    </section>
+
+    <!-- 13 RECAP -->
+    <section class="slide" id="s-recap">
+      <div class="head"><div class="kick">[ RECAP <span class="b">·</span> WORKSHOP 09 ]</div><div class="num">13</div></div>
+      <div class="body">
+        <ul class="recap">
+          <li class="r" style="--d:0s"><span class="rn">01</span><span class="rt"><span class="hl">__str__</span> / <span class="hl">__repr__</span> make objects print nicely — friendly text for people, exact text for programmers.</span></li>
+          <li class="r" style="--d:.07s"><span class="rn">02</span><span class="rt"><span class="hl">__eq__</span> decides when <span class="mono">a == b</span> is true by comparing data. <span class="mono">is</span> still asks about the same object in memory.</span></li>
+          <li class="r" style="--d:.14s"><span class="rn">03</span><span class="rt">A <span class="hl">class attribute</span> (in the class body) is shared by every object — handy for counting them.</span></li>
+          <li class="r" style="--d:.21s"><span class="rn">04</span><span class="rt"><span class="hl">Inheritance</span>: <span class="mono">class Dog(Animal)</span> reuses the parent and can <span class="hl">override</span> methods; <span class="mono">super().__init__()</span> runs the parent&rsquo;s setup.</span></li>
+          <li class="r" style="--d:.28s"><span class="rn">05</span><span class="rt"><span class="hl">@property</span> turns a method into a computed attribute you read with no parentheses.</span></li>
+        </ul>
+        <p class="teaser r" style="--d:.4s"><span class="hl">Your classes now behave like Python&rsquo;s own types.</span> That is the heart of object-oriented programming.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>dunder methods · inheritance · @property</span></div>
+    </section>
+
+    <!-- 14 HOMEWORK -->
+    <section class="slide" id="s-hw">
+      <div class="head"><div class="kick">[ HOMEWORK <span class="b">·</span> WORKSHOP 09 ]</div><div class="num">14</div></div>
+      <div class="body">
+        <h1 class="h-lg r" style="--d:0s">Your turn.</h1>
+        <p class="lead r" style="--d:.1s; margin-top:16px">Eight exercises: give a class a <span class="mono" style="font-family:var(--mono)">__str__</span>, compare with <span class="mono" style="font-family:var(--mono)">__eq__</span>, count objects with a class attribute, build a family of classes with <span class="mono" style="font-family:var(--mono)">inheritance</span> and <span class="mono" style="font-family:var(--mono)">super()</span>, a computed <span class="mono" style="font-family:var(--mono)">@property</span>, and a bonus <span class="mono" style="font-family:var(--mono)">Library</span> that saves itself with <span class="mono" style="font-family:var(--mono)">json</span>.</p>
+        <p class="lead r mut" style="--d:.18s; margin-top:14px">Put it in a <span class="mono" style="font-family:var(--mono)">workshop_9_homework/</span> folder, push to the same repo, and re-send the link. <span class="hl">Due before Workshop 10.</span></p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>docs/workshop_9_homework.md</span></div>
+    </section>
+
+    <!-- 15 END -->
+    <section class="slide" id="s-end">
+      <div class="body" style="justify-content:center">
+        <div class="kick r" style="--d:0s">[ END <span class="b">·</span> WORKSHOP 09 ]</div>
+        <div class="end-q r" style="--d:.08s">QUESTIONS?</div>
+        <div class="rule r" style="--d:.16s"></div>
+      </div>
+      <div class="foot">
+        <span class="motif">&gt;&gt;&gt; class SeeYou(Workshop): pass</span>
+        <span>Python · Workshop 09</span>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- overlay nav UI -->
+<div class="ui">
+  <span class="count" id="count">01 / 15</span>
+  <div class="prog-track"><div class="prog" id="prog"></div></div>
+  <div class="btns">
+    <button id="prev" aria-label="Previous">&lsaquo;</button>
+    <button id="next" aria-label="Next">&rsaquo;</button>
+  </div>
+</div>
+<div class="hint" id="hint">← → navigate · ↓ step through demos</div>
+
+<script>
+(function(){
+  var stage = document.getElementById('stage');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  slides.forEach(function(s){
+    var lb=document.createElement('div'); lb.className='brk l';
+    var rb=document.createElement('div'); rb.className='brk r';
+    s.appendChild(lb); s.appendChild(rb);
+  });
+  document.querySelectorAll('.stepper').forEach(function(st){
+    var b=document.createElement('button');
+    b.className='sbtn auto on';
+    b.setAttribute('data-act','auto');
+    b.textContent='Auto';
+    var go=st.querySelector('.go');
+    if(go) go.insertAdjacentElement('afterend', b); else st.appendChild(b);
+  });
+  var count = document.getElementById('count');
+  var prog  = document.getElementById('prog');
+  var hint  = document.getElementById('hint');
+  var cur = 0, timers = [];
+
+  function fit(){
+    var s = Math.min(window.innerWidth/1440, window.innerHeight/900);
+    stage.style.transform = 'translate(-50%,-50%) scale('+s+')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+  function resetAnims(){ clearTimers(); }
+  function runAnims(i){}
+
+  var STEP_CAPS = {
+    's-strrepr':['print(rex)  →  __str__  →  "Rex, aged 3"','print(repr(rex))  →  __repr__  →  "Dog(\'Rex\', 3)"','print([rex, bella])  →  a list uses __repr__ for each item'],
+    's-eq':['a == b  →  same x and y  →  True','a == c  →  3 ≠ 9  →  False','a is b  →  different objects in memory  →  False'],
+    's-classattr':['rex = Dog("Rex")  →  Dog.count becomes 1','bella = Dog("Bella")  →  the shared counter becomes 2','print(Dog.count)  →  2'],
+    's-inherit':['Dog has its own speak()  →  "Rex says woof"','Cat has its own speak()  →  "Felix says meow"','Cow has none  →  Python walks up to Animal  →  "Daisy makes a sound"'],
+    's-super':['super().__init__(...)  →  Employee sets name & salary','self.team = team  →  Manager adds its own field','mgr.describe()  →  "giorgi earns 3500 and leads Backend"'],
+    's-property':['c = Circle(5)  →  radius stored','c.area  →  computed on demand, no () → 78.54','c.radius = 10  →  area recomputes → 314.16'],
+    's-shapes':['print(Circle(5))  →  "Circle with area 78.54"','print(Rectangle(3, 4))  →  "Rectangle with area 12.00"','biggest  →  the circle wins → "Biggest: Circle with area 78.54"']
+  };
+  function setStep(slide, k){
+    var max = parseInt(slide.getAttribute('data-steps'),10) || 0;
+    k = Math.max(0, Math.min(max, k));
+    slide.setAttribute('data-step', k);
+    var curEl = slide.querySelector('.scur'); if(curEl) curEl.textContent = k;
+    var caps = STEP_CAPS[slide.id] || [];
+    var cap = slide.querySelector('.scap'); if(cap) cap.textContent = k>0 ? (caps[k-1]||'') : '';
+    var pv = slide.querySelector('[data-act="prev"]');  if(pv) pv.disabled = (k===0);
+    var rs = slide.querySelector('[data-act="reset"]'); if(rs) rs.disabled = (k===0);
+    var nx = slide.querySelector('[data-act="next"]');  if(nx) nx.disabled = (k===max);
+  }
+  function stepSlide(slide, d){ setStep(slide, (parseInt(slide.getAttribute('data-step'),10)||0) + d); }
+
+  var auto = true, autoTimer = null;
+  function stopAuto(){ if(autoTimer){ clearTimeout(autoTimer); autoTimer = null; } }
+  function startAuto(slide){
+    stopAuto();
+    var max = parseInt(slide.getAttribute('data-steps'),10) || 0;
+    function tick(){
+      var k = parseInt(slide.getAttribute('data-step'),10) || 0;
+      if(k>=max){ setStep(slide, 0); autoTimer = setTimeout(tick, 1300); }
+      else { setStep(slide, k+1); autoTimer = setTimeout(tick, (k+1>=max) ? 1900 : 1300); }
+    }
+    autoTimer = setTimeout(tick, 1100);
+  }
+  function syncAutoBtns(){
+    document.querySelectorAll('.sbtn.auto').forEach(function(b){ b.classList.toggle('on', auto); });
+  }
+  function setManual(){ if(auto){ auto = false; stopAuto(); syncAutoBtns(); } }
+
+  document.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('.sbtn') : null; if(!b) return;
+    var slide = b.closest('.slide'); if(!slide) return;
+    var act = b.getAttribute('data-act');
+    if(act==='auto'){
+      auto = !auto; syncAutoBtns();
+      if(auto) startAuto(slide); else stopAuto();
+    } else {
+      setManual();
+      if(act==='next') stepSlide(slide, 1);
+      else if(act==='prev') stepSlide(slide, -1);
+      else if(act==='reset') setStep(slide, 0);
+    }
+  });
+
+  function goTo(i){
+    i = Math.max(0, Math.min(slides.length-1, i));
+    slides[cur].classList.remove('active');
+    resetAnims();
+    cur = i;
+    var s = slides[cur];
+    void s.offsetWidth;
+    s.classList.add('active');
+    stopAuto();
+    syncAutoBtns();
+    if(s.hasAttribute('data-steps')){
+      setStep(s, 0);
+      if(auto) startAuto(s);
+    }
+    count.textContent = String(i+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
+    prog.style.width = (i/(slides.length-1)*100) + '%';
+    runAnims(i);
+  }
+  function nextS(){ goTo(cur+1); }
+  function prevS(){ goTo(cur-1); }
+
+  document.getElementById('next').addEventListener('click', nextS);
+  document.getElementById('prev').addEventListener('click', prevS);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); nextS(); }
+    else if(e.key===' '){ e.preventDefault(); nextS(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prevS(); }
+    else if(e.key==='ArrowDown'){ var s=slides[cur]; if(s.hasAttribute('data-steps')){ e.preventDefault(); setManual(); stepSlide(s,1); } }
+    else if(e.key==='ArrowUp'){ var s=slides[cur]; if(s.hasAttribute('data-steps')){ e.preventDefault(); setManual(); stepSlide(s,-1); } }
+    else if(e.key==='Home'){ goTo(0); }
+    else if(e.key==='End'){ goTo(slides.length-1); }
+  });
+  var tx=0;
+  document.addEventListener('touchstart', function(e){ tx=e.changedTouches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dx=e.changedTouches[0].clientX - tx;
+    if(Math.abs(dx)>50){ dx<0 ? nextS() : prevS(); }
+  }, {passive:true});
+
+  setTimeout(function(){ hint.style.opacity='0'; }, 4000);
+  goTo(0);
+})();
+</script>
