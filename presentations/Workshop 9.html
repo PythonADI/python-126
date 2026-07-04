@@ -1,5 +1,5 @@
 
-<!-- Python Workshop 09 — OOP Part 2 · Special methods · Inheritance. Self-contained. Use ← → / Space to navigate, ↓ to step through demos. -->
+<!-- Python Workshop 09 — OOP Part 2 · Special methods · Inheritance. Self-contained. Use ← → / Space to navigate, ↓ to step through demos; interactive slides respond to clicking the method calls and dragging the sliders. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Python · Workshop 09 — OOP Part 2</title>
@@ -162,7 +162,9 @@
 
   /* ===== s-eq : __eq__ ===== */
   #s-eq[data-step="1"] .cl-e1,
+  #s-eq[data-step="1"] .cl-eqm,
   #s-eq[data-step="2"] .cl-e2,
+  #s-eq[data-step="2"] .cl-eqm,
   #s-eq[data-step="3"] .cl-e3{background:var(--hl); border-left-color:var(--ink)}
   #s-eq[data-step="1"] .o1,#s-eq[data-step="2"] .o1,#s-eq[data-step="3"] .o1,
   #s-eq[data-step="2"] .o2,#s-eq[data-step="3"] .o2,
@@ -174,7 +176,9 @@
 
   /* ===== s-classattr : shared counter ===== */
   #s-classattr[data-step="1"] .cl-a1,
+  #s-classattr[data-step="1"] .cl-am,
   #s-classattr[data-step="2"] .cl-a2,
+  #s-classattr[data-step="2"] .cl-am,
   #s-classattr[data-step="3"] .cl-a3{background:var(--hl); border-left-color:var(--ink)}
   .countwrap{flex:.9; display:flex; flex-direction:column; align-items:center; gap:18px; justify-content:center}
   .countbadge{border:1.5px solid var(--ink); padding:16px 34px; text-align:center; min-width:230px}
@@ -193,8 +197,11 @@
 
   /* ===== s-inherit : method dispatch ===== */
   #s-inherit[data-step="1"] .cl-h1,
+  #s-inherit[data-step="1"] .cl-md,
   #s-inherit[data-step="2"] .cl-h2,
-  #s-inherit[data-step="3"] .cl-h3{background:var(--hl); border-left-color:var(--ink)}
+  #s-inherit[data-step="2"] .cl-mc,
+  #s-inherit[data-step="3"] .cl-h3,
+  #s-inherit[data-step="3"] .cl-ma{background:var(--hl); border-left-color:var(--ink)}
   #s-inherit[data-step="1"] .o1,#s-inherit[data-step="2"] .o1,#s-inherit[data-step="3"] .o1,
   #s-inherit[data-step="2"] .o2,#s-inherit[data-step="3"] .o2,
   #s-inherit[data-step="3"] .o3{opacity:1}
@@ -225,8 +232,11 @@
 
   /* ===== s-property : computed area ===== */
   #s-property[data-step="1"] .cl-pr1,
+  #s-property[data-step="1"] .cl-pi,
   #s-property[data-step="2"] .cl-pr2,
-  #s-property[data-step="3"] .cl-pr3{background:var(--hl); border-left-color:var(--ink)}
+  #s-property[data-step="2"] .cl-pm,
+  #s-property[data-step="3"] .cl-pr3,
+  #s-property[data-step="3"] .cl-pm{background:var(--hl); border-left-color:var(--ink)}
   .circwrap{flex:.9; display:flex; flex-direction:column; align-items:center; gap:16px; justify-content:center}
   .circsvg{width:240px; height:240px}
   .circsvg .cfill{fill:rgba(10,10,10,.06); stroke:var(--ink); stroke-width:2.5; r:60px; transition:r .6s cubic-bezier(.3,.8,.3,1)}
@@ -243,8 +253,12 @@
 
   /* ===== s-shapes : capstone hierarchy ===== */
   #s-shapes[data-step="1"] .cl-sh1,
+  #s-shapes[data-step="1"] .cl-sc,
   #s-shapes[data-step="2"] .cl-sh2,
-  #s-shapes[data-step="3"] .cl-sh3{background:var(--hl); border-left-color:var(--ink)}
+  #s-shapes[data-step="2"] .cl-sr2,
+  #s-shapes[data-step="3"] .cl-sh3,
+  #s-shapes[data-step="3"] .cl-ss,
+  #s-shapes[data-step="3"] .cl-sc{background:var(--hl); border-left-color:var(--ink)}
   #s-shapes[data-step="1"] .o1,#s-shapes[data-step="2"] .o1,#s-shapes[data-step="3"] .o1,
   #s-shapes[data-step="2"] .o2,#s-shapes[data-step="3"] .o2,
   #s-shapes[data-step="3"] .o3{opacity:1}
@@ -257,6 +271,65 @@
   #s-shapes[data-step="2"] .sc1,#s-shapes[data-step="3"] .sc1{opacity:1; transform:none}
   #s-shapes[data-step="3"] .sc0 .shapesvg .sfill{fill:rgba(31,138,76,.16); stroke:#1f8a4c}
   #s-shapes[data-step="3"] .sc0 .sl2{color:#1f8a4c; font-weight:600}
+
+  /* ===== interactive machinery : sliders ===== */
+  .rngrow{display:flex; align-items:center; gap:16px; margin-top:18px; flex-wrap:wrap}
+  .rnglab{font-family:var(--mono); font-size:16px; color:var(--mute)}
+  .rng{-webkit-appearance:none; appearance:none; width:330px; height:2.5px; background:var(--ink); outline:none; cursor:pointer}
+  .rng::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:24px; height:24px; border-radius:50%; background:#fff; border:2.5px solid var(--ink); cursor:grab}
+  .rng::-webkit-slider-thumb:active{background:var(--ink); cursor:grabbing}
+  .rng::-moz-range-thumb{width:19px; height:19px; border-radius:50%; background:#fff; border:2.5px solid var(--ink); cursor:grab}
+  .rng::-moz-range-thumb:active{background:var(--ink)}
+  .rng:focus-visible{outline:2px solid var(--ink); outline-offset:5px}
+  .rngval{font-family:var(--mono); font-size:17px; color:var(--mute)}
+  .rngval b{color:var(--ink); font-weight:600}
+
+  /* ===== interactive machinery : click-to-call ===== */
+  .callrow{display:flex; align-items:center; gap:12px; margin-top:18px; flex-wrap:wrap}
+  .callhint{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute); margin-right:2px}
+  .callbtn{font-family:var(--mono); font-size:17px; padding:10px 16px; border:1.5px solid var(--ink); background:#fff; color:var(--ink); cursor:pointer; line-height:1; transition:background .15s, color .15s}
+  .callbtn:hover{background:var(--ink); color:#fff}
+  .callbtn.run{background:var(--ink); color:#fff}
+
+  /* ===== s-objects : blueprint → objects (slider) ===== */
+  #s-objects[data-k="1"] .cl-b1,
+  #s-objects[data-k="2"] .cl-b2,
+  #s-objects[data-k="3"] .cl-b3,
+  #s-objects[data-k="4"] .cl-b4,
+  #s-objects[data-k="1"] .cl-bi,
+  #s-objects[data-k="2"] .cl-bi,
+  #s-objects[data-k="3"] .cl-bi,
+  #s-objects[data-k="4"] .cl-bi{background:var(--hl); border-left-color:var(--ink)}
+  .bpcol{flex:.95; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px}
+  .dogrid{display:grid; grid-template-columns:repeat(2,minmax(200px,1fr)); gap:12px; width:100%}
+  .dcard{border:1.5px dashed #bfbfbf; opacity:.5; transform:scale(.97); transition:opacity .35s, transform .35s}
+  .dcard.on{border:1.5px solid var(--ink); opacity:1; transform:none}
+  .dcard .dh{font-family:var(--mono); font-size:14px; padding:7px 12px; border-bottom:1px dashed #bfbfbf; color:#b5b5b5}
+  .dcard.on .dh{background:#f0f0f0; border-bottom:1.5px solid var(--ink); color:var(--ink)}
+  .dcard .df{font-family:var(--mono); font-size:15px; padding:4px 12px; visibility:hidden}
+  .dcard .df:last-child{padding-bottom:9px}
+  .dcard.on .df{visibility:visible}
+  .dcard .df .str{color:var(--syn-str)}
+
+  /* ===== s-self : who is self? (click) ===== */
+  .chip.sel{background:var(--ink); color:#fff}
+  .chip.sel .cn{color:#cfcfcf}
+  .transbox{border:1.5px solid var(--ink); padding:13px 18px; font-family:var(--mono); font-size:19px; text-align:center; margin-top:14px; min-height:52px}
+  .transbox .tv{font-weight:600}
+  .transbox .dim2, .selfline .dim2{color:var(--mute)}
+  .selfline{font-family:var(--mono); font-size:18px; text-align:center; margin-top:10px; min-height:26px}
+  .selfline b{font-weight:600}
+
+  /* ===== s-state : account balance (click) ===== */
+  .balbadge{border:1.5px solid var(--ink); padding:12px 30px; text-align:center; min-width:230px; align-self:center}
+  .balbadge .cl2{font-family:var(--mono); font-size:14px; color:var(--mute); letter-spacing:.05em}
+  .balbadge .bv{font-family:var(--display); font-size:76px; line-height:1.05}
+  .balbadge .bv.tick{animation:balpulse .45s ease}
+  @keyframes balpulse{0%{transform:scale(1)} 35%{transform:scale(1.14)} 100%{transform:scale(1)}}
+  .objcard.live .orow{opacity:1}
+
+  /* ===== s-radius : @property playground (slider) ===== */
+  .circ2 .cfill2{fill:rgba(10,10,10,.06); stroke:var(--ink); stroke-width:2.5}
 
   .ui{position:fixed; left:0; right:0; bottom:0; height:46px; display:flex; align-items:center; gap:18px; padding:0 20px; z-index:50; pointer-events:none}
   .ui .prog-track{flex:1; height:2px; background:var(--line)}
@@ -281,13 +354,110 @@
       </div>
       <div class="foot">
         <span class="motif">&gt;&gt;&gt; class Dog(Animal): ...</span>
-        <span>Workshop 09 / 15</span>
+        <span>Workshop 09 / 19</span>
       </div>
     </section>
 
-    <!-- 02 LEAD-IN: THE PROBLEM -->
+    <!-- 02 REWIND: ONE CLASS, MANY OBJECTS (slider demo) -->
+    <section class="slide" id="s-objects" data-k="0">
+      <div class="head"><div class="kick">[ REWIND <span class="b">·</span> OOP PART 1 ]</div><div class="num">02</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">One class. Many objects.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">Last week&rsquo;s big idea, hands-on. The class is a <span class="hl">blueprint</span> — each call to <span class="mono" style="font-family:var(--mono)">Dog(...)</span> builds a <span class="hl">separate object</span>. Drag the slider:</p>
+        <div class="demo r" style="--d:.16s; align-items:stretch">
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start; font-size:19px; line-height:1.55"><span class="cl"><span class="kw">class</span> Dog:&nbsp;&nbsp;<span class="com"># the blueprint — no data inside</span></span><span class="cl cl-bi">    <span class="kw">def</span> __init__(self, name, age):</span><span class="cl cl-bi">        self.name = name&nbsp;&nbsp;<span class="com"># this object's own</span></span><span class="cl cl-bi">        self.age&nbsp;&nbsp;= age</span><span class="cl"> </span><span class="cl cl-b1">rex&nbsp;&nbsp;&nbsp;= Dog(<span class="str">"Rex"</span>, 3)</span><span class="cl cl-b2">bella = Dog(<span class="str">"Bella"</span>, 5)</span><span class="cl cl-b3">toby&nbsp;&nbsp;= Dog(<span class="str">"Toby"</span>, 1)</span><span class="cl cl-b4">mia&nbsp;&nbsp;&nbsp;= Dog(<span class="str">"Mia"</span>, 7)</span></div>
+          <div class="bpcol">
+            <div class="parentbox">class Dog<span class="pm"> · the blueprint</span></div>
+            <div class="treestem"></div>
+            <div class="dogrid">
+              <div class="dcard dc1"><div class="dh">rex · a Dog object</div><div class="df">self.name = <span class="str">"Rex"</span></div><div class="df">self.age&nbsp;&nbsp;= 3</div></div>
+              <div class="dcard dc2"><div class="dh">bella · a Dog object</div><div class="df">self.name = <span class="str">"Bella"</span></div><div class="df">self.age&nbsp;&nbsp;= 5</div></div>
+              <div class="dcard dc3"><div class="dh">toby · a Dog object</div><div class="df">self.name = <span class="str">"Toby"</span></div><div class="df">self.age&nbsp;&nbsp;= 1</div></div>
+              <div class="dcard dc4"><div class="dh">mia · a Dog object</div><div class="df">self.name = <span class="str">"Mia"</span></div><div class="df">self.age&nbsp;&nbsp;= 7</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="rngrow r" style="--d:.3s">
+          <span class="rnglab">Dog(...) calls &rarr;</span>
+          <input class="rng" type="range" min="0" max="4" step="1" value="0" aria-label="How many Dog objects are built">
+          <span class="rngval"><b class="kv">0</b> / 4 objects</span>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:12px">The class holds the <span class="hl">recipe</span>; every object built from it carries its <span class="hl">own</span> <span class="mono">self.name</span> and <span class="mono">self.age</span>. Changing <span class="mono">bella</span> would never touch <span class="mono">rex</span>.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>class = blueprint · object = one built thing</span></div>
+    </section>
+
+    <!-- 03 REWIND: WHAT IS SELF? (click-to-call demo) -->
+    <section class="slide" id="s-self">
+      <div class="head"><div class="kick">[ REWIND <span class="b">·</span> WHAT IS SELF? ]</div><div class="num">03</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">self is the dog before the dot.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">One method, three dogs. <span class="hl">Click a call</span> and watch which code runs — and who <span class="mono" style="font-family:var(--mono)">self</span> becomes:</p>
+        <div class="demo r" style="--d:.16s; align-items:stretch">
+          <div class="code sm steps" style="flex:1.02; align-self:flex-start; font-size:20px; line-height:1.6"><span class="cl"><span class="kw">class</span> Dog:</span><span class="cl">    <span class="kw">def</span> __init__(self, name):</span><span class="cl">        self.name = name</span><span class="cl"> </span><span class="cl cl-sd">    <span class="kw">def</span> speak(self):</span><span class="cl cl-sr">        <span class="kw">return</span> f<span class="str">"{self.name} says woof"</span></span></div>
+          <div class="eqcol">
+            <div class="chiprow">
+              <div class="chip ch-0"><span class="cn">rex</span>name = "Rex"</div>
+              <div class="chip ch-1"><span class="cn">bella</span>name = "Bella"</div>
+              <div class="chip ch-2"><span class="cn">luna</span>name = "Luna"</div>
+            </div>
+            <div class="transbox"><span class="dim2">click a call below&hellip;</span></div>
+            <div class="selfline"></div>
+            <div class="term" style="margin-top:12px">
+              <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Python — REPL</span></div>
+              <div class="tbody"><span class="cmd"><span class="pr">$</span>python</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="callrow r" style="--d:.3s">
+          <span class="callhint">click &rarr;</span>
+          <button class="callbtn" data-dog="0">rex.speak()</button>
+          <button class="callbtn" data-dog="1">bella.speak()</button>
+          <button class="callbtn" data-dog="2">luna.speak()</button>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:12px"><span class="mono">rex.speak()</span> is really <span class="mono">Dog.speak(rex)</span> — Python hands the object before the dot to the method as <span class="mono">self</span>. That is <span class="hl">all</span> self is.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>x.method() == Class.method(x)</span></div>
+    </section>
+
+    <!-- 04 REWIND: OBJECTS REMEMBER (click-to-call demo, live state) -->
+    <section class="slide" id="s-state">
+      <div class="head"><div class="kick">[ REWIND <span class="b">·</span> OBJECTS REMEMBER ]</div><div class="num">04</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Methods change their object.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:8px; font-size:20px; color:var(--mute)">An account keeps its balance on <span class="mono" style="font-family:var(--mono)">self</span>. <span class="hl">Click the calls in any order</span> — the object remembers between clicks:</p>
+        <div class="demo r" style="--d:.16s; align-items:stretch">
+          <div class="code sm steps" style="flex:1.12; align-self:flex-start; font-size:16px; line-height:1.45"><span class="cl"><span class="kw">class</span> Account:</span><span class="cl cl-c1">    <span class="kw">def</span> __init__(self, owner):</span><span class="cl">        self.owner = owner</span><span class="cl cl-c2">        self.balance = 0</span><span class="cl"> </span><span class="cl cl-d1">    <span class="kw">def</span> deposit(self, amount):</span><span class="cl cl-d2">        self.balance += amount</span><span class="cl"> </span><span class="cl cl-w1">    <span class="kw">def</span> withdraw(self, amount):</span><span class="cl cl-w2">        <span class="kw">if</span> amount &gt; self.balance:</span><span class="cl cl-w3">            <span class="kw">print</span>(<span class="str">"Not enough money!"</span>)</span><span class="cl">        <span class="kw">else</span>:</span><span class="cl cl-w4">            self.balance -= amount</span></div>
+          <div class="eqcol" style="display:flex; flex-direction:column; justify-content:center; gap:14px">
+            <div class="balbadge">
+              <div class="cl2">acc · self.balance</div>
+              <div class="bv">0</div>
+            </div>
+            <div class="term">
+              <div class="tbar"><span class="tdot cr"></span><span class="tdot cy"></span><span class="tdot cg"></span><span class="ttl">Python — REPL</span></div>
+              <div class="tbody"><span class="cmd"><span class="pr">$</span>python</span><span class="o dim">&gt;&gt;&gt; acc = Account("nino")</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="callrow r" style="--d:.3s">
+          <span class="callhint">click &rarr;</span>
+          <button class="callbtn" data-op="dep" data-n="50">acc.deposit(50)</button>
+          <button class="callbtn" data-op="dep" data-n="200">acc.deposit(200)</button>
+          <button class="callbtn" data-op="wd" data-n="30">acc.withdraw(30)</button>
+          <button class="callbtn" data-op="wd" data-n="1000">acc.withdraw(1000)</button>
+          <button class="callbtn" data-op="new">acc = Account("nino")</button>
+          <span class="scap"></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:4px; font-size:17px; max-width:none">Nothing runs between clicks, yet <span class="mono">acc</span> remembers — objects <span class="hl">keep data alive on self</span>. Deposit enough and <span class="mono">withdraw(1000)</span> succeeds.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>state lives on self · methods change it</span></div>
+    </section>
+
+    <!-- 05 LEAD-IN: THE PROBLEM -->
     <section class="slide" id="s-leadin">
-      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SPECIAL METHODS ]</div><div class="num">02</div></div>
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SPECIAL METHODS ]</div><div class="num">05</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Your objects<br>can do more.</h1>
         <p class="lead r" style="--d:.1s; margin-top:22px">Last week you built classes. But <span class="hl">print one</span> and Python shows this:</p>
@@ -302,7 +472,7 @@
 
     <!-- 03 __str__ / __repr__ (step demo) -->
     <section class="slide" id="s-strrepr" data-steps="3">
-      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> PRINT NICELY ]</div><div class="num">03</div></div>
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> PRINT NICELY ]</div><div class="num">06</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">__str__ and __repr__.</h1>
         <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">Two methods that return a string. <span class="mono" style="font-family:var(--mono)">__str__</span> is for people; <span class="mono" style="font-family:var(--mono)">__repr__</span> is for programmers. Step through it:</p>
@@ -327,7 +497,7 @@
 
     <!-- 04 THE DUNDER FAMILY -->
     <section class="slide" id="s-dunder">
-      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> DUNDER METHODS ]</div><div class="num">04</div></div>
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> DUNDER METHODS ]</div><div class="num">07</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">The &ldquo;dunder&rdquo; family.</h1>
         <p class="lead r" style="--d:.08s; margin-top:10px; font-size:21px; color:var(--mute)">Names wrapped in <span class="hl">d</span>ouble <span class="hl">under</span>scores. Python calls them for you at the right moment — you never call them by name.</p>
@@ -344,12 +514,12 @@
 
     <!-- 05 __eq__ (step demo) -->
     <section class="slide" id="s-eq" data-steps="3">
-      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> COMPARE ]</div><div class="num">05</div></div>
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> COMPARE ]</div><div class="num">08</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">When are two objects equal?</h1>
         <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">By default, only if they are the <span class="hl">same object</span>. <span class="mono" style="font-family:var(--mono)">__eq__</span> lets you compare the <span class="hl">data</span> instead. Step through it:</p>
         <div class="demo r" style="--d:.16s; align-items:stretch">
-          <div class="code sm steps" style="flex:1.05; align-self:flex-start; font-size:19px; line-height:1.6"><span class="cl"><span class="kw">def</span> __eq__(self, other):</span><span class="cl">    <span class="kw">return</span> self.x == other.x <span class="kw">and</span> self.y == other.y</span><span class="cl"> </span><span class="cl">a, b, c = Point(3,7), Point(3,7), Point(9,0)</span><span class="cl cl-e1"><span class="kw">print</span>(a == b)</span><span class="cl cl-e2"><span class="kw">print</span>(a == c)</span><span class="cl cl-e3"><span class="kw">print</span>(a <span class="kw">is</span> b)</span></div>
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start; font-size:19px; line-height:1.6"><span class="cl cl-eqm"><span class="kw">def</span> __eq__(self, other):</span><span class="cl cl-eqm">    <span class="kw">return</span> self.x == other.x <span class="kw">and</span> self.y == other.y</span><span class="cl"> </span><span class="cl">a, b, c = Point(3,7), Point(3,7), Point(9,0)</span><span class="cl cl-e1"><span class="kw">print</span>(a == b)</span><span class="cl cl-e2"><span class="kw">print</span>(a == c)</span><span class="cl cl-e3"><span class="kw">print</span>(a <span class="kw">is</span> b)</span></div>
           <div class="eqcol">
             <div class="chiprow">
               <div class="chip"><span class="cn">a</span>(3, 7)</div>
@@ -376,12 +546,12 @@
 
     <!-- 06 CLASS vs INSTANCE (step demo) -->
     <section class="slide" id="s-classattr" data-steps="3">
-      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SHARED DATA ]</div><div class="num">06</div></div>
+      <div class="head"><div class="kick">[ PART 1 <span class="b">·</span> SHARED DATA ]</div><div class="num">09</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">A value shared by all.</h1>
         <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">Written in the class body (not on <span class="mono" style="font-family:var(--mono)">self</span>), a <span class="hl">class attribute</span> is shared by every object. Great for counting them. Step through it:</p>
         <div class="demo r" style="--d:.16s; align-items:center">
-          <div class="code sm steps" style="flex:1.05; align-self:flex-start"><span class="cl"><span class="kw">class</span> Dog:</span><span class="cl">    count = 0&nbsp;&nbsp;&nbsp;&nbsp;<span class="com"># shared by all dogs</span></span><span class="cl">    <span class="kw">def</span> __init__(self, name):</span><span class="cl">        self.name = name</span><span class="cl">        Dog.count += 1</span><span class="cl"> </span><span class="cl cl-a1">rex&nbsp;&nbsp;= Dog(<span class="str">"Rex"</span>)</span><span class="cl cl-a2">bella = Dog(<span class="str">"Bella"</span>)</span><span class="cl cl-a3"><span class="kw">print</span>(Dog.count)</span></div>
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start"><span class="cl"><span class="kw">class</span> Dog:</span><span class="cl">    count = 0&nbsp;&nbsp;&nbsp;&nbsp;<span class="com"># shared by all dogs</span></span><span class="cl cl-am">    <span class="kw">def</span> __init__(self, name):</span><span class="cl cl-am">        self.name = name</span><span class="cl cl-am">        Dog.count += 1</span><span class="cl"> </span><span class="cl cl-a1">rex&nbsp;&nbsp;= Dog(<span class="str">"Rex"</span>)</span><span class="cl cl-a2">bella = Dog(<span class="str">"Bella"</span>)</span><span class="cl cl-a3"><span class="kw">print</span>(Dog.count)</span></div>
           <div class="countwrap">
             <div class="countbadge">
               <div class="cl2">Dog.count</div>
@@ -421,7 +591,7 @@
 
     <!-- 08 WHY INHERIT -->
     <section class="slide" id="s-why2">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> WHY ]</div><div class="num">08</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> WHY ]</div><div class="num">11</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Don&rsquo;t repeat yourself.</h1>
         <p class="lead r" style="--d:.1s; margin-top:14px">Dogs, cats and cows all have a <span class="hl">name</span>. Copy that into three classes? No — write it <span class="hl">once</span> in a parent and let the others <span class="hl">inherit</span> it.</p>
@@ -453,12 +623,12 @@
 
     <!-- 09 INHERITANCE DISPATCH (step demo) -->
     <section class="slide" id="s-inherit" data-steps="3">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> OVERRIDE ]</div><div class="num">09</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> OVERRIDE ]</div><div class="num">12</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">Which speak() runs?</h1>
         <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">A subclass can <span class="hl">override</span> a method. If it doesn&rsquo;t, it falls back to the parent&rsquo;s. Step through the loop:</p>
         <div class="demo r" style="--d:.16s; align-items:stretch">
-          <div class="code sm steps" style="flex:1.02; align-self:flex-start; font-size:18px; line-height:1.5"><span class="cl"><span class="kw">class</span> Animal:</span><span class="cl">    <span class="kw">def</span> speak(self): <span class="kw">return</span> f<span class="str">"{self.name} makes a sound"</span></span><span class="cl"><span class="kw">class</span> Dog(Animal):</span><span class="cl">    <span class="kw">def</span> speak(self): <span class="kw">return</span> f<span class="str">"{self.name} says woof"</span></span><span class="cl"><span class="kw">class</span> Cat(Animal):</span><span class="cl">    <span class="kw">def</span> speak(self): <span class="kw">return</span> f<span class="str">"{self.name} says meow"</span></span><span class="cl"><span class="kw">class</span> Cow(Animal): <span class="kw">pass</span></span><span class="cl"> </span><span class="cl cl-h1"><span class="kw">print</span>(Dog(<span class="str">"Rex"</span>).speak())</span><span class="cl cl-h2"><span class="kw">print</span>(Cat(<span class="str">"Felix"</span>).speak())</span><span class="cl cl-h3"><span class="kw">print</span>(Cow(<span class="str">"Daisy"</span>).speak())</span></div>
+          <div class="code sm steps" style="flex:1.02; align-self:flex-start; font-size:18px; line-height:1.5"><span class="cl"><span class="kw">class</span> Animal:</span><span class="cl cl-ma">    <span class="kw">def</span> speak(self): <span class="kw">return</span> f<span class="str">"{self.name} makes a sound"</span></span><span class="cl"><span class="kw">class</span> Dog(Animal):</span><span class="cl cl-md">    <span class="kw">def</span> speak(self): <span class="kw">return</span> f<span class="str">"{self.name} says woof"</span></span><span class="cl"><span class="kw">class</span> Cat(Animal):</span><span class="cl cl-mc">    <span class="kw">def</span> speak(self): <span class="kw">return</span> f<span class="str">"{self.name} says meow"</span></span><span class="cl"><span class="kw">class</span> Cow(Animal): <span class="kw">pass</span></span><span class="cl"> </span><span class="cl cl-h1"><span class="kw">print</span>(Dog(<span class="str">"Rex"</span>).speak())</span><span class="cl cl-h2"><span class="kw">print</span>(Cat(<span class="str">"Felix"</span>).speak())</span><span class="cl cl-h3"><span class="kw">print</span>(Cow(<span class="str">"Daisy"</span>).speak())</span></div>
           <div class="eqcol">
             <div class="treewrap">
               <div class="parentbox">Animal<span class="pm"> · speak() → "makes a sound"</span></div>
@@ -489,7 +659,7 @@
 
     <!-- 10 super().__init__ (step demo) -->
     <section class="slide" id="s-super" data-steps="3">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> SUPER ]</div><div class="num">10</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> SUPER ]</div><div class="num">13</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">Let the parent set up first.</h1>
         <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">A subclass&rsquo;s <span class="mono" style="font-family:var(--mono)">__init__</span> calls <span class="mono" style="font-family:var(--mono)">super().__init__(...)</span> to reuse the parent&rsquo;s setup, then adds its own. Watch the object fill in:</p>
@@ -520,12 +690,12 @@
 
     <!-- 11 @property (step demo) -->
     <section class="slide" id="s-property" data-steps="3">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> COMPUTED ]</div><div class="num">11</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> COMPUTED ]</div><div class="num">14</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">A method you use like data.</h1>
         <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">Some values are <span class="hl">computed</span>, not stored. <span class="mono" style="font-family:var(--mono)">@property</span> lets you read <span class="mono" style="font-family:var(--mono)">c.area</span> with no parentheses. Step through it:</p>
         <div class="demo r" style="--d:.16s; align-items:center">
-          <div class="code sm steps" style="flex:1.05; align-self:flex-start; font-size:20px; line-height:1.55"><span class="cl"><span class="kw">class</span> Circle:</span><span class="cl">    <span class="kw">def</span> __init__(self, radius):</span><span class="cl">        self.radius = radius</span><span class="cl">    @property</span><span class="cl">    <span class="kw">def</span> area(self):</span><span class="cl">        <span class="kw">return</span> math.pi * self.radius * self.radius</span><span class="cl"> </span><span class="cl cl-pr1">c = Circle(5)</span><span class="cl cl-pr2"><span class="kw">print</span>(c.area)&nbsp;&nbsp;<span class="com"># no () — like an attribute</span></span><span class="cl cl-pr3">c.radius = 10&nbsp;&nbsp;<span class="com"># recomputes</span></span></div>
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start; font-size:20px; line-height:1.55"><span class="cl"><span class="kw">class</span> Circle:</span><span class="cl cl-pi">    <span class="kw">def</span> __init__(self, radius):</span><span class="cl cl-pi">        self.radius = radius</span><span class="cl cl-pm">    @property</span><span class="cl cl-pm">    <span class="kw">def</span> area(self):</span><span class="cl cl-pm">        <span class="kw">return</span> math.pi * self.radius * self.radius</span><span class="cl"> </span><span class="cl cl-pr1">c = Circle(5)</span><span class="cl cl-pr2"><span class="kw">print</span>(c.area)&nbsp;&nbsp;<span class="com"># no () — like an attribute</span></span><span class="cl cl-pr3">c.radius = 10&nbsp;&nbsp;<span class="com"># recomputes</span></span></div>
           <div class="circwrap">
             <svg class="circsvg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg"><circle class="cfill" cx="120" cy="120" r="60"/></svg>
             <div class="circmeta">
@@ -546,14 +716,40 @@
       <div class="foot"><span>Python · Workshop 09</span><span>@property · read c.area, not c.area()</span></div>
     </section>
 
-    <!-- 12 CAPSTONE: SHAPES (step demo) -->
+    <!-- 15 @PROPERTY PLAYGROUND (slider demo) -->
+    <section class="slide" id="s-radius">
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> TRY IT ]</div><div class="num">15</div></div>
+      <div class="body">
+        <h1 class="h-md r" style="--d:0s">Drag the radius.</h1>
+        <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">There is no stored <span class="mono" style="font-family:var(--mono)">area</span> anywhere — every read of <span class="mono" style="font-family:var(--mono)">c.area</span> runs the method again. Drag and watch it recompute:</p>
+        <div class="demo r" style="--d:.16s; align-items:center">
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start; font-size:19px; line-height:1.55"><span class="cl"><span class="kw">class</span> Circle:</span><span class="cl">    <span class="kw">def</span> __init__(self, radius):</span><span class="cl">        self.radius = radius</span><span class="cl"> </span><span class="cl">    @property</span><span class="cl">    <span class="kw">def</span> area(self):</span><span class="cl cl-rr">        <span class="kw">return</span> math.pi * self.radius * self.radius</span><span class="cl"> </span><span class="cl cl-rc">c.radius = <span class="rrv">5</span></span><span class="cl"><span class="kw">print</span>(c.area)&nbsp;&nbsp;<span class="com"># &asymp; <span class="rav">78.54</span></span></span></div>
+          <div class="circwrap">
+            <svg class="circsvg circ2" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg"><circle class="cfill2" cx="125" cy="125" r="50"/></svg>
+            <div class="circmeta">
+              <div>c.radius = <b class="mrv">5</b></div>
+              <div>c.area&nbsp;&nbsp; = <b class="mav">78.54</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="rngrow r" style="--d:.3s">
+          <span class="rnglab">c.radius &rarr;</span>
+          <input class="rng" type="range" min="1" max="12" step="1" value="5" aria-label="Circle radius">
+          <span class="rngval">area = <b class="rgv">78.54</b></span>
+        </div>
+        <p class="note r" style="--d:.38s; margin-top:12px">Change the data and the <span class="hl">computed</span> attribute follows instantly — that is why <span class="mono">@property</span> beats storing a copy that could go stale.</p>
+      </div>
+      <div class="foot"><span>Python · Workshop 09</span><span>@property · computed fresh on every read</span></div>
+    </section>
+
+    <!-- 16 CAPSTONE: SHAPES (step demo) -->
     <section class="slide" id="s-shapes" data-steps="3">
-      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> ALL TOGETHER ]</div><div class="num">12</div></div>
+      <div class="head"><div class="kick">[ PART 2 <span class="b">·</span> ALL TOGETHER ]</div><div class="num">16</div></div>
       <div class="body">
         <h1 class="h-md r" style="--d:0s">Everything, in one hierarchy.</h1>
         <p class="lead r" style="--d:.08s; margin-top:13px; font-size:20px; color:var(--mute)">Inheritance + <span class="mono" style="font-family:var(--mono)">super()</span> + <span class="mono" style="font-family:var(--mono)">@property</span> + <span class="mono" style="font-family:var(--mono)">__str__</span> — the shape of real code. Step through it:</p>
         <div class="demo r" style="--d:.16s; align-items:center">
-          <div class="code sm steps" style="flex:1.05; align-self:flex-start"><span class="cl"><span class="kw">class</span> Shape:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com"># name + __str__ + area</span></span><span class="cl"><span class="kw">class</span> Circle(Shape):&nbsp;&nbsp;&nbsp;<span class="com"># area = πr²</span></span><span class="cl"><span class="kw">class</span> Rectangle(Shape): <span class="com"># area = w·h</span></span><span class="cl"> </span><span class="cl cl-sh1"><span class="kw">print</span>(Circle(5))</span><span class="cl cl-sh2"><span class="kw">print</span>(Rectangle(3, 4))</span><span class="cl cl-sh3"><span class="kw">print</span>(<span class="str">"Biggest:"</span>, biggest)</span></div>
+          <div class="code sm steps" style="flex:1.05; align-self:flex-start"><span class="cl cl-ss"><span class="kw">class</span> Shape:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="com"># name + __str__ + area</span></span><span class="cl cl-sc"><span class="kw">class</span> Circle(Shape):&nbsp;&nbsp;&nbsp;<span class="com"># area = πr²</span></span><span class="cl cl-sr2"><span class="kw">class</span> Rectangle(Shape): <span class="com"># area = w·h</span></span><span class="cl"> </span><span class="cl cl-sh1"><span class="kw">print</span>(Circle(5))</span><span class="cl cl-sh2"><span class="kw">print</span>(Rectangle(3, 4))</span><span class="cl cl-sh3"><span class="kw">print</span>(<span class="str">"Biggest:"</span>, biggest)</span></div>
           <div class="eqcol">
             <div class="shaperow">
               <div class="shapecard sc0">
@@ -585,7 +781,7 @@
 
     <!-- 13 RECAP -->
     <section class="slide" id="s-recap">
-      <div class="head"><div class="kick">[ RECAP <span class="b">·</span> WORKSHOP 09 ]</div><div class="num">13</div></div>
+      <div class="head"><div class="kick">[ RECAP <span class="b">·</span> WORKSHOP 09 ]</div><div class="num">17</div></div>
       <div class="body">
         <ul class="recap">
           <li class="r" style="--d:0s"><span class="rn">01</span><span class="rt"><span class="hl">__str__</span> / <span class="hl">__repr__</span> make objects print nicely — friendly text for people, exact text for programmers.</span></li>
@@ -601,7 +797,7 @@
 
     <!-- 14 HOMEWORK -->
     <section class="slide" id="s-hw">
-      <div class="head"><div class="kick">[ HOMEWORK <span class="b">·</span> WORKSHOP 09 ]</div><div class="num">14</div></div>
+      <div class="head"><div class="kick">[ HOMEWORK <span class="b">·</span> WORKSHOP 09 ]</div><div class="num">18</div></div>
       <div class="body">
         <h1 class="h-lg r" style="--d:0s">Your turn.</h1>
         <p class="lead r" style="--d:.1s; margin-top:16px">Eight exercises: give a class a <span class="mono" style="font-family:var(--mono)">__str__</span>, compare with <span class="mono" style="font-family:var(--mono)">__eq__</span>, count objects with a class attribute, build a family of classes with <span class="mono" style="font-family:var(--mono)">inheritance</span> and <span class="mono" style="font-family:var(--mono)">super()</span>, a computed <span class="mono" style="font-family:var(--mono)">@property</span>, and a bonus <span class="mono" style="font-family:var(--mono)">Library</span> that saves itself with <span class="mono" style="font-family:var(--mono)">json</span>.</p>
@@ -635,7 +831,7 @@
     <button id="next" aria-label="Next">&rsaquo;</button>
   </div>
 </div>
-<div class="hint" id="hint">← → navigate · ↓ step through demos</div>
+<div class="hint" id="hint">← → navigate · ↓ step · click &amp; drag the demos</div>
 
 <script>
 (function(){
@@ -726,6 +922,7 @@
   function goTo(i){
     i = Math.max(0, Math.min(slides.length-1, i));
     slides[cur].classList.remove('active');
+    slides[cur].querySelectorAll('.cl.on, .callbtn.run').forEach(function(el){ el.classList.remove('on'); el.classList.remove('run'); });
     resetAnims();
     cur = i;
     var s = slides[cur];
@@ -737,6 +934,10 @@
       setStep(s, 0);
       if(auto) startAuto(s);
     }
+    s.querySelectorAll('.rng').forEach(function(r){
+      if(r.value!==r.defaultValue){ r.value=r.defaultValue; r.dataset.silent='1'; r.dispatchEvent(new Event('input')); delete r.dataset.silent; }
+    });
+    if(typeof s._onEnter==='function') s._onEnter();
     count.textContent = String(i+1).padStart(2,'0') + ' / ' + String(slides.length).padStart(2,'0');
     prog.style.width = (i/(slides.length-1)*100) + '%';
     runAnims(i);
@@ -747,6 +948,7 @@
   document.getElementById('next').addEventListener('click', nextS);
   document.getElementById('prev').addEventListener('click', prevS);
   document.addEventListener('keydown', function(e){
+    if(e.target && e.target.tagName==='INPUT' && e.key.indexOf('Arrow')===0) return; /* sliders keep their arrow keys; every other key still drives the deck */
     if(e.key==='ArrowRight'||e.key==='PageDown'){ e.preventDefault(); nextS(); }
     else if(e.key===' '){ e.preventDefault(); nextS(); }
     else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prevS(); }
@@ -755,12 +957,155 @@
     else if(e.key==='Home'){ goTo(0); }
     else if(e.key==='End'){ goTo(slides.length-1); }
   });
-  var tx=0;
-  document.addEventListener('touchstart', function(e){ tx=e.changedTouches[0].clientX; }, {passive:true});
+  var tx=0, tguard=false;
+  document.addEventListener('touchstart', function(e){
+    tx=e.changedTouches[0].clientX;
+    tguard=!!(e.target.closest && e.target.closest('input,button')); /* dragging a slider or tapping a call button is not a swipe */
+  }, {passive:true});
   document.addEventListener('touchend', function(e){
+    if(tguard) return;
     var dx=e.changedTouches[0].clientX - tx;
     if(Math.abs(dx)>50){ dx<0 ? nextS() : prevS(); }
   }, {passive:true});
+
+  /* ===== interactive demos : sliders & click-to-call traces ===== */
+  function onLines(slide, sels){
+    slide.querySelectorAll('.cl.on').forEach(function(el){ el.classList.remove('on'); });
+    (sels||[]).forEach(function(sel){ var el=slide.querySelector(sel); if(el) el.classList.add('on'); });
+  }
+  function setCap(slide, t){ var c=slide.querySelector('.scap'); if(c) c.textContent=t||''; }
+  function termLog(slide, text, cls){
+    var body=slide.querySelector('.term .tbody'); if(!body) return;
+    var s=document.createElement('span'); s.className='o'+(cls?' '+cls:''); s.textContent=text;
+    body.appendChild(s);
+    var lines=body.querySelectorAll('.o');
+    if(lines.length>6) body.removeChild(lines[0]);
+  }
+  function trace(slide, frames){
+    clearTimers();
+    frames.forEach(function(f,i){ timers.push(setTimeout(f, i*700)); });
+  }
+  function markRun(slide, btn){
+    slide.querySelectorAll('.callbtn').forEach(function(x){ x.classList.remove('run'); });
+    if(btn) btn.classList.add('run');
+  }
+
+  /* s-objects — blueprint builds objects (slider) */
+  (function(){
+    var sl=document.getElementById('s-objects'); if(!sl) return;
+    var rng=sl.querySelector('.rng'), kv=sl.querySelector('.kv');
+    var caps=['only the blueprint exists — no dogs yet',
+      'rex = Dog("Rex", 3)  →  __init__ runs — a first object is born',
+      'bella = Dog("Bella", 5)  →  a second, separate object',
+      'toby = Dog("Toby", 1)  →  each one gets its own name and age',
+      'mia = Dog("Mia", 7)  →  one class, four independent objects'];
+    function set(k){
+      sl.setAttribute('data-k', k);
+      kv.textContent=k;
+      for(var i=1;i<=4;i++){ var c=sl.querySelector('.dc'+i); if(c) c.classList.toggle('on', i<=k); }
+      setCap(sl, caps[k]);
+    }
+    rng.addEventListener('input', function(){ set(parseInt(rng.value,10)||0); });
+    set(0);
+  })();
+
+  /* s-self — who does self become? (click-to-call) */
+  (function(){
+    var sl=document.getElementById('s-self'); if(!sl) return;
+    var vars=['rex','bella','luna'], names=['Rex','Bella','Luna'];
+    var tb=sl.querySelector('.transbox'), sf=sl.querySelector('.selfline');
+    sl.querySelectorAll('.callbtn').forEach(function(b){
+      b.addEventListener('click', function(){
+        var i=parseInt(b.getAttribute('data-dog'),10), v=vars[i], n=names[i];
+        markRun(sl, b);
+        trace(sl, [
+          function(){
+            onLines(sl, []);
+            sl.querySelectorAll('.chip').forEach(function(c,ci){ c.classList.toggle('sel', ci===i); });
+            tb.innerHTML = v+'.speak() <span class="dim2">&rarr; Python runs &rarr;</span> Dog.speak(<span class="tv">'+v+'</span>)';
+            sf.innerHTML = '';
+            termLog(sl, '>>> '+v+'.speak()', 'dim');
+            setCap(sl, 'the object before the dot is handed to the method');
+          },
+          function(){
+            onLines(sl, ['.cl-sd']);
+            sf.innerHTML = 'self <span class="dim2">&#10230;</span> <b>'+v+'</b> <span class="dim2">— the Dog whose name is "'+n+'"</span>';
+            setCap(sl, 'speak() starts — inside it, self is '+v);
+          },
+          function(){
+            onLines(sl, ['.cl-sr']);
+            setCap(sl, 'self.name → "'+n+'" → the f-string builds the sentence');
+          },
+          function(){
+            termLog(sl, "'"+n+" says woof'", 'ok');
+            b.classList.remove('run');
+          }
+        ]);
+      });
+    });
+  })();
+
+  /* s-state — the object remembers (click-to-call, live balance) */
+  (function(){
+    var sl=document.getElementById('s-state'); if(!sl) return;
+    var bal=0, bv=sl.querySelector('.bv');
+    function showBal(x, pulse){ bv.textContent=x; if(pulse){ bv.classList.remove('tick'); void bv.offsetWidth; bv.classList.add('tick'); } }
+    sl._onEnter = function(){ showBal(bal, false); }; /* badge always matches the real state on re-entry */
+    sl.querySelectorAll('.callbtn').forEach(function(b){
+      b.addEventListener('click', function(){
+        var op=b.getAttribute('data-op'), n=parseInt(b.getAttribute('data-n'),10)||0, old=bal;
+        var fail = (op==='wd') && n > old;
+        /* mutate the state NOW — a rapid second click cancels pending frames, so frames must only animate */
+        if(op==='new') bal = 0;
+        else if(op==='dep') bal = old + n;
+        else if(!fail) bal = old - n;
+        markRun(sl, b);
+        var frames;
+        if(op==='new'){
+          frames=[
+            function(){ onLines(sl,['.cl-c1']); showBal(old,false); termLog(sl,'>>> acc = Account("nino")','dim'); setCap(sl,'a brand-new object — __init__ runs again'); },
+            function(){ onLines(sl,['.cl-c2']); showBal(0,true); setCap(sl,'self.balance starts back at 0 — the old object is gone'); },
+            function(){ b.classList.remove('run'); }
+          ];
+        } else if(op==='dep'){
+          frames=[
+            function(){ onLines(sl,['.cl-d1']); showBal(old,false); termLog(sl,'>>> acc.deposit('+n+')','dim'); setCap(sl,'self = acc · amount = '+n); },
+            function(){ onLines(sl,['.cl-d2']); showBal(old+n,true); setCap(sl,'self.balance: '+old+' + '+n+' → '+(old+n)); },
+            function(){ b.classList.remove('run'); }
+          ];
+        } else {
+          frames=[
+            function(){ onLines(sl,['.cl-w1']); showBal(old,false); termLog(sl,'>>> acc.withdraw('+n+')','dim'); setCap(sl,'self = acc · amount = '+n); },
+            function(){ onLines(sl,['.cl-w2']); setCap(sl,'is '+n+' > '+old+'?  '+(fail ? 'Yes → the if branch' : 'No → the else branch')); },
+            fail
+              ? function(){ onLines(sl,['.cl-w3']); termLog(sl,'Not enough money!','bad'); setCap(sl,'balance unchanged — the object protected itself'); }
+              : function(){ onLines(sl,['.cl-w4']); showBal(old-n,true); setCap(sl,'self.balance: '+old+' − '+n+' → '+(old-n)); },
+            function(){ b.classList.remove('run'); }
+          ];
+        }
+        trace(sl, frames);
+      });
+    });
+  })();
+
+  /* s-radius — @property recomputes (slider) */
+  (function(){
+    var sl=document.getElementById('s-radius'); if(!sl) return;
+    var rng=sl.querySelector('.rng'), circ=sl.querySelector('.cfill2');
+    var rrv=sl.querySelector('.rrv'), rav=sl.querySelector('.rav'),
+        mrv=sl.querySelector('.mrv'), mav=sl.querySelector('.mav'), rgv=sl.querySelector('.rgv');
+    var idle=null;
+    rng.addEventListener('input', function(){
+      var k=parseInt(rng.value,10)||1, a=(Math.PI*k*k).toFixed(2);
+      circ.setAttribute('r', k*10);
+      rrv.textContent=k; mrv.textContent=k;
+      rav.textContent=a; mav.textContent=a; rgv.textContent=a;
+      if(idle) clearTimeout(idle);
+      if(rng.dataset.silent){ onLines(sl, []); return; } /* goTo() reset — restore values without the recompute flash */
+      onLines(sl, ['.cl-rc', '.cl-rr']);
+      idle=setTimeout(function(){ onLines(sl, []); }, 900);
+    });
+  })();
 
   setTimeout(function(){ hint.style.opacity='0'; }, 4000);
   goTo(0);
