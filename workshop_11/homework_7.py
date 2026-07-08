@@ -1,7 +1,7 @@
 import math
 class Shape:
-    def __init__(self, type):
-        self.type = type
+    def __init__(self, tp):
+        self.type = tp
     
     @property
     def area(self):
@@ -29,8 +29,17 @@ class Circle(Shape):
         return math.pi * (self.radius ** 2)
 
 
-square = Square(5)
-c = Circle(7)
+shapes = []
 
-print(square)
-print(c)
+with open("./workshop_11/shapes.txt") as f:
+    for line in f:
+        shape, data = line.split(",")
+        if shape.lower() == "square":
+            shapes.append(Square(float(data)))
+        elif shape.lower() == "circle":
+            shapes.append(Circle(float(data)))
+        else:
+            print(f"Shape {shape} does not exist in our program!")
+
+for shape in shapes:
+    print(shape)
