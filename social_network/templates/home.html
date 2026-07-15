@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=viewport, initial-scale=1.0">
+    <title>Social Network</title>
+</head>
+<body>
+    {% if request.user.is_authenticated %}
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button>Log out</button>
+    </form>
+    {% else %}
+    <a href="{% url 'login' %}">Log in</a>
+    
+    {% endif %}
+    <h1>Social Network - {{ request.user }}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="title">
+        <textarea name="content"></textarea>
+        <button>Create Post</button>
+    </form>
+
+    {% for post in posts %}
+    <div style="border: 1px solid black;">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.author.username }} <small>{{ post.created_at }}</small></p>
+        <p>{{ post.content }}</p>
+
+       <ul>
+        {% for comment in post.comment_set.all %}
+            <li>{{ comment.content }}</li>
+        {% endfor %}
+       </ul>
+        <form method="POST" action="comment/create/">
+            {% csrf_token %}
+            <input value="{{ post.id }}" name="post_id" hidden/>
+            <textarea name="content"></textarea>
+            <button>Comment</button>
+        </form>
+    </div>
+    {% endfor %}
+</body>
+</html>
