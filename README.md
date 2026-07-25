@@ -21,5 +21,10 @@
 
 [Workshop 11 — Homework](./docs/workshop_11_homework.md)
 
+[Workshop 12 — Homework](./docs/workshop_12_homework.md)
+
+## Final Project
+[Final Project — Requirements](./docs/final_project.md)
+
 ## Books
 [Recommended Reading](./docs/resources.md)

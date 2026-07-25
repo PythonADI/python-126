@@ -56,11 +56,18 @@
             <div class="card-body">
                 <form method="POST">
                     {% csrf_token %}
+                    {{ form.non_field_errors }}
                     <div class="d-flex gap-2 mb-2">
                         <div class="avatar flex-shrink-0">{{ request.user.username|first }}</div>
                         <div class="flex-grow-1">
-                            <input type="text" name="title" class="form-control mb-2" placeholder="Title" required>
-                            <textarea name="content" class="form-control" rows="2" placeholder="What's on your mind?" required></textarea>
+                            {{ form.title }}
+                            {% for error in form.title.errors %}
+                            <div class="text-danger small mb-2">{{ error }}</div>
+                            {% endfor %}
+                            {{ form.content }}
+                            {% for error in form.content.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
                         </div>
                     </div>
                     <div class="text-end">
@@ -107,7 +114,7 @@
                 </div>
                 {% endif %}
 
-                <form method="POST" action="comment/create/" class="d-flex gap-2 mt-3">
+                <form method="POST" action="{% url 'comment-create' %}" class="d-flex gap-2 mt-3">
                     {% csrf_token %}
                     <input value="{{ post.id }}" name="post_id" hidden/>
                     <input type="text" name="content" class="form-control form-control-sm rounded-pill" placeholder="Write a comment..." required>
